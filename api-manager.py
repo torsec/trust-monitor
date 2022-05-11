@@ -1,9 +1,10 @@
 from quart import Quart, request
+from core import register_entity
 
 app = Quart(__name__)
 
 @app.route('/add_entity', methods=['POST'])
-async def route():
+async def add_entity():
     """
     Body structure:
     {
@@ -40,6 +41,22 @@ async def route():
         return "error"
 
     return "success"
+
+@app.route('/remove_entity')
+def remove_entity():
+    return
+
+@app.route('attest_entity')
+def attest_entity():
+    return
+
+@app.route('register_verifier')
+def register_verifier():
+    return
+
+@app.route('upload_whitelist')
+def upload_whitelist():
+    return
 
 if __name__ == "__main__":
     app.run()
