@@ -43,19 +43,19 @@ async def add_entity():
     return "success"
 
 @app.route('/remove_entity')
-def remove_entity():
+async def remove_entity():
     return
 
-@app.route('attest_entity')
-def attest_entity():
+@app.route('/attest_entity')
+async def attest_entity():
     return
 
-@app.route('register_verifier')
-def register_verifier():
+@app.route('/register_verifier')
+async def register_verifier():
     return
 
-@app.route('upload_whitelist')
-def upload_whitelist():
+@app.route('/upload_whitelist')
+async def upload_whitelist():
     return
 
 if __name__ == "__main__":
