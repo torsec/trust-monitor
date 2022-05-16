@@ -1,6 +1,6 @@
 from quart import Quart, request
 from core import register_entity
-from database_connector.instances import insert_entity
+from database_connectors.instances import insert_entity
 
 app = Quart(__name__)
 
@@ -30,6 +30,8 @@ async def add_entity():
     """
     Validation
     """
+    if "entity_uuid" not in body:
+        return "error"
     if "name" not in body:
         return "error"
     if "external_id" not in body:
@@ -40,6 +42,8 @@ async def add_entity():
         return "error"
 
     insert_entity(body)
+
+    register_entity()
 
     return "success"
 

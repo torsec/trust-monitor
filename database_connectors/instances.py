@@ -7,7 +7,16 @@ def insert_entity(entity):
     cur.execute("""
             INSERT INTO entities (name,external_id,type,whitelist_uuid,child,parent,state, metadata)
             VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-    """, (entity["name"], entity["external_id"], entity["type"], entity["whitelist_uuid"], entity["child"], entity["parent"], entity["state"], str(entity["metadat""a"]).replace("\'", "\"")))
+    """, (entity.get("name"), 
+        entity.get("external_id"), 
+        entity.get("type"), 
+        entity.get("whitelist_uuid"), 
+        entity.get("child"), 
+        entity.get("parent"), 
+        entity.get("state"), 
+        str(entity.get("metadata")).replace("\'", "\"")
+        )
+    )
 
     conn.commit()
     return
