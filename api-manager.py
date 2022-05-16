@@ -1,5 +1,6 @@
 from quart import Quart, request
 from core import register_entity
+from database_connector.instances import insert_entity
 
 app = Quart(__name__)
 
@@ -9,15 +10,15 @@ async def add_entity():
     Body structure:
     {
         "entity_uuid": uuid,
-        "att_tech": att_tech, (not mandatory)
+        "att_tech": att_tech, (optional)
         "name": name,
         "external_id": id,
         "type": type,
-        "whitelist_uuid": wl_uuid, (not mandatory)
-        "child": [                  (not mandatory)
+        "whitelist_uuid": wl_uuid, (optional)
+        "child": [                  (optional)
             uuid_1, uuid_2, ...
         ],
-        "parent": id,   (not mandatory)
+        "parent": id,   (optional)
         "metadata": {
             ...
         }
@@ -29,8 +30,6 @@ async def add_entity():
     """
     Validation
     """
-    if "entity_uuid" not in body:
-        return "error"
     if "name" not in body:
         return "error"
     if "external_id" not in body:
@@ -39,6 +38,8 @@ async def add_entity():
         return "error"
     if "metadata" not in body:
         return "error"
+
+    insert_entity(body)
 
     return "success"
 
