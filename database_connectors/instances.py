@@ -11,7 +11,7 @@ def store_entity(entity):
     try:
         cur.execute("""
                 INSERT INTO entities (entity_uuid,att_tech,name,external_id,type,whitelist_uuid,child,parent,state, metadata)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 RETURNING entity_uuid
         """, (
             entity.get("entity_uuid"),
@@ -30,9 +30,9 @@ def store_entity(entity):
         conn.commit()
 
     except Exception as error:
-        return {"error": error}
+        return {"error": error.__str__()}
     
-    return {"id": id}
+    return {"id": str(id)}
 
 def purge_entity(entity):
     cur  = conn.cursor()
@@ -53,4 +53,4 @@ def purge_entity(entity):
     except Exception as error:
         return {"error": error}
     
-    return {"id": id}
+    return {"id": str(id)}

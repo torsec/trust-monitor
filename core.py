@@ -1,5 +1,8 @@
 from importlib.metadata import entry_points
-from database_connectors.instances import store_entity,purge_entity
+from database_connectors.instances import (
+    store_entity,
+    purge_entity
+)
 from database_connectors.verifiers import store_verifier
 from adapters_connector import register_entity
 from database_connectors.whitelists import store_whitelist
@@ -21,18 +24,31 @@ def insert_entity(entity):
 
 def delete_entity(entity):
 
+    """
+    Delete an entity from the instances database
+    """
     ret = purge_entity(entity)
 
     return ret
 
 def insert_att_tech(verifier):
 
+    """
+    Store the new verifier in the attestation technologies database
+    """
     ret = store_verifier(verifier)
 
     return ret
 
+def delete_att_tech(verifier):
+
+    return
+
 def insert_whitelist(whitelist):
 
+    """
+    Store the new whitelist in the whitelists database
+    """
     ret = store_whitelist(whitelist)
 
     return ret

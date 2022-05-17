@@ -1,7 +1,13 @@
 from distutils.log import error
 import re
 from quart import Quart, request
-from core import insert_att_tech,insert_entity,delete_entity,insert_whitelist
+from core import (
+    insert_att_tech,
+    delete_att_tech,
+    insert_entity,
+    delete_entity,
+    insert_whitelist
+)
 
 app = Quart(__name__)
 
@@ -32,13 +38,13 @@ async def add_entity():
     Mandatory values
     """
     if "entity_uuid" not in body:
-        return {"Error": "entity_uuid field must be present"}
+        return {"Error": "entity_uuid field must be present"}, 422
     if "name" not in body:
-        return {"Error": "name must field be present"}
+        return {"Error": "name must field be present"}, 422
     if "external_id" not in body:
-        return {"Error": "external_id field must be present"}
+        return {"Error": "external_id field must be present"}, 422
     if "type" not in body:
-        return {"Error": "type field must be present"}
+        return {"Error": "type field must be present"}, 422
 
     """
     Insert new entity in the TM
@@ -46,9 +52,9 @@ async def add_entity():
     ret = insert_entity(body)
 
     if "error" in ret.keys():
-        return {"Error": "entity " + body["entity_uuid"] + " :" + error}
+        return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "entity " + body["entity_uuid"] + "succesfully added"}
+    return {"Message": "entity " + ret["id"] + " succesfully added"}
 
 @app.route('/entity', methods=['DELETE'])
 async def remove_entity():
@@ -65,14 +71,14 @@ async def remove_entity():
     Mandatory values
     """
     if "entity_uuid" not in body:
-        return {"Error": "entity_uuid field must be present"}
+        return {"Error": "entity_uuid field must be present"}, 422
 
     ret = delete_entity(body)
 
     if "error" in ret.keys():
-        return {"Error": "entity " + body["entity_uuid"] + " :" + error}
+        return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "entity " + body["entity_uuid"] + " succesfully deleted"}
+    return {"Message": "entity " + ret["id"] + " succesfully deleted"}
 
 @app.route('/attest_entity')
 async def attest_entity():
@@ -96,16 +102,47 @@ async def register_verifier():
     Mandatory values
     """
     if "att_tech" not in body:
-        return {"Error": "att_tech field must be present"}
+        return {"Error": "att_tech field must be present"}, 422
     if "metadata" not in body:
-        return {"Error": "metadata field must be present"}
+        return {"Error": "metadata field must be present"}, 422
 
     """
     Insert new attestation technology in the TM
     """
     ret = insert_att_tech(body)
 
-    return {"Message": "verfier " + body["att_tech"] + " added succesfully"}
+    if "error" in ret.keys():
+        return {"Error": "verifier " + body["att_tech"] + " :" + ret["error"]}, 500
+
+    return {"Message": "verfier " + ret["id"] + " added succesfully"}
+
+@app.route('/register_verifier', methods=['DELETE'])
+async def remove_verifier():
+    """
+    Body structure:
+    {
+        "att_tech": name
+    }
+    """
+
+    body = await request.get_json()
+
+    """
+    Mandatory values
+    """
+    if "att_tech" not in body:
+        return {"Error": "att_tech field must be present"}, 422
+
+    """
+    Delete an attestation technology from the TM
+    """
+    ret = delete_att_tech(body)
+
+    if "error" in ret.keys():
+        return {"Error": "verifier " + body["att_tech"] + " :" + ret["error"]}, 500
+
+    return {"Message": "verfier " + ret["id"] + " deleted succesfully"}
+
 
 @app.route('/whitelist', methods=['POST'])
 async def upload_whitelist():
@@ -128,16 +165,21 @@ async def upload_whitelist():
     Mandatory values
     """
     if "whitelist_uuid" not in body:
-        return {"Error": "id field must be present"}
+        return {"Error": "whitelist_uuid field must be present"}, 422
+    if "metadata" not in body:
+        return {"Error": "metadata field must be present"}, 422
     if "whitelist" not in body:
-        return {"Error": "whitelist field must be present"}
+        return {"Error": "whitelist field must be present"}, 422
 
     """
     Insert new whitelist in the TM
     """
     ret = insert_whitelist(body)
 
-    return {"Message": "whitelist " + str(body["whitelist_uuid"]) + " added succesfully"}
+    if "error" in ret.keys():
+        return {"Error": "whitelist " + str(body["whitelist_uuid"]) + " :" + ret["error"]}, 500
+
+    return {"Message": "whitelist " + ret["id"] + " added succesfully"}
 
 @app.route('/whitelist', methods=['DELETE'])
 async def delete_whitelist():
