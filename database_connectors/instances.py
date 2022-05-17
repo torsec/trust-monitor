@@ -1,25 +1,56 @@
+from distutils.log import error
+from markupsafe import escape_silent
 import psycopg2
 
-conn  = psycopg2.connect(database="instaces", user="postgres", password="prova", host="172.17.0.2", port="5432")
+conn  = psycopg2.connect(database="instances", user="postgres", password="prova", host="172.17.0.3", port="5432")
 
 def store_entity(entity):
     cur = conn.cursor()
-    cur.execute("""
-            INSERT INTO entities (entity_uuid,att_tech,name,external_id,type,whitelist_uuid,child,parent,state, metadata)
-            VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
-    """, (
-        entity.get("entity_uuid"),
-        entity.get("att_tech"),
-        entity.get("name"),
-        entity.get("external_id"),
-        entity.get("type"),
-        entity.get("whitelist_uuid"),
-        entity.get("child"),
-        entity.get("parent"),
-        entity.get("state"),
-        str(entity.get("metadata")).replace("\'", "\"")
-        )
-    )
+    id = -1
 
-    conn.commit()
-    return
+    try:
+        cur.execute("""
+                INSERT INTO entities (entity_uuid,att_tech,name,external_id,type,whitelist_uuid,child,parent,state, metadata)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s)
+                RETURNING entity_uuid
+        """, (
+            entity.get("entity_uuid"),
+            entity.get("att_tech"),
+            entity.get("name"),
+            entity.get("external_id"),
+            entity.get("type"),
+            entity.get("whitelist_uuid"),
+            entity.get("child"),
+            entity.get("parent"),
+            entity.get("state"),
+            str(entity.get("metadata")).replace("\'", "\"")
+            )
+        )
+        id = cur.fetchone()[0]
+        conn.commit()
+
+    except Exception as error:
+        return {"error": error}
+    
+    return {"id": id}
+
+def purge_entity(entity):
+    cur  = conn.cursor()
+    id = -1
+
+    try:
+        cur.execute("""
+            DELETE FROM entities WHERE name=%s
+            RETURNING entity_uuid
+        """,
+            (
+                entity.get("entity_uuid"),
+            )
+        )
+        id = cur.fetchone()[0]
+        conn.commit()
+    
+    except Exception as error:
+        return {"error": error}
+    
+    return {"id": id}
