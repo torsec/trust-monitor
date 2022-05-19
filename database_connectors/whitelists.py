@@ -1,10 +1,19 @@
-from http import client
 from pymongo import MongoClient
 from jsonschema import validate
 import os
+import configparser
 
+config = configparser.ConfigParser()
+config.read('config.ini')
+
+client = None
 try:
-    client = MongoClient('172.17.0.2', 27017, username='mongo', password='prova')
+    client = MongoClient(
+        config['whitelists_database']['address'], 
+        int(config['whitelists_database']['port']), 
+        username=config['whitelists_database']['user'], 
+        password=config['whitelists_database']['password']
+    )
 except Exception as e:
     print("Could not connect to mongoDB server: %s" % e.__str__())
     os._exit(-1)
@@ -27,7 +36,7 @@ def store_whitelist(whitelist):
     schema = {
         "type" : "object",
         "properties" : {
-            "whitelist_uuid" : {"type" : "number"},
+            "_id" : {"type" : "number"},
             "metadata" : {
                 "type" : "object",
                 "properties" : {
@@ -39,7 +48,7 @@ def store_whitelist(whitelist):
             },
             "whitelist" : {"type" : "object"}
         },
-        "required": ["whitelist_uuid", "metadata", "whitelist"],
+        "required": ["_id", "metadata", "whitelist"],
         "additionalProperties": False
     }
 
@@ -56,16 +65,16 @@ def store_whitelist(whitelist):
     except Exception as error:
         return {"error": error.__str__()}
 
-    return {"id": str(whitelist["whitelist_uuid"])}
+    return {"id": str(whitelist["_id"])}
 
 """
 Remove a document from the whitelist database
 """
 def purge_whitelist(whitelist):
 
-    _id = whitelists.delete_one( {"whitelist_uuid": whitelist["whitelist_uuid"]} )
+    _id = whitelists.delete_one( {"_id": whitelist["_id"]} )
     
     if _id.deleted_count == 0:
-        return {"error": "Object with whitelist_uuid " + str(whitelist["whitelist_uuid"]) + " is not present"}
+        return {"error": "Object with _id " + str(whitelist["_id"]) + " is not present"}
 
-    return {"id": str(whitelist["whitelist_uuid"])}
+    return {"id": str(whitelist["_id"])}

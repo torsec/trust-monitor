@@ -1,4 +1,3 @@
-from importlib.metadata import entry_points
 from database_connectors.instances import (
     store_entity,
     purge_entity

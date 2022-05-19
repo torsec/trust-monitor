@@ -53,9 +53,6 @@ async def add_entity():
     """
     ret = insert_entity(body)
 
-    if "error_values" in ret.keys():
-        return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 422
-
     if "error" in ret.keys():
         return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
@@ -154,7 +151,7 @@ async def upload_whitelist():
     """
     Body structure:
     {
-        “whitelist_uuid”: uuid,
+        “_id”: uuid,
         "metadata": {
                 "att_tech": att_tech,
                 "hash_algo": hash_algo
@@ -169,8 +166,8 @@ async def upload_whitelist():
     """
     Mandatory values
     """
-    if "whitelist_uuid" not in body:
-        return {"Error": "whitelist_uuid field must be present"}, 422
+    if "_id" not in body:
+        return {"Error": "_id field must be present"}, 422
     if "metadata" not in body:
         return {"Error": "metadata field must be present"}, 422
     if "whitelist" not in body:
@@ -181,8 +178,11 @@ async def upload_whitelist():
     """
     ret = insert_whitelist(body)
 
+    if "error_values" in ret.keys():
+        return {"Error": "whitelist " + str(body["_id"]) + " :" + ret["error_values"]}, 422
+
     if "error" in ret.keys():
-        return {"Error": "whitelist " + str(body["whitelist_uuid"]) + " :" + ret["error"]}, 500
+        return {"Error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
 
     return {"Message": "whitelist " + ret["id"] + " added succesfully"}
 
@@ -191,7 +191,7 @@ async def remove_whitelist():
     """
     Body structure:
     {
-        "whitelist_uuid": uuid
+        "_id": uuid
     }
     """
     body = await request.get_json()
@@ -199,8 +199,8 @@ async def remove_whitelist():
     """
     Mandatory values
     """
-    if "whitelist_uuid" not in body:
-        return {"Error": "whitelist_uuid field must be present"}, 422
+    if "_id" not in body:
+        return {"Error": "_id field must be present"}, 422
 
     """
     Delete a whitelist from the TM
@@ -208,7 +208,7 @@ async def remove_whitelist():
     ret = delete_whitelist(body)
 
     if "error" in ret.keys():
-        return {"Error": "whitelist " + str(body["whitelist_uuid"]) + " :" + ret["error"]}, 500
+        return {"Error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
 
     return {"Message": "whitelist " + ret["id"] + " deleted succesfully"}
 
