@@ -12,6 +12,10 @@ from database_connectors.whitelists import (
     purge_whitelist, 
     store_whitelist
 )
+from database_connectors.policies import (
+    store_policy,
+    purge_policy
+)
 
 def insert_entity(entity):
 
@@ -70,5 +74,23 @@ def delete_whitelist(whitelist):
     Delete a whitelist from the whitelists database
     """
     ret = purge_whitelist(whitelist)
+
+    return ret
+
+def insert_policy(policy):
+
+    """
+    Store the new policy for an entity in the policy database
+    """
+    ret = store_policy(policy)
+
+    return ret
+
+def delete_policy(policy):
+
+    """
+    Delete a policy for an entity from the policy database
+    """
+    ret = purge_policy(policy)
 
     return ret

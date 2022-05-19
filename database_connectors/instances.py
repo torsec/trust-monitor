@@ -33,6 +33,7 @@ def store_entity(entity):
         conn.commit()
 
     except Exception as error:
+        conn.commit()
         return {"error": error.__str__()}
     
     return {"id": str(id)}
@@ -54,6 +55,7 @@ def purge_entity(entity):
         conn.commit()
     
     except Exception as error:
+        conn.commit()
         return {"error": error.__str__()}
     
     return {"id": str(id)}

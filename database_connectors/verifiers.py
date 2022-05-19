@@ -25,6 +25,7 @@ def store_verifier(verifier):
         conn.commit()
 
     except Exception as error:
+        conn.commit()
         return {"error": error.__str__()}
     
     return {"id": id}
@@ -45,6 +46,7 @@ def purge_verifier(verifier):
         conn.commit()
 
     except Exception as error:
+        conn.commit()
         return {"error": error.__str__()}
     
     return {"id": id}

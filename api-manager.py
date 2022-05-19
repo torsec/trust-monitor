@@ -1,11 +1,14 @@
 from quart import Quart, request
 from core import (
+    delete_policy,
     insert_att_tech,
     delete_att_tech,
     insert_entity,
     delete_entity,
     insert_whitelist,
-    delete_whitelist
+    delete_whitelist,
+    insert_policy,
+    delete_policy
 )
 
 app = Quart(__name__)
@@ -208,6 +211,62 @@ async def remove_whitelist():
         return {"Error": "whitelist " + str(body["whitelist_uuid"]) + " :" + ret["error"]}, 500
 
     return {"Message": "whitelist " + ret["id"] + " deleted succesfully"}
+
+@app.route('/policy', methods=['POST'])
+async def upload_policy():
+    """
+    Body structure:
+    {
+        "entity_uuid": uuid,
+        "policy": policy
+    }
+    """
+
+    body = await request.get_json()
+
+    """
+    Mandatory values
+    """
+    if "entity_uuid" not in body:
+        return {"Error": "entity_uuid field must be present"}, 422
+    if "policy" not in body:
+        return {"Error": "policy field must be present"}, 422
+
+    """
+    Insert a policy for an entity in the TM
+    """
+    ret = insert_policy(body)
+
+    if "error" in ret.keys():
+        return {"Error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+
+    return {"Message": "policy for entity " + ret["id"] + " added succesfully"}
+
+@app.route('/policy', methods=['DELETE'])
+async def remove_policy():
+    """
+    Body structure:
+    {
+        "entity_uuid": uuid
+    }
+    """
+    body = await request.get_json()
+
+    """
+    Mandatory values
+    """
+    if "entity_uuid" not in body:
+        return {"Error": "entity_uuid field must be present"}, 422
+
+    """
+    Delete a policy for an entity from the TM
+    """
+    ret = delete_policy(body)
+
+    if "error" in ret.keys():
+        return {"Error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+
+    return {"Message": "policy for entity " + ret["id"] + " deleted succesfully"}
 
 if __name__ == "__main__":
     app.run()
