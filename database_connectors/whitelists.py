@@ -65,7 +65,7 @@ def store_whitelist(whitelist):
     except Exception as error:
         return {"error": error.__str__()}
 
-    return {"id": str(whitelist["_id"])}
+    return {"id": str(_id)}
 
 """
 Remove a document from the whitelist database
