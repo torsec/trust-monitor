@@ -51,6 +51,6 @@ def purge_entity(entity):
         conn.commit()
     
     except Exception as error:
-        return {"error": error}
+        return {"error": error.__str__()}
     
     return {"id": str(id)}

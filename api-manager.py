@@ -6,7 +6,8 @@ from core import (
     delete_att_tech,
     insert_entity,
     delete_entity,
-    insert_whitelist
+    insert_whitelist,
+    delete_whitelist
 )
 
 app = Quart(__name__)
@@ -50,6 +51,9 @@ async def add_entity():
     Insert new entity in the TM
     """
     ret = insert_entity(body)
+
+    if "error_values" in ret.keys():
+        return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 422
 
     if "error" in ret.keys():
         return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
@@ -182,8 +186,30 @@ async def upload_whitelist():
     return {"Message": "whitelist " + ret["id"] + " added succesfully"}
 
 @app.route('/whitelist', methods=['DELETE'])
-async def delete_whitelist():
-    return
+async def remove_whitelist():
+    """
+    Body structure:
+    {
+        "whitelist_uuid": uuid
+    }
+    """
+    body = await request.get_json()
+
+    """
+    Mandatory values
+    """
+    if "whitelist_uuid" not in body:
+        return {"Error": "whitelist_uuid field must be present"}, 422
+
+    """
+    Delete a whitelist from the TM
+    """
+    ret = delete_whitelist(body)
+
+    if "error" in ret.keys():
+        return {"Error": "whitelist " + str(body["whitelist_uuid"]) + " :" + ret["error"]}, 500
+
+    return {"Message": "whitelist " + ret["id"] + " deleted succesfully"}
 
 if __name__ == "__main__":
     app.run()
