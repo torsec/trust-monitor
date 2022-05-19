@@ -1,8 +1,18 @@
 import psycopg2
 import os
+import configparser
+
+config = configparser.ConfigParser()
+config.read('config.ini')
 
 try:
-    conn  = psycopg2.connect(database="instances", user="postgres", password="prova", host="172.17.0.3", port="5432")
+    conn  = psycopg2.connect(
+        database="policy", 
+        user=config['policies_database']['user'],
+        password=config['policies_database']['password'],
+        host=config['policies_database']['address'],
+        port=config['policies_database']['port']
+    )
 except Exception as error:
     print("Could not connect to postgres server: %s" % error.__str__())
     os._exit(-1)
