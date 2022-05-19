@@ -1,12 +1,13 @@
 from http import client
 from pymongo import MongoClient
 from jsonschema import validate
+import os
 
 try:
     client = MongoClient('172.17.0.2', 27017, username='mongo', password='prova')
 except Exception as e:
-    print("Could not connect to server: %s" % e.__str__())
-    exit(-1)
+    print("Could not connect to mongoDB server: %s" % e.__str__())
+    os._exit(-1)
 
 """
 Connenction to the database

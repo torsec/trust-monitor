@@ -1,5 +1,3 @@
-from distutils.log import error
-import re
 from quart import Quart, request
 from core import (
     insert_att_tech,

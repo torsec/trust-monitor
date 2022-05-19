@@ -1,6 +1,11 @@
 import psycopg2
+import os
 
-conn  = psycopg2.connect(database="attestation_tech", user="postgres", password="prova", host="172.17.0.3", port="5432")
+try:
+    conn  = psycopg2.connect(database="attestation_tech", user="postgres", password="prova", host="172.17.0.3", port="5432")
+except Exception as error:
+    print("Could not connect to postgres server: %s" % error.__str__())
+    os._exit(-1)
 
 def store_verifier(verifier):
     cur = conn.cursor()
@@ -16,7 +21,7 @@ def store_verifier(verifier):
             str(verifier.get("metadata")).replace("\'", "\"")
             )
         )
-        id = cur.fetchall()[0]
+        id = cur.fetchall()[0][0]
         conn.commit()
 
     except Exception as error:
@@ -36,7 +41,7 @@ def purge_verifier(verifier):
             verifier.get("att_tech"),
             )
         )
-        id = cur.fetchall()[0]
+        id = cur.fetchall()[0][0]
         conn.commit()
 
     except Exception as error:

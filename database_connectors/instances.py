@@ -1,8 +1,11 @@
-from distutils.log import error
-from markupsafe import escape_silent
 import psycopg2
+import os
 
-conn  = psycopg2.connect(database="instances", user="postgres", password="prova", host="172.17.0.3", port="5432")
+try:
+    conn  = psycopg2.connect(database="instances", user="postgres", password="prova", host="172.17.0.3", port="5432")
+except Exception as error:
+    print("Could not connect to postgres server: %s" % error.__str__())
+    os._exit(-1)
 
 def store_entity(entity):
     cur = conn.cursor()

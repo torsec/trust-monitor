@@ -3,7 +3,10 @@ from database_connectors.instances import (
     store_entity,
     purge_entity
 )
-from database_connectors.verifiers import store_verifier
+from database_connectors.verifiers import (
+    store_verifier,
+    purge_verifier
+)
 from adapters_connector import register_entity
 from database_connectors.whitelists import (
     purge_whitelist, 
@@ -45,7 +48,12 @@ def insert_att_tech(verifier):
 
 def delete_att_tech(verifier):
 
-    return
+    """
+    Delete a verifier from the attetstation technologies database
+    """
+    ret = purge_verifier(verifier)
+
+    return ret
 
 def insert_whitelist(whitelist):
 
