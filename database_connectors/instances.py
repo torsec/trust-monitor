@@ -39,7 +39,7 @@ def store_entity(entity):
             str(entity.get("metadata")).replace("\'", "\"")
             )
         )
-        id = cur.fetchone()[0]
+        id = cur.fetchone()[0][0]
         conn.commit()
 
     except Exception as error:
@@ -61,7 +61,7 @@ def purge_entity(entity):
                 entity.get("entity_uuid"),
             )
         )
-        id = cur.fetchone()[0]
+        id = cur.fetchone()[0][0]
         conn.commit()
     
     except Exception as error:

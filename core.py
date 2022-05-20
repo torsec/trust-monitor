@@ -1,20 +1,9 @@
-from database_connectors.instances import (
-    store_entity,
-    purge_entity
-)
-from database_connectors.verifiers import (
-    store_verifier,
-    purge_verifier
-)
-from adapters_connector import register_entity
-from database_connectors.whitelists import (
-    purge_whitelist, 
-    store_whitelist
-)
-from database_connectors.policies import (
-    store_policy,
-    purge_policy
-)
+from database_connectors.instances import (store_entity,purge_entity)
+from database_connectors.verifiers import (store_verifier,purge_verifier)
+from database_connectors.whitelists import (purge_whitelist,store_whitelist)
+from database_connectors.policies import (store_policy,purge_policy)
+from adapters_connector import (register_entity)
+
 
 def insert_entity(entity):
 
