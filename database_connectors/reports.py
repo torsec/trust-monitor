@@ -37,18 +37,24 @@ def store_report(report):
         "type" : "object",
         "properties" : {
             "_id" : {"type" : "number"},
-            "metadata" : {
-                "type" : "object",
-                "properties" : {
-                    "att_tech" : {"type" : "string"},
-                    "hash_algo" : {"type" : "string"}
-                },
-                "required": ["att_tech", "hash_algo"],
-                "additionalProperties": False
+            "entity_uuid" : {"type" : "number"},
+            "trust" : {"type" : "string"},
+            "time" : {"type" : "string"},
+            "state" : {
+                "type" : "array",
+                "items" : {
+                    "type" : "object",
+                    "properties" : {
+                        "att_tech" : { "type" : "string" },
+                        "trust" : { "type" : "string" }
+                    },
+                    "required": ["att_tech", "trust"],
+                    "additionalProperties": False
+                }
             },
-            "whitelist" : {"type" : "object"}
+            "metadata" : { "type" : "object" }
         },
-        "required": ["_id", "metadata", "whitelist"],
+        "required": ["_id", "entity_uuid", "trust", "time", "state", "metadata"],
         "additionalProperties": False
     }
 
