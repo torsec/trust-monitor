@@ -53,6 +53,9 @@ async def add_entity():
     """
     ret = insert_entity(body)
 
+    if "error_values" in ret.keys():
+        return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error_values"]}, 422
+
     if "error" in ret.keys():
         return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 

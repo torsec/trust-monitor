@@ -1,6 +1,7 @@
 import psycopg2
 import os
 import configparser
+from jsonschema import validate
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -18,6 +19,34 @@ except Exception as error:
     os._exit(-1)
 
 def store_entity(entity):
+    schema = {
+        "type" : "object",
+        "properties" : {
+            "entity_uuid" : { "type" : "number" },
+            "att_tech" : { "type" : "string" },
+            "name" : { "type" : "string" },
+            "external_id" : { "type" : "string" },
+            "type" : { "type" : "string" },
+            "whitelist_uuid" : { "type" : "number" },
+            "child" : { "type" : "array",
+                "items": { "type" : "number" }
+            },
+            "parent" : { "type" : "number" },
+            "state" : { "type" : "string" },
+            "metadata" : { "type" : "object" }
+        },
+        "required": ["entity_uuid", "name", "external_id", "type"],
+        "additionalProperties": False
+    }
+
+    """
+    Validation of the document received from the core application
+    """
+    try:
+        validate(entity, schema=schema)
+    except Exception as error:
+        return {"error_values": error.__str__()}
+        
     cur = conn.cursor()
     id = -1
 
