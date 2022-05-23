@@ -23,12 +23,16 @@ def store_entity(entity):
         "type" : "object",
         "properties" : {
             "entity_uuid" : { "type" : "number" },
-            "att_tech" : { "type" : "string" },
+            "att_tech" : { 
+                "type" : "array",
+                "items" : { "type" : "string" }
+            },
             "name" : { "type" : "string" },
             "external_id" : { "type" : "string" },
             "type" : { "type" : "string" },
             "whitelist_uuid" : { "type" : "number" },
-            "child" : { "type" : "array",
+            "child" : { 
+                "type" : "array",
                 "items": { "type" : "number" }
             },
             "parent" : { "type" : "number" },
@@ -46,7 +50,7 @@ def store_entity(entity):
         validate(entity, schema=schema)
     except Exception as error:
         return {"error_values": error.__str__()}
-        
+
     cur = conn.cursor()
     id = -1
 
