@@ -14,19 +14,19 @@ for module in config["adapters"].keys():
 
 
 def register_entity(entity):
-    for tech in classes.keys():
-        if tech == entity["att_tech"]:
-            classes[tech].register()
-    return
+    if entity["att_tech"] in classes.keys():
+        classes[entity["att_tech"]].register()
+    else:
+        return {"error" : "no adapter found for attestation technology " + entity["att_tech"] }
 
 def delete_entity(entity):
-    for tech in classes.keys():
-        if tech == entity["att_tech"]:
-            classes[tech].delete()
-    return
+    if entity["att_tech"] in classes.keys():
+        classes[entity["att_tech"]].delete()
+    else:
+        return {"error" : "no adapter found for attestation technology " + entity["att_tech"] }
 
 def status(att_tech):
-    for tech in classes.keys():
-        if tech == att_tech:
-            classes[tech].status()
-    return
+    if att_tech in classes.keys():
+        classes[att_tech].status()
+    else:
+        return {"error" : "no adapter found for attestation technology " + att_tech }
