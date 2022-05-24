@@ -116,6 +116,9 @@ async def register_verifier():
     """
     ret = insert_att_tech(body)
 
+    if "error_values" in ret.keys():
+        return {"Error": "verifier " + body["att_tech"] + " :" + ret["error_values"]}, 422
+
     if "error" in ret.keys():
         return {"Error": "verifier " + body["att_tech"] + " :" + ret["error"]}, 500
 

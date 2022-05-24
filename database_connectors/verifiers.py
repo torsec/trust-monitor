@@ -1,6 +1,7 @@
 import psycopg2
 import os
 import configparser
+from jsonschema import validate
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -18,6 +19,24 @@ except Exception as error:
     os._exit(-1)
 
 def store_verifier(verifier):
+    schema = {
+         "type" : "object",
+        "properties" : {
+            "att_tech" : { "type" : "string" },
+            "metadata" : { "type" : "object" }
+        },
+        "required": ["att_tech", "metadata"],
+        "additionalProperties": False
+    }
+
+    """
+    Validation of the document received from the core application
+    """
+    try:
+        validate(verifier, schema=schema)
+    except Exception as error:
+        return {"error_values": error.__str__()}
+
     cur = conn.cursor()
     id = 0
 
