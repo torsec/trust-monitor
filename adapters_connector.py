@@ -15,18 +15,27 @@ for module in config["adapters"].keys():
 
 def register_entity(entity):
     if entity["att_tech"] in classes.keys():
-        classes[entity["att_tech"]].register()
+        if hasattr(classes[entity["att_tech"]], 'register') and callable(getattr(classes[entity["att_tech"]], 'register')):
+            classes[entity["att_tech"]].register()
+        else:
+          return {"error" : "no register() method found for " + entity["att_tech"] + " adapter"}  
     else:
         return {"error" : "no adapter found for attestation technology " + entity["att_tech"] }
 
 def delete_entity(entity):
     if entity["att_tech"] in classes.keys():
-        classes[entity["att_tech"]].delete()
+        if hasattr(classes[entity["att_tech"]], 'delete') and callable(getattr(classes[entity["att_tech"]], 'delete')):
+            classes[entity["att_tech"]].delete()
+        else:
+            return {"error" : "no delete() method found for " + entity["att_tech"] + " adapter"} 
     else:
         return {"error" : "no adapter found for attestation technology " + entity["att_tech"] }
 
 def status(att_tech):
     if att_tech in classes.keys():
-        classes[att_tech].status()
+        if hasattr(classes[att_tech], 'status') and callable(getattr(classes[att_tech], 'status')):
+            classes[att_tech].status()
+        else:
+            return {"error" : "no status() method found for " + att_tech + " adapter"} 
     else:
         return {"error" : "no adapter found for attestation technology " + att_tech }
