@@ -13,15 +13,14 @@ for module in config["adapters"].keys():
     classes[module] = getattr(__import__("adapters."+module, fromlist=[module]), class_)
 
 
-def register_entity(entity):
-    for tech in entity["att_tech"]:
-        if tech in classes.keys():
-            if hasattr(classes[tech], 'register') and callable(getattr(classes[tech], 'register')):
-                classes[tech].register()
-            else:
-                return {"error" : "no register() method found for " + tech + " adapter"}  
+def register_entity(entity, whitelist, verifier):
+    if verifier["att_tech"] in classes.keys():
+        if hasattr(classes[verifier["att_tech"]], 'register') and callable(getattr(classes[verifier["att_tech"]], 'register')):
+            classes[verifier["att_tech"]].register(entity, whitelist, verifier)
         else:
-            return {"error" : "no adapter found for attestation technology " + tech }
+            return {"error" : "no register() method found for " + verifier["att_tech"] + " adapter"}  
+    else:
+        return {"error" : "no adapter found for attestation technology " + verifier["att_tech"] }
 
 def delete_entity(entity):
     if entity["att_tech"] in classes.keys():

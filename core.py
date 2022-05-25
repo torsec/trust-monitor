@@ -15,10 +15,11 @@ def insert_entity(entity):
     """
     Register entity for every attestation technology
     """
-    whitelist = retreive_whitelist(entity["whitelist_uuid"])  #get the whitelist for the specified entity
-
     if "att_tech" in entity.keys():
-        register_entity(entity, whitelist)
+        whitelist = retreive_whitelist(entity["whitelist_uuid"])  #get the whitelist for the specified entity
+        for tech in entity["att_tech"]:
+            verifier = retreive_verifier(tech)
+            register_entity(entity, whitelist, verifier)
 
     return ret
 
