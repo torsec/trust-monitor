@@ -68,12 +68,25 @@ def store_whitelist(whitelist):
     return {"id": str(_id)}
 
 """
+Retreive a document from the whitelist database
+"""
+def retreive_whitelist(id):
+    try:
+        res = whitelists.find_one( {"_id": id} )
+    except Exception as error:
+        return {"error": error.__str__()}
+
+    return res
+
+"""
 Remove a document from the whitelist database
 """
 def purge_whitelist(whitelist):
+    try:
+        _id = whitelists.delete_one( {"_id": whitelist["_id"]} )
+    except Exception as error:
+        return {"error": error.__str__()}
 
-    _id = whitelists.delete_one( {"_id": whitelist["_id"]} )
-    
     if _id.deleted_count == 0:
         return {"error": "Object with _id " + str(whitelist["_id"]) + " is not present"}
 

@@ -59,6 +59,25 @@ def store_verifier(verifier):
     
     return {"id": id}
 
+def retreive_verifier(att_tech):
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+                SELECT * FROM verifiers WHERE att_tech=%s
+        """, (
+            att_tech,
+            )
+        )
+        res = cur.fetchone()
+        conn.commit()
+
+    except Exception as error:
+        conn.commit()
+        return {"error": error.__str__()}
+    
+    return { "att_tech": res[0], "metadata": res[1] }
+
 def purge_verifier(verifier):
     cur = conn.cursor()
     id = 0

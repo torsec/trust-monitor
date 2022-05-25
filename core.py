@@ -1,6 +1,6 @@
 from database_connectors.instances import (store_entity,purge_entity)
-from database_connectors.verifiers import (store_verifier,purge_verifier)
-from database_connectors.whitelists import (purge_whitelist,store_whitelist)
+from database_connectors.verifiers import (store_verifier,purge_verifier,retreive_verifier)
+from database_connectors.whitelists import (purge_whitelist,store_whitelist,retreive_whitelist)
 from database_connectors.policies import (store_policy,purge_policy)
 from adapters_connector import (register_entity)
 
@@ -15,8 +15,10 @@ def insert_entity(entity):
     """
     Register entity for every attestation technology
     """
+    whitelist = retreive_whitelist(entity["whitelist_uuid"])  #get the whitelist for the specified entity
+
     if "att_tech" in entity.keys():
-        register_entity(entity)
+        register_entity(entity, whitelist)
 
     return ret
 

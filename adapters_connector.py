@@ -14,13 +14,14 @@ for module in config["adapters"].keys():
 
 
 def register_entity(entity):
-    if entity["att_tech"] in classes.keys():
-        if hasattr(classes[entity["att_tech"]], 'register') and callable(getattr(classes[entity["att_tech"]], 'register')):
-            classes[entity["att_tech"]].register()
+    for tech in entity["att_tech"]:
+        if tech in classes.keys():
+            if hasattr(classes[tech], 'register') and callable(getattr(classes[tech], 'register')):
+                classes[tech].register()
+            else:
+                return {"error" : "no register() method found for " + tech + " adapter"}  
         else:
-          return {"error" : "no register() method found for " + entity["att_tech"] + " adapter"}  
-    else:
-        return {"error" : "no adapter found for attestation technology " + entity["att_tech"] }
+            return {"error" : "no adapter found for attestation technology " + tech }
 
 def delete_entity(entity):
     if entity["att_tech"] in classes.keys():
