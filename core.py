@@ -1,8 +1,9 @@
+import threading
 from database_connectors.instances import (store_entity,purge_entity)
 from database_connectors.verifiers import (store_verifier,purge_verifier,retreive_verifier)
 from database_connectors.whitelists import (purge_whitelist,store_whitelist,retreive_whitelist)
 from database_connectors.policies import (store_policy,purge_policy)
-from adapters_connector import (register_entity)
+from adapters_connector import (register_entity,verify_entity)
 
 
 def insert_entity(entity):
@@ -16,20 +17,29 @@ def insert_entity(entity):
     Register entity for every attestation technology
     """
     if "att_tech" in entity.keys():
-        whitelist = retreive_whitelist(entity["whitelist_uuid"])  #get the whitelist for the specified entity
+        whitelist = retreive_whitelist(entity["whitelist_uuid"])  # get the whitelist for the specified entity
         for tech in entity["att_tech"]:
             verifier = retreive_verifier(tech)
-            print(verifier["att_tech"])
-            #register_entity(entity, whitelist, verifier)
+            #print(verifier["att_tech"])
+            register_entity(entity, whitelist, verifier) # we pass tha same whitelist for all technologies
 
     return ret
 
 def attest_entity(entity):
-
+    t_attestation = []
     if "att_tech" in entity.keys():
         for tech in entity["att_tech"]:
-            pass
+            verifier = retreive_verifier(tech)
+            t_entity = threading.Thread(target=verify_entity, args=[entity, verifier])
 
+            t_attestation.append(t_entity)
+
+        for t in t_attestation:
+            t.start()
+
+        for t in t_attestation:
+            t.join()
+            
     return
 
 def delete_entity(entity):

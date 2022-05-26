@@ -70,7 +70,7 @@ class KeyLimeAdapter():
 
             response_body = response.json()
 
-            if response_body['results']['operational_state'] == 1:
+            if response_body['results']['operational_state'] in [3, 4, 5, 6]:  # trusted state
                 time.sleep(1)
             else:
                 break

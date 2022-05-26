@@ -23,8 +23,13 @@ def register_entity(entity, whitelist, verifier):
         return {"error" : "no adapter found for attestation technology " + verifier["att_tech"] }
 
 def verify_entity(entity, verifier):
-
-    return
+    if verifier["att_tech"] in classes.keys():
+        if hasattr(classes[verifier["att_tech"]], 'register') and callable(getattr(classes[verifier["att_tech"]], 'register')):
+            classes[verifier["att_tech"]].attest(entity, verifier)
+        else:
+            return {"error" : "no attest() method found for " + verifier["att_tech"] + " adapter"}  
+    else:
+        return {"error" : "no adapter found for attestation technology " + verifier["att_tech"] }
 
 def delete_entity(entity):
     if entity["att_tech"] in classes.keys():
