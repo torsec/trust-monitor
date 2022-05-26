@@ -1,6 +1,7 @@
 import json
 import requests
 import time
+from kafka_connector.kafka_connector import run_kafka_producer
 
 tech = "keylime_v6_4_0"
 
@@ -71,8 +72,18 @@ class KeyLimeAdapter():
             response_body = response.json()
 
             if response_body['results']['operational_state'] in [3, 4, 5, 6]:  # trusted state
+                run_kafka_producer( {
+                    "entity_uuid": entity["entity_uuid"],
+                    "att_tech": tech,
+                    "trust": True
+                } )
                 time.sleep(1)
             else:
+                run_kafka_producer( {
+                    "entity_uuid": entity["entity_uuid"],
+                    "att_tech": tech,
+                    "trust": False
+                } )
                 break
 
     def delete(entity):
