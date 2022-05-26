@@ -1,5 +1,6 @@
 import json
 import requests
+import time
 
 tech = "keylime_v6_4_0"
 
@@ -16,7 +17,9 @@ class KeyLimeAdapter():
 
         if "tenant_ip" not in verifier["metadata"].keys():
             return {"error" : "tanant_ip not found for technology " + str(verifier["att_tech"])}
-
+        #
+        # agent_id = external_id
+        #
         keylime_tenant_url = "http://" + verifier["metadata"]["tenant_ip"] + "/v2.0/agents/" + entity["external_id"]
 
         if "metadata" not in entity.keys():
@@ -25,7 +28,7 @@ class KeyLimeAdapter():
         if tech not in entity["metadata"].keys():
             return {"error" : tech + " data not present into metadata field for entity " + str(entity["entity_uuid"])}
         #
-        #start building the body for the API request
+        # start building the body for the API request
         #
         if "agent_ip" not in entity["metadata"][tech].keys():
             return {"error" : "no agent_id field specified in " + str(tech) + " metadata"}
@@ -42,7 +45,35 @@ class KeyLimeAdapter():
         if "e_list_data" in entity["metadata"][tech].keys():
             data["e_list_data"] = entity["metadata"][tech]["e_list_data"]
 
-        response = requests.post(keylime_tenant_url, data=json.dump(data))
+        #
+        # contact the tenant API
+        #
+        response = requests.post(keylime_tenant_url, json=data)
+        response_body = response.json()
+
+        if response.status_code == 200:
+            return {"state" : "entity " + entity["name"] + " succesfully registered in " + tech + " technology"}
+        else:
+            return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
+
+    def attest(entity, verifier):
+        if tech not in entity["att_tech"]:
+            return {"error" : tech + " is not present into the entity's attestation technologies list"}
+
+        #
+        # agent_id = external_id
+        #
+        keylime_tenant_url = "http://" + verifier["metadata"]["tenant_ip"] + "/v2.0/agents/" + entity["external_id"]
+
+        while True:
+            response = requests.get(keylime_tenant_url)
+
+            response_body = response.json()
+
+            if response_body['results']['operational_state'] == 1:
+                time.sleep(1)
+            else:
+                break
 
     def delete(entity):
         if tech not in entity["att_tech"]:

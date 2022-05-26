@@ -22,6 +22,10 @@ def register_entity(entity, whitelist, verifier):
     else:
         return {"error" : "no adapter found for attestation technology " + verifier["att_tech"] }
 
+def verify_entity(entity, verifier):
+
+    return
+
 def delete_entity(entity):
     if entity["att_tech"] in classes.keys():
         if hasattr(classes[entity["att_tech"]], 'delete') and callable(getattr(classes[entity["att_tech"]], 'delete')):

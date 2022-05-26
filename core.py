@@ -19,9 +19,18 @@ def insert_entity(entity):
         whitelist = retreive_whitelist(entity["whitelist_uuid"])  #get the whitelist for the specified entity
         for tech in entity["att_tech"]:
             verifier = retreive_verifier(tech)
-            register_entity(entity, whitelist, verifier)
+            print(verifier["att_tech"])
+            #register_entity(entity, whitelist, verifier)
 
     return ret
+
+def attest_entity(entity):
+
+    if "att_tech" in entity.keys():
+        for tech in entity["att_tech"]:
+            pass
+
+    return
 
 def delete_entity(entity):
 

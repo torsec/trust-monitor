@@ -72,7 +72,7 @@ def store_entity(entity):
             str(entity.get("metadata")).replace("\'", "\"")
             )
         )
-        id = cur.fetchone()[0][0]
+        id = cur.fetchone()[0]
         conn.commit()
 
     except Exception as error:
@@ -87,14 +87,14 @@ def purge_entity(entity):
 
     try:
         cur.execute("""
-            DELETE FROM entities WHERE name=%s
+            DELETE FROM entities WHERE entity_uuid=%s
             RETURNING entity_uuid
         """,
             (
                 entity.get("entity_uuid"),
             )
         )
-        id = cur.fetchone()[0][0]
+        id = cur.fetchone()[0]
         conn.commit()
     
     except Exception as error:
