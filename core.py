@@ -1,4 +1,4 @@
-from distutils.command.config import config
+import configparser
 import threading
 from database_connectors.instances import (retrieve_entity, store_entity, purge_entity)
 from database_connectors.verifiers import (store_verifier, purge_verifier, retrieve_verifier)
@@ -6,6 +6,9 @@ from database_connectors.whitelists import (purge_whitelist, store_whitelist, re
 from database_connectors.policies import (store_policy, purge_policy)
 from adapters_connector import (register_entity, verify_entity)
 from kafka_connector.kafka_connector import run_kafka_consumer
+
+config = configparser.ConfigParser()
+config.read('config.ini')
 
 consumers = {}
 
