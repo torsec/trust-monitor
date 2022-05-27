@@ -50,21 +50,44 @@ def run_kafka_consumer(stop_event, entity, topics):
         result = json.loads(str)
         key_list = map(lambda x: x["att_tech"], report["state"])
 
-        if result in key_list:
-            pass   # TODO
+        #
+        # update the result, in the report, if it's already present
+        #
+        if result["att_tech"] in key_list:
+            for i in range(len(report["state"])):
+                if report["state"][i]["att_tech"] == result["att_tech"]:
+                    del report["state"][i]
+                    report["state"].append(
+                        {
+                            "att_tech": result["att_tech"],
+                            "trust": result["trust"]
+                        }
+                    )
+                    break
         else:
-            report["state"].append(result)
+        #
+        # add the result, in the report, if it's NOT present
+        #
+            report["state"].append(
+                        {
+                            "att_tech": result["att_tech"],
+                            "trust": result["trust"]
+                        }
+                    )
 
-            if len(report["state"]) == len(entity["att_tech"]):
+        #
+        # build the report if it's possible
+        #
+        if len(report["state"]) == len(entity["att_tech"]):
 
-                report["time"] = datetime.now()
+            report["time"] = datetime.now()
 
-                for res in report["state"]:
-                    if res["trust"] == False:
-                        report["trust"] = False
-                        break
+            for res in report["state"]:
+                if res["trust"] == False:
+                    report["trust"] = False
+                    break
 
-                run_kafka_producer(report, config["kafka_topics"]["attestation_report_topic"])
+            run_kafka_producer(report, config["kafka_topics"]["attestation_report_topic"])
 
 def run_kafka_producer(message, topic):
     """
