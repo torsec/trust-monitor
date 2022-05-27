@@ -1,10 +1,10 @@
 from distutils.command.config import config
 import threading
-from database_connectors.instances import (store_entity,purge_entity)
-from database_connectors.verifiers import (store_verifier,purge_verifier,retrieve_verifier)
-from database_connectors.whitelists import (purge_whitelist,store_whitelist,retrieve_whitelist)
-from database_connectors.policies import (store_policy,purge_policy)
-from adapters_connector import (register_entity,verify_entity)
+from database_connectors.instances import (retrieve_entity, store_entity, purge_entity)
+from database_connectors.verifiers import (store_verifier, purge_verifier, retrieve_verifier)
+from database_connectors.whitelists import (purge_whitelist, store_whitelist, retrieve_whitelist)
+from database_connectors.policies import (store_policy, purge_policy)
+from adapters_connector import (register_entity, verify_entity)
 from kafka_connector.kafka_connector import run_kafka_consumer
 
 consumers = {}
@@ -28,8 +28,12 @@ def insert_entity(entity):
 
     return ret
 
-def attest_entity(entity):
+def attest_entity(entity_):
     t_attestation = []
+
+    entity = retrieve_entity(entity_)
+    if "error" in entity:
+        return entity
 
     stop_event = threading.Event()  # stop event for kafka consumer
     kafka_consumer_thread = threading.Thread(target=run_kafka_consumer, args=[stop_event, entity, [config["kafka_topics"]["attestation_result_topic"]]])

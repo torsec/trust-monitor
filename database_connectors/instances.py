@@ -98,6 +98,7 @@ def retrieve_entity(entity):
     except Exception as error:
         conn.commit()
         return {"error": error.__str__()}
+        
     obj = {
         "entity_uuid": res[0],
         "att_tech": res[1],
