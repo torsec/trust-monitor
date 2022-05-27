@@ -31,7 +31,7 @@ def store_policy(policy):
             policy.get("policy")
             )
         )
-        id = cur.fetchall()[0][0]
+        id = cur.fetchone()[0]
         conn.commit()
 
     except Exception as error:
@@ -52,7 +52,7 @@ def purge_policy(policy):
             policy.get("entity_uuid"),
             )
         )
-        id = cur.fetchall()[0][0]
+        id = cur.fetchone()[0]
         conn.commit()
 
     except Exception as error:
