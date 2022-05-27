@@ -275,4 +275,5 @@ async def remove_policy():
     return {"Message": "policy for entity " + ret["id"] + " deleted succesfully"}
 
 if __name__ == "__main__":
+    
     app.run()
