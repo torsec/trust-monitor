@@ -59,7 +59,7 @@ def store_verifier(verifier):
     
     return {"id": id}
 
-def retreive_verifier(att_tech):
+def retrieve_verifier(att_tech):
     cur = conn.cursor()
 
     try:

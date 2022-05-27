@@ -1,10 +1,8 @@
 from distutils.command.config import config
 import threading
-from time import thread_time
-from tracemalloc import stop
 from database_connectors.instances import (store_entity,purge_entity)
-from database_connectors.verifiers import (store_verifier,purge_verifier,retreive_verifier)
-from database_connectors.whitelists import (purge_whitelist,store_whitelist,retreive_whitelist)
+from database_connectors.verifiers import (store_verifier,purge_verifier,retrieve_verifier)
+from database_connectors.whitelists import (purge_whitelist,store_whitelist,retrieve_whitelist)
 from database_connectors.policies import (store_policy,purge_policy)
 from adapters_connector import (register_entity,verify_entity)
 from kafka_connector.kafka_connector import run_kafka_consumer
@@ -22,9 +20,9 @@ def insert_entity(entity):
     Register entity for every attestation technology
     """
     if "att_tech" in entity.keys():
-        whitelist = retreive_whitelist(entity["whitelist_uuid"])  # get the whitelist for the specified entity
+        whitelist = retrieve_whitelist(entity["whitelist_uuid"])  # get the whitelist for the specified entity
         for tech in entity["att_tech"]:
-            verifier = retreive_verifier(tech)
+            verifier = retrieve_verifier(tech)
             #print(verifier["att_tech"])
             register_entity(entity, whitelist, verifier) # we pass tha same whitelist for all technologies
 
@@ -39,7 +37,7 @@ def attest_entity(entity):
 
     if "att_tech" in entity.keys():
         for tech in entity["att_tech"]:
-            verifier = retreive_verifier(tech)
+            verifier = retrieve_verifier(tech)
             t_entity = threading.Thread(target=verify_entity, args=[entity, verifier])
 
             t_attestation.append(t_entity)

@@ -70,7 +70,7 @@ def store_whitelist(whitelist):
 """
 Retreive a document from the whitelist database
 """
-def retreive_whitelist(id):
+def retrieve_whitelist(id):
     try:
         res = whitelists.find_one( {"_id": id} )
     except Exception as error:
