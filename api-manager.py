@@ -18,6 +18,8 @@ app = Quart(__name__)
 @app.route('/entity', methods=['POST'])
 async def add_entity():
     """
+    Register a new object into the Trust Monitor
+
     Body structure:
     {
         "entity_uuid": uuid,
@@ -66,6 +68,8 @@ async def add_entity():
 @app.route('/entity', methods=['DELETE'])
 async def remove_entity():
     """
+    Delete an object from the Trust Monitor
+
     Body structure:
     {
         "entity_uuid": uuid
@@ -117,6 +121,8 @@ async def attest_entity():
 @app.route('/register_verifier', methods=['POST'])
 async def register_verifier():
     """
+    Store information about a new attestation technology, into the Trust Monitor
+
     Body structure:
     {
         "att_tech": name,
@@ -152,6 +158,8 @@ async def register_verifier():
 @app.route('/register_verifier', methods=['DELETE'])
 async def remove_verifier():
     """
+    Delete information about a specific attestation technology from the Trust Monitor
+
     Body structure:
     {
         "att_tech": name
@@ -180,6 +188,8 @@ async def remove_verifier():
 @app.route('/whitelist', methods=['POST'])
 async def upload_whitelist():
     """
+    Upload a new whitelist into the Trust Monitor database
+
     Body structure:
     {
         “_id”: uuid,
@@ -220,6 +230,8 @@ async def upload_whitelist():
 @app.route('/whitelist', methods=['DELETE'])
 async def remove_whitelist():
     """
+    Delete a whitelist from the Trust Monitor database
+
     Body structure:
     {
         "_id": uuid
@@ -246,6 +258,8 @@ async def remove_whitelist():
 @app.route('/policy', methods=['POST'])
 async def upload_policy():
     """
+    Store a new policy, for a specific object registered into the Trust Monitor
+
     Body structure:
     {
         "entity_uuid": uuid,
@@ -276,6 +290,8 @@ async def upload_policy():
 @app.route('/policy', methods=['DELETE'])
 async def remove_policy():
     """
+    Delete a policy, for a specific object registered into the Trust Monitor
+    
     Body structure:
     {
         "entity_uuid": uuid
@@ -301,4 +317,7 @@ async def remove_policy():
 
 if __name__ == "__main__":
     
+    #
+    # start the API server
+    #
     app.run()
