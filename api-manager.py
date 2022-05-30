@@ -1,3 +1,4 @@
+import threading
 from quart import Quart, request
 from core import (
     delete_policy,
@@ -8,7 +9,8 @@ from core import (
     insert_whitelist,
     delete_whitelist,
     insert_policy,
-    delete_policy
+    delete_policy,
+    attest_entity
 )
 
 app = Quart(__name__)
@@ -87,7 +89,30 @@ async def remove_entity():
 
 @app.route('/attest_entity')
 async def attest_entity():
-    return
+    """
+    Body structure:
+    {
+        "entity_uuid": uuid
+    }
+    """
+
+    body = await request.get_json()
+
+    """
+    Mandatory values
+    """
+    if "entity_uuid" not in body:
+        return {"Error": "entity_uuid field must be present"}, 422
+    try:
+        t = threading.Thread(target=attest_entity, args=[body])
+        t.start()
+    
+        return {"Message": "attestation started succesfully"}
+
+    except Exception as error:
+
+        return {"Error": error.__str__()}, 500
+
 
 @app.route('/register_verifier', methods=['POST'])
 async def register_verifier():
