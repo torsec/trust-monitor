@@ -1,6 +1,6 @@
 import configparser
 import threading
-from database_connectors.instances import (retrieve_entity, store_entity, purge_entity)
+from database_connectors.instances import (retrieve_entity, store_entity, purge_entity, edit_entity)
 from database_connectors.verifiers import (store_verifier, purge_verifier, retrieve_verifier)
 from database_connectors.whitelists import (purge_whitelist, store_whitelist, retrieve_whitelist)
 from database_connectors.policies import (store_policy, purge_policy)
@@ -20,6 +20,16 @@ def insert_entity(entity):
     ret = store_entity(entity)
 
     return ret
+
+def update_entity(entity):
+
+    """
+    Update an entity in the instances database
+    """
+    ret = edit_entity(entity)
+
+    return ret
+
 
 def attest_entity(entity_):
     t_attestation = []

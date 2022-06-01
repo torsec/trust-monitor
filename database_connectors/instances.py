@@ -76,9 +76,103 @@ def store_entity(entity):
         conn.commit()
 
     except Exception as error:
-        conn.commit()
+        conn.rollback()
         return {"error": error.__str__()}
     
+    return {"id": str(id)}
+
+def edit_entity(entity):
+    cur = conn.cursor()
+    id = -1
+
+    try:
+        if "att_tech" in entity:
+            cur.execute("""
+                    UPDATE entities SET att_tech=%s WHERE entity_uuid=%s
+                    RETURNING entity_uuid
+            """, (
+                entity.get("att_tech"),
+                entity.get("entity_uuid")
+                )
+            )
+
+        if "name" in entity:
+            cur.execute("""
+                    UPDATE entities SET name=%s WHERE entity_uuid=%s
+                    RETURNING entity_uuid
+            """, (
+                entity.get("name"),
+                entity.get("entity_uuid")
+                )
+            )
+
+        if "external_id" in entity:
+            cur.execute("""
+                    UPDATE entities SET external_id=%s WHERE entity_uuid=%s
+                    RETURNING entity_uuid
+            """, (
+                entity.get("external_id"),
+                entity.get("entity_uuid")
+                )
+            )
+
+        if "type" in entity:
+            cur.execute("""
+                    UPDATE entities SET type=%s WHERE entity_uuid=%s
+                    RETURNING entity_uuid
+            """, (
+                entity.get("type"),
+                entity.get("entity_uuid")
+                )
+            )
+
+        if "whitelist_uuid" in entity:
+            cur.execute("""
+                    UPDATE entities SET whitelist_uuid=%s WHERE entity_uuid=%s
+                    RETURNING entity_uuid
+            """, (
+                entity.get("whitelist_uuid"),
+                entity.get("entity_uuid")
+                )
+            )
+
+        if "child" in entity:
+            cur.execute("""
+                    UPDATE entities SET child=%s WHERE entity_uuid=%s
+                    RETURNING entity_uuid
+            """, (
+                entity.get("child"),
+                entity.get("entity_uuid")
+                )
+            )
+
+        if "parent" in entity:
+            cur.execute("""
+                    UPDATE entities SET parent=%s WHERE entity_uuid=%s
+                    RETURNING entity_uuid
+            """, (
+                entity.get("parent"),
+                entity.get("entity_uuid")
+                )
+            )
+
+        if "metatdata" in entity:
+            cur.execute("""
+                    UPDATE entities SET metatdata=%s WHERE entity_uuid=%s
+                    RETURNING entity_uuid
+            """, (
+                entity.get("metatdata"),
+                entity.get("entity_uuid")
+                )
+            )
+
+        id = cur.fetchone()[0]
+        conn.commit()
+
+    except Exception as error:
+        conn.rollback()
+        return {"error": error.__str__()}
+
     return {"id": str(id)}
 
 def retrieve_entity(entity):

@@ -5,6 +5,7 @@ from core import (
     insert_att_tech,
     delete_att_tech,
     insert_entity,
+    update_entity,
     delete_entity,
     insert_whitelist,
     delete_whitelist,
@@ -90,6 +91,44 @@ async def remove_entity():
         return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
     return {"Message": "entity " + ret["id"] + " succesfully deleted"}
+
+@app.route('/entity', methods=['PUT'])
+async def modify_entity():
+    """
+    Update an object saved into the Trust Monitor
+
+    Body structure:
+    {
+        "entity_uuid": uuid,
+        "att_tech": [att_tech_1, att_tech_2, ...], (optional)
+        "name": name,  (optional)
+        "external_id": id,  (optional)
+        "type": type,  (optional)
+        "whitelist_uuid": wl_uuid, (optional)
+        "child": [                  (optional)
+            uuid_1, uuid_2, ...
+        ],
+        "parent": id,   (optional)
+        "metadata": {   (optional)
+            ...
+        }
+    }
+    """
+
+    body = await request.get_json()
+
+    """
+    Mandatory values
+    """
+    if "entity_uuid" not in body:
+        return {"Error": "entity_uuid field must be present"}, 422
+
+    ret = update_entity(body)
+
+    if "error" in ret.keys():
+        return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+
+    return {"Message": "entity " + ret["id"] + " succesfully updated"}
 
 @app.route('/attest_entity', methods=['POST'])
 async def attest_entity():
