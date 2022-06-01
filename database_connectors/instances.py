@@ -192,7 +192,10 @@ def retrieve_entity(entity):
     except Exception as error:
         conn.commit()
         return {"error": error.__str__()}
-        
+
+    if res is None:
+        return {"error": "entity_uuid " + str(entity["entity_uuid"]) + " not present"}
+
     obj = {
         "entity_uuid": res[0],
         "att_tech": res[1],

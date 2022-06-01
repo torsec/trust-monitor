@@ -13,8 +13,30 @@ from core import (
     delete_policy,
     attest_entity
 )
+from database_connectors.instances import retrieve_entity
 
 app = Quart(__name__)
+
+@app.route('/entity/<entity_uuid>')
+async def get_entity(entity_uuid):
+    """
+    Read data about an object stored into the instances DB
+
+    """
+
+    """
+    Mandatory values
+    """
+    if entity_uuid is None:
+        return {"Error": "entity_uuid field must be present in the URL"}, 422
+
+    ret = retrieve_entity({"entity_uuid" : entity_uuid})
+
+    if "error" in ret.keys():
+        return {"Error": "entity " + str(entity_uuid) + " :" + ret["error"]}, 500
+
+    return ret
+
 
 @app.route('/entity', methods=['POST'])
 async def add_entity():
