@@ -91,7 +91,7 @@ async def remove_entity():
 
     return {"Message": "entity " + ret["id"] + " succesfully deleted"}
 
-@app.route('/attest_entity')
+@app.route('/attest_entity', methods=['POST'])
 async def attest_entity():
     """
     Body structure:

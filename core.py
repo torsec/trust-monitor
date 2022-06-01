@@ -19,16 +19,6 @@ def insert_entity(entity):
     """
     ret = store_entity(entity)
 
-    """
-    Register entity for every attestation technology
-    """
-    if "att_tech" in entity.keys():
-        whitelist = retrieve_whitelist(entity["whitelist_uuid"])  # get the whitelist for the specified entity
-        for tech in entity["att_tech"]:
-            verifier = retrieve_verifier(tech)
-            #print(verifier["att_tech"])
-            register_entity(entity, whitelist, verifier) # we pass tha same whitelist for all technologies
-
     return ret
 
 def attest_entity(entity_):
@@ -37,6 +27,25 @@ def attest_entity(entity_):
     entity = retrieve_entity(entity_)
     if "error" in entity:
         return entity
+
+    """
+    Register entity for every attestation technology
+    """
+    if entity["att_tech"] in None:
+        return {"error": "no attestation technologies specified for the entity " + entity["entity_uuid"]}
+        
+    if entity["whitelist_uuid"] is None:
+        return {"error": "no whitelist_uuid specified for the entity " + entity["entity_uuid"]}
+    whitelist = retrieve_whitelist(entity["whitelist_uuid"])  # get the whitelist for the specified entity
+
+    for tech in entity["att_tech"]:
+        verifier = retrieve_verifier(tech)
+        #print(verifier["att_tech"])
+        register_entity(entity, whitelist, verifier) # we pass tha same whitelist for all technologies
+
+
+    if entity["whitelist_uuid"] is None:
+        return {"error": "no whitelist_uuid specified for the entity " + entity["entity_uuid"]}
 
     stop_event = threading.Event()  # stop event for kafka consumer
     kafka_consumer_thread = threading.Thread(target=run_kafka_consumer, args=[stop_event, entity, [config["kafka_topics"]["attestation_result_topic"]]])
