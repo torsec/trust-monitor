@@ -57,7 +57,7 @@ class KeyLimeAdapter():
         else:
             return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
 
-    def attest(entity, verifier):
+    def attest(entity, verifier, topic):
         if tech not in entity["att_tech"]:
             return {"error" : tech + " is not present into the entity's attestation technologies list"}
 
@@ -76,14 +76,14 @@ class KeyLimeAdapter():
                     "entity_uuid": entity["entity_uuid"],
                     "att_tech": tech,
                     "trust": True
-                } )
+                }, topic )
                 time.sleep(1)
             else:
                 run_kafka_producer( {
                     "entity_uuid": entity["entity_uuid"],
                     "att_tech": tech,
                     "trust": False
-                } )
+                }, topic )
                 break
 
     def delete(entity):

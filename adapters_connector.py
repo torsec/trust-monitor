@@ -25,7 +25,7 @@ def register_entity(entity, whitelist, verifier):
 def verify_entity(entity, verifier):
     if verifier["att_tech"] in classes.keys():
         if hasattr(classes[verifier["att_tech"]], 'register') and callable(getattr(classes[verifier["att_tech"]], 'register')):
-            classes[verifier["att_tech"]].attest(entity, verifier)
+            classes[verifier["att_tech"]].attest(entity, verifier, config["kafka_topics"]["attestation_result_topic"])
         else:
             return {"error" : "no attest() method found for " + verifier["att_tech"] + " adapter"}  
     else:
