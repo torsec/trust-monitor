@@ -17,13 +17,13 @@ from database_connectors.instances import retrieve_entity
 
 app = Quart(__name__)
 
-@app.route('/entity/<entity_uuid>')
-async def get_entity(entity_uuid):
+@app.route('/entity')
+async def get_entity():
     """
     Read data about an object stored into the instances DB
 
     """
-
+    entity_uuid = request.args.get('entity_uuid')
     """
     Mandatory values
     """
