@@ -38,7 +38,7 @@ class KeyLimeAdapter():
                 obj = retrieve_entity( {"entity_uuid": id} )
                 child.append( obj )
                 w_list = retrieve_whitelist( obj["whitelist_uuid"] )
-                a_lists[id] = w_list["a_list_data"]
+                a_lists[id] = w_list["whitelist"]["a_list_data"]
         #
         # start building the body for the API request
         #
@@ -131,13 +131,15 @@ class KeyLimeAdapter():
             }
         }
         """
-        response = requests.post(keylime_tenant_url, json=data, verify=False)
-        response_body = response.json()
 
-        if response.status_code == 200:
-            return {"state" : "entity " + entity["name"] + " succesfully registered in " + tech + " technology"}
-        else:
-            return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
+        print(data)
+        #response = requests.post(keylime_tenant_url, json=data, verify=False)
+        #response_body = response.json()
+
+        #if response.status_code == 200:
+        #    return {"state" : "entity " + entity["name"] + " succesfully registered in " + tech + " technology"}
+        #else:
+        #    return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
 
     def attest(entity, verifier, topic):
         if tech not in entity["att_tech"]:

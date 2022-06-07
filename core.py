@@ -41,7 +41,7 @@ def attest_entity(entity_):
     """
     Register entity for every attestation technology
     """
-    if entity["att_tech"] in None:
+    if entity["att_tech"] is None:
         return {"error": "no attestation technologies specified for the entity " + entity["entity_uuid"]}
         
     if entity["whitelist_uuid"] is None:
@@ -53,9 +53,7 @@ def attest_entity(entity_):
         #print(verifier["att_tech"])
         register_entity(entity, whitelist, verifier) # we pass the same whitelist for all technologies
 
-
-    if entity["whitelist_uuid"] is None:
-        return {"error": "no whitelist_uuid specified for the entity " + entity["entity_uuid"]}
+    return
 
     stop_event = threading.Event()  # stop event for kafka consumer
     kafka_consumer_thread = threading.Thread(target=run_kafka_consumer, args=[stop_event, entity, [config["kafka_topics"]["attestation_result_topic"]]])

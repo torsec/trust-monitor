@@ -154,7 +154,7 @@ async def modify_entity():
     return {"Message": "entity " + ret["id"] + " succesfully updated"}
 
 @app.route('/attest_entity', methods=['POST'])
-async def attest_entity():
+async def ra_entity():
     """
     Body structure:
     {
