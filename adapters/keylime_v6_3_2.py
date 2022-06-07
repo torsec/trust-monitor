@@ -2,6 +2,8 @@ import json
 import requests
 import time
 from kafka_connector.kafka_connector import run_kafka_producer
+from database_connectors.instances import retrieve_entity
+from database_connectors.whitelists import retrieve_whitelist
 
 tech = "keylime_v6_3_2"
 
@@ -19,15 +21,24 @@ class KeyLimeAdapter():
         if "tenant_ip" not in verifier["metadata"].keys():
             return {"error" : "tanant_ip not found for technology " + str(verifier["att_tech"])}
         #
-        # agent_id = external_id
+        # agent_uuid = external_id
         #
-        keylime_tenant_url = "http://" + verifier["metadata"]["tenant_ip"] + "/v2.0/agents/" + entity["external_id"]
+        keylime_tenant_url = "https://" + verifier["metadata"]["tenant_ip"] + "/agents/" + entity["external_id"]
 
         if "metadata" not in entity.keys():
             return {"error" : "metadata not found for entity " + str(entity["entity_uuid"])}
         
         if tech not in entity["metadata"].keys():
             return {"error" : tech + " data not present into metadata field for entity " + str(entity["entity_uuid"])}
+
+        if "child" in entity.keys():
+            child = []   # list of child objects
+            a_lists = {} # list of child's whitelists
+            for id in entity["child"]:
+                obj = retrieve_entity( {"entity_uuid": id} )
+                child.append( obj )
+                w_list = retrieve_whitelist( obj["whitelist_uuid"] )
+                a_lists[id] = w_list["a_list_data"]
         #
         # start building the body for the API request
         #
@@ -77,6 +88,11 @@ class KeyLimeAdapter():
         if "e_list_data" in entity["metadata"][tech].keys():
             data["e_list_data"] = entity["metadata"][tech]["e_list_data"]
 
+        if "child" in entity.keys():
+            data["pods"] = {}
+            for obj in child:
+                data["pods"][obj["external_id"]] = { "a_list_data": a_lists[obj["entity_uuid"]]}
+
         #
         # contact the tenant API
         #
@@ -115,7 +131,7 @@ class KeyLimeAdapter():
             }
         }
         """
-        response = requests.post(keylime_tenant_url, json=data)
+        response = requests.post(keylime_tenant_url, json=data, verify=False)
         response_body = response.json()
 
         if response.status_code == 200:

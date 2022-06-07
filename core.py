@@ -51,7 +51,7 @@ def attest_entity(entity_):
     for tech in entity["att_tech"]:
         verifier = retrieve_verifier(tech)
         #print(verifier["att_tech"])
-        register_entity(entity, whitelist, verifier) # we pass tha same whitelist for all technologies
+        register_entity(entity, whitelist, verifier) # we pass the same whitelist for all technologies
 
 
     if entity["whitelist_uuid"] is None:
