@@ -20,7 +20,8 @@ app = Quart(__name__)
 @app.route('/entity')
 async def get_entity():
     """
-    Read data about an object stored into the instances DB
+    Read data about an object stored into the instances DB. Usage:
+        /entity?entity_uuid=<id>
 
     """
     entity_uuid = request.args.get('entity_uuid')
