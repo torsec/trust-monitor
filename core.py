@@ -13,7 +13,6 @@ config.read('config.ini')
 consumers = {}
 
 def insert_entity(entity):
-
     """
     Store the new entity in the instances database
     """
@@ -22,7 +21,6 @@ def insert_entity(entity):
     return ret
 
 def update_entity(entity):
-
     """
     Update an entity in the instances database
     """
@@ -31,7 +29,12 @@ def update_entity(entity):
     return ret
 
 
-def attest_entity(entity_):
+def attest_entity(entity_, se):
+    """
+    Prameters:
+        - entity_ = entity object containing all information about the object
+        - se = stop event for the verify thread
+    """
     t_attestation = []
 
     entity = retrieve_entity(entity_)
@@ -62,7 +65,7 @@ def attest_entity(entity_):
     if "att_tech" in entity.keys():
         for tech in entity["att_tech"]:
             verifier = retrieve_verifier(tech)
-            t_entity = threading.Thread(target=verify_entity, args=[entity, verifier])
+            t_entity = threading.Thread(target=verify_entity, args=[entity, verifier, se])
 
             t_attestation.append(t_entity)
 

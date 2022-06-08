@@ -43,7 +43,7 @@ class KeyLimeAdapter():
         # start building the body for the API request
         #
         """
-        metadata structure:
+        metadata structure: (for node)
         {
             "keylime_v6_3_2": {
                 "agent_ip": ip,
@@ -141,17 +141,20 @@ class KeyLimeAdapter():
         #else:
         #    return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
 
-    def attest(entity, verifier, topic):
+    def attest(entity, verifier, se, topic):
         if tech not in entity["att_tech"]:
             return {"error" : tech + " is not present into the entity's attestation technologies list"}
 
         #
         # agent_id = external_id
         #
-        keylime_tenant_url = "http://" + verifier["metadata"]["tenant_ip"] + "/v2.0/agents/" + entity["external_id"]
+        keylime_tenant_url = "https://" + verifier["metadata"]["tenant_ip"] + "/agents/" + entity["external_id"]
 
-        while True:
-            response = requests.get(keylime_tenant_url)
+        #
+        # Request object state until the stop event is set
+        #
+        while not se.is_set():
+            response = requests.get(keylime_tenant_url, verify=False)
 
             response_body = response.json()
 

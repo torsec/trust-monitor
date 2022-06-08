@@ -1,3 +1,4 @@
+from concurrent.futures import thread
 import threading
 from quart import Quart, request
 from core import (
@@ -14,6 +15,15 @@ from core import (
     attest_entity
 )
 from database_connectors.instances import retrieve_entity
+
+threads = {}
+
+def test(body, se):
+    print("thread " + str(body["entity_uuid"]) + " started!")
+    while not se.is_set():
+        pass
+
+    print("thread " + str(body["entity_uuid"]) + " stopped!")
 
 app = Quart(__name__)
 
@@ -170,10 +180,44 @@ async def ra_entity():
     if "entity_uuid" not in body:
         return {"Error": "entity_uuid field must be present"}, 422
     try:
-        t = threading.Thread(target=attest_entity, args=[body])
+        se = threading.Event()
+        #t = threading.Thread(target=attest_entity, args=[body, se])
+        t = threading.Thread(target=test, args=[body, se])
+        threads[body["entity_uuid"]] = { "thread": t, "stop_event": se }
         t.start()
     
         return {"Message": "attestation started succesfully"}
+
+    except Exception as error:
+
+        return {"Error": error.__str__()}, 500
+
+@app.route('/attest_entity', methods=['DELETE'])
+async def stop_ra_entity():
+    """
+    Body structure:
+    {
+        "entity_uuid": uuid
+    }
+    """
+
+    body = await request.get_json()
+
+    """
+    Mandatory values
+    """
+    if "entity_uuid" not in body:
+        return {"Error": "entity_uuid field must be present"}, 422
+
+    if body["entity_uuid"] not in threads:
+        return {"Error": "there is no attestation process for entity_uuid " + str(body["entity_uuid"])}, 422
+
+    try:
+        threads[body["entity_uuid"]]["stop_event"].set()
+        threads[body["entity_uuid"]]["thread"].join()
+        del threads[body["entity_uuid"]]
+
+        return {"Message": "attestation stopped succesfully"}
 
     except Exception as error:
 
