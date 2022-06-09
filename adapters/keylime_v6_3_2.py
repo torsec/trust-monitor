@@ -132,14 +132,14 @@ class KeyLimeAdapter():
         }
         """
 
-        print(data)
-        #response = requests.post(keylime_tenant_url, json=data, verify=False)
-        #response_body = response.json()
+        #print(data)
+        response = requests.post(keylime_tenant_url, json=data, verify=False)
+        response_body = response.json()
 
-        #if response.status_code == 200:
-        #    return {"state" : "entity " + entity["name"] + " succesfully registered in " + tech + " technology"}
-        #else:
-        #    return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
+        if response.status_code == 200:
+            return {"state" : "entity " + entity["name"] + " succesfully registered in " + tech + " technology"}
+        else:
+            return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
 
     def attest(entity, verifier, se, topic):
         if tech not in entity["att_tech"]:
@@ -158,6 +158,8 @@ class KeyLimeAdapter():
 
             response_body = response.json()
 
+            #print(response_body)
+
             if response_body['results']['operational_state'] in [3, 4, 5, 6]:  # trusted state
                 run_kafka_producer( {
                     "entity_uuid": entity["entity_uuid"],
@@ -171,7 +173,7 @@ class KeyLimeAdapter():
                     "att_tech": tech,
                     "trust": False
                 }, topic )
-                break
+                time.sleep(1)
 
     def delete(entity):
         if tech not in entity["att_tech"]:

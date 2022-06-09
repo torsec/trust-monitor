@@ -181,8 +181,8 @@ async def ra_entity():
         return {"Error": "entity_uuid field must be present"}, 422
     try:
         se = threading.Event()
-        #t = threading.Thread(target=attest_entity, args=[body, se])
-        t = threading.Thread(target=test, args=[body, se])
+        t = threading.Thread(target=attest_entity, args=[body, se])
+        #t = threading.Thread(target=test, args=[body, se])
         threads[body["entity_uuid"]] = { "thread": t, "stop_event": se }
         t.start()
     

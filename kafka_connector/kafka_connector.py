@@ -45,9 +45,9 @@ def run_kafka_consumer(stop_event, entity, topics):
             print("Received message has None topic")
             continue
 
-        str =msg.value().decode('utf-8')
-        print("Message value: %s", str)
-        result = json.loads(str)
+        _str =msg.value().decode('utf-8')
+        print("Message value: %s", _str)
+        result = json.loads(_str)
         key_list = map(lambda x: x["att_tech"], report["state"])
 
         #
@@ -80,7 +80,7 @@ def run_kafka_consumer(stop_event, entity, topics):
         #
         if len(report["state"]) == len(entity["att_tech"]):
 
-            report["time"] = datetime.now()
+            report["time"] = str(datetime.now())
 
             for res in report["state"]:
                 if res["trust"] == False:

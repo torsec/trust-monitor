@@ -56,7 +56,7 @@ def attest_entity(entity_, se):
         #print(verifier["att_tech"])
         register_entity(entity, whitelist, verifier) # we pass the same whitelist for all technologies
 
-    return
+    #return
 
     stop_event = threading.Event()  # stop event for kafka consumer
     kafka_consumer_thread = threading.Thread(target=run_kafka_consumer, args=[stop_event, entity, [config["kafka_topics"]["attestation_result_topic"]]])
