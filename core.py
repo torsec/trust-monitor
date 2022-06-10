@@ -106,6 +106,15 @@ def insert_att_tech(verifier):
 
     return ret
 
+def retrieve_att_tech(verifier):
+
+    """
+    Store the new verifier in the attestation technologies database
+    """
+    ret = retrieve_verifier(verifier)
+
+    return ret
+
 def delete_att_tech(verifier):
 
     """

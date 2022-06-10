@@ -75,6 +75,9 @@ def retrieve_verifier(att_tech):
     except Exception as error:
         conn.commit()
         return {"error": error.__str__()}
+
+    if res is None:
+        return {"error": "entity_uuid " + str(att_tech) + " not present"}
     
     return { "att_tech": res[0], "metadata": res[1] }
 

@@ -5,6 +5,7 @@ from core import (
     delete_policy,
     insert_att_tech,
     delete_att_tech,
+    retrieve_att_tech,
     insert_entity,
     update_entity,
     delete_entity,
@@ -227,8 +228,28 @@ async def stop_ra_entity():
 
         return {"Error": error.__str__()}, 500
 
+@app.route('/verifier')
+async def get_verifier():
+    """
+    Read data about a verfier stored into the instances DB. Usage:
+        /verifier?att_tech=<att_tech_name>
 
-@app.route('/register_verifier', methods=['POST'])
+    """
+    att_tech = request.args.get('att_tech')
+    """
+    Mandatory values
+    """
+    if att_tech is None:
+        return {"Error": "att_tech field must be present in the URL"}, 422
+
+    ret = retrieve_att_tech(att_tech)
+
+    if "error" in ret.keys():
+        return {"Error": "entity " + str(att_tech) + " :" + ret["error"]}, 500
+
+    return ret
+
+@app.route('/verifier', methods=['POST'])
 async def register_verifier():
     """
     Store information about a new attestation technology, into the Trust Monitor
@@ -265,7 +286,7 @@ async def register_verifier():
 
     return {"Message": "verfier " + ret["id"] + " added succesfully"}
 
-@app.route('/register_verifier', methods=['DELETE'])
+@app.route('/verifier', methods=['DELETE'])
 async def remove_verifier():
     """
     Delete information about a specific attestation technology from the Trust Monitor
