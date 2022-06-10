@@ -35,6 +35,14 @@ def insert_entity(entity):
 
     return ret
 
+def read_entity(entity):
+    """
+    Read an entity in the instances database
+    """
+    ret = retrieve_entity(entity)
+
+    return ret
+
 def update_entity(entity):
     """
     Update an entity in the instances database

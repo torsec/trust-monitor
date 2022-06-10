@@ -8,6 +8,7 @@ from core import (
     retrieve_att_tech,
     insert_entity,
     update_entity,
+    read_entity,
     delete_entity,
     insert_whitelist,
     delete_whitelist,
@@ -17,8 +18,6 @@ from core import (
     delete_policy,
     attest_entity
 )
-from database_connectors.instances import retrieve_entity
-from database_connectors.whitelists import retrieve_whitelist
 
 threads = {}
 
@@ -45,7 +44,7 @@ async def get_entity():
     if entity_uuid is None:
         return {"Error": "entity_uuid field must be present in the URL"}, 422
 
-    ret = retrieve_entity({"entity_uuid" : entity_uuid})
+    ret = read_entity({"entity_uuid" : entity_uuid})
 
     if "error" in ret.keys():
         return {"Error": "entity " + str(entity_uuid) + " :" + ret["error"]}, 500
