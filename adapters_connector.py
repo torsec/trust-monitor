@@ -22,10 +22,10 @@ def register_entity(entity, whitelist, verifier):
     else:
         return {"error" : "no adapter found for attestation technology " + verifier["att_tech"] }
 
-def verify_entity(entity, verifier, se):
+def verify_entity(entity, verifier, whitelist, se):
     if verifier["att_tech"] in classes.keys():
         if hasattr(classes[verifier["att_tech"]], 'register') and callable(getattr(classes[verifier["att_tech"]], 'register')):
-            classes[verifier["att_tech"]].attest(entity, verifier, se, config["kafka_topics"]["attestation_result_topic"])
+            classes[verifier["att_tech"]].attest(entity, verifier, whitelist, se, config["kafka_topics"]["attestation_result_topic"])
         else:
             return {"error" : "no attest() method found for " + verifier["att_tech"] + " adapter"}  
     else:

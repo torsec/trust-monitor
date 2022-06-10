@@ -18,6 +18,21 @@ def insert_entity(entity):
     """
     ret = store_entity(entity)
 
+    if "error" in entity.keys() or "error_value" in entity.keys():
+        return ret
+
+    """
+    Register entity for every attestation technology
+    """
+    whitelist = None   
+    if entity["whitelist_uuid"] is not None:
+        whitelist = retrieve_whitelist(entity["whitelist_uuid"])  # get the whitelist for the specified entity
+    
+    for tech in entity["att_tech"]:
+        verifier = retrieve_verifier(tech)
+        #print(verifier["att_tech"])
+        register_entity(entity, whitelist, verifier) # we pass the same whitelist for all technologies
+
     return ret
 
 def update_entity(entity):
@@ -41,20 +56,9 @@ def attest_entity(entity_, se):
     if "error" in entity:
         return entity
 
-    """
-    Register entity for every attestation technology
-    """
-    if entity["att_tech"] is None:
-        return {"error": "no attestation technologies specified for the entity " + entity["entity_uuid"]}
-        
     if entity["whitelist_uuid"] is None:
         return {"error": "no whitelist_uuid specified for the entity " + entity["entity_uuid"]}
     whitelist = retrieve_whitelist(entity["whitelist_uuid"])  # get the whitelist for the specified entity
-
-    for tech in entity["att_tech"]:
-        verifier = retrieve_verifier(tech)
-        #print(verifier["att_tech"])
-        register_entity(entity, whitelist, verifier) # we pass the same whitelist for all technologies
 
     #return
 
@@ -65,7 +69,7 @@ def attest_entity(entity_, se):
     if "att_tech" in entity.keys():
         for tech in entity["att_tech"]:
             verifier = retrieve_verifier(tech)
-            t_entity = threading.Thread(target=verify_entity, args=[entity, verifier, se])
+            t_entity = threading.Thread(target=verify_entity, args=[entity, verifier, whitelist, se])
 
             t_attestation.append(t_entity)
 

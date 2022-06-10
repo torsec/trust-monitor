@@ -13,6 +13,16 @@ class KeyLimeAdapter():
         pass
 
     def register(entity, whitelist, verifier):
+        """
+        Keylime does not need an implemetation for the register method
+        """
+        pass
+
+    def attest(entity, verifier, whitelist, se, topic):
+
+        #
+        # Register the object in the framework
+        #
         if tech not in entity["att_tech"]:
             return {"error" : tech + " is not present into the entity's attestation technologies list"}
 
@@ -137,13 +147,15 @@ class KeyLimeAdapter():
         response_body = response.json()
 
         if response.status_code == 200:
-            return {"state" : "entity " + entity["name"] + " succesfully registered in " + tech + " technology"}
+            print(str({"state" : "entity " + entity["name"] + " succesfully registered in " + tech + " technology"}))
         else:
             return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
 
-    def attest(entity, verifier, se, topic):
-        if tech not in entity["att_tech"]:
-            return {"error" : tech + " is not present into the entity's attestation technologies list"}
+
+        #
+        # Attest the object
+        #
+        
 
         #
         # agent_id = external_id
@@ -175,9 +187,22 @@ class KeyLimeAdapter():
                 }, topic )
                 time.sleep(1)
 
+        #
+        # Remove the object from the framework and stop the attestation
+        #
+
+        response = requests.delete(keylime_tenant_url, verify=False)
+
+        if response.status_code == 200:
+            print(str({"state" : "entity " + entity["name"] + " succesfully registered in " + tech + " technology"}))
+        else:
+            return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
+
     def delete(entity):
-        if tech not in entity["att_tech"]:
-            return {"error" : tech + " is not present into the entity's attestation technologies list"}
+        """
+        Keylime does not need an implemetation for the delete method
+        """
+        pass
 
     def status():
         pass
