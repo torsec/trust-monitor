@@ -70,11 +70,14 @@ def store_whitelist(whitelist):
 """
 Retreive a document from the whitelist database
 """
-def retrieve_whitelist(id):
+def retrieve_whitelist(whitelist):
     try:
-        res = whitelists.find_one( {"_id": id} )
+        res = whitelists.find_one( {"_id": whitelist["_id"]} )
     except Exception as error:
         return {"error": error.__str__()}
+
+    if res is None:
+        return {"error": "whitelist " + str(whitelist["_id"]) + " not present"}
 
     return res
 

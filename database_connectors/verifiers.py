@@ -59,14 +59,14 @@ def store_verifier(verifier):
     
     return {"id": id}
 
-def retrieve_verifier(att_tech):
+def retrieve_verifier(verifier):
     cur = conn.cursor()
 
     try:
         cur.execute("""
                 SELECT * FROM verifiers WHERE att_tech=%s
         """, (
-            att_tech,
+            verifier.get("att_tech"),
             )
         )
         res = cur.fetchone()
@@ -77,7 +77,7 @@ def retrieve_verifier(att_tech):
         return {"error": error.__str__()}
 
     if res is None:
-        return {"error": "entity_uuid " + str(att_tech) + " not present"}
+        return {"error": "entity_uuid " + str(verifier["att_tech"]) + " not present"}
     
     return { "att_tech": res[0], "metadata": res[1] }
 

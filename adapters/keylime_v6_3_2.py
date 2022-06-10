@@ -47,7 +47,7 @@ class KeyLimeAdapter():
             for id in entity["child"]:
                 obj = retrieve_entity( {"entity_uuid": id} )
                 child.append( obj )
-                w_list = retrieve_whitelist( obj["whitelist_uuid"] )
+                w_list = retrieve_whitelist( {"_id": obj["whitelist_uuid"]} )
                 a_lists[id] = w_list["whitelist"]["a_list_data"]
         #
         # start building the body for the API request

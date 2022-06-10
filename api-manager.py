@@ -11,11 +11,14 @@ from core import (
     delete_entity,
     insert_whitelist,
     delete_whitelist,
+    read_whitelist,
     insert_policy,
+    read_policy,
     delete_policy,
     attest_entity
 )
 from database_connectors.instances import retrieve_entity
+from database_connectors.whitelists import retrieve_whitelist
 
 threads = {}
 
@@ -231,7 +234,7 @@ async def stop_ra_entity():
 @app.route('/verifier')
 async def get_verifier():
     """
-    Read data about a verfier stored into the instances DB. Usage:
+    Read data about a verfier stored into the verfiers DB. Usage:
         /verifier?att_tech=<att_tech_name>
 
     """
@@ -242,10 +245,10 @@ async def get_verifier():
     if att_tech is None:
         return {"Error": "att_tech field must be present in the URL"}, 422
 
-    ret = retrieve_att_tech(att_tech)
+    ret = retrieve_att_tech({ "att_tech": att_tech })
 
     if "error" in ret.keys():
-        return {"Error": "entity " + str(att_tech) + " :" + ret["error"]}, 500
+        return {"Error": "verifier " + str(att_tech) + " :" + ret["error"]}, 500
 
     return ret
 
@@ -315,6 +318,26 @@ async def remove_verifier():
 
     return {"Message": "verfier " + ret["id"] + " deleted succesfully"}
 
+@app.route('/whitelist')
+async def get_whitelist():
+    """
+    Read data about a whitelist stored into the whitelist DB. Usage:
+        /whitelist?whitelist_uuid=<whitelist_uuid>
+
+    """
+    whitelist_uuid = request.args.get('whitelist_uuid')
+    """
+    Mandatory values
+    """
+    if whitelist_uuid is None:
+        return {"Error": "whitelist_uuid field must be present in the URL"}, 422
+
+    ret = read_whitelist({ "_id": int(whitelist_uuid) })
+
+    if "error" in ret.keys():
+        return {"Error": "whitelist " + str(whitelist_uuid) + " :" + ret["error"]}, 500
+
+    return ret
 
 @app.route('/whitelist', methods=['POST'])
 async def upload_whitelist():
@@ -385,6 +408,27 @@ async def remove_whitelist():
         return {"Error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
 
     return {"Message": "whitelist " + ret["id"] + " deleted succesfully"}
+
+@app.route('/policy')
+async def get_policy():
+    """
+    Read data about a policy for a specific entity stored into the policies DB. Usage:
+        /policy?entity_uuid=<entity_uuid>
+
+    """
+    entity_uuid = request.args.get('entity_uuid')
+    """
+    Mandatory values
+    """
+    if entity_uuid is None:
+        return {"Error": "entity_uuid field must be present in the URL"}, 422
+
+    ret = read_policy( {"entity_uuid": int(entity_uuid)} )
+
+    if "error" in ret.keys():
+        return {"Error": "policy for entity " + str(entity_uuid) + " :" + ret["error"]}, 500
+
+    return ret
 
 @app.route('/policy', methods=['POST'])
 async def upload_policy():

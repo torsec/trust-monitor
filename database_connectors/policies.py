@@ -40,6 +40,28 @@ def store_policy(policy):
     
     return {"id": str(id)}
 
+def retrieve_policy(policy):
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+                SELECT * FROM policies WHERE entity_uuid=%s
+        """, (
+            policy.get("entity_uuid"),
+            )
+        )
+        res = cur.fetchone()
+        conn.commit()
+
+    except Exception as error:
+        conn.commit()
+        return {"error": error.__str__()}
+
+    if res is None:
+        return {"error": "policy for entity_uuid " + str(policy["entity_uuid"]) + " not present"}
+    
+    return { "entity_uuid": res[0], "policy": res[1] }
+
 def purge_policy(policy):
     cur = conn.cursor()
     id = 0

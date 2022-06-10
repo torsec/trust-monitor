@@ -3,7 +3,7 @@ import threading
 from database_connectors.instances import (retrieve_entity, store_entity, purge_entity, edit_entity)
 from database_connectors.verifiers import (store_verifier, purge_verifier, retrieve_verifier)
 from database_connectors.whitelists import (purge_whitelist, store_whitelist, retrieve_whitelist)
-from database_connectors.policies import (store_policy, purge_policy)
+from database_connectors.policies import (store_policy, purge_policy, retrieve_policy)
 from adapters_connector import (register_entity, verify_entity)
 from kafka_connector.kafka_connector import run_kafka_consumer
 
@@ -26,7 +26,7 @@ def insert_entity(entity):
     """
     whitelist = None   
     if entity["whitelist_uuid"] is not None:
-        whitelist = retrieve_whitelist(entity["whitelist_uuid"])  # get the whitelist for the specified entity
+        whitelist = retrieve_whitelist({ "_id": entity["whitelist_uuid"] })  # get the whitelist for the specified entity
     
     for tech in entity["att_tech"]:
         verifier = retrieve_verifier(tech)
@@ -58,7 +58,7 @@ def attest_entity(entity_, se):
 
     if entity["whitelist_uuid"] is None:
         return {"error": "no whitelist_uuid specified for the entity " + entity["entity_uuid"]}
-    whitelist = retrieve_whitelist(entity["whitelist_uuid"])  # get the whitelist for the specified entity
+    whitelist = retrieve_whitelist({ "_id": entity["whitelist_uuid"] })  # get the whitelist for the specified entity
 
     #return
 
@@ -68,7 +68,7 @@ def attest_entity(entity_, se):
 
     if "att_tech" in entity.keys():
         for tech in entity["att_tech"]:
-            verifier = retrieve_verifier(tech)
+            verifier = retrieve_verifier({ "att_tech": tech })
             t_entity = threading.Thread(target=verify_entity, args=[entity, verifier, whitelist, se])
 
             t_attestation.append(t_entity)
@@ -109,7 +109,7 @@ def insert_att_tech(verifier):
 def retrieve_att_tech(verifier):
 
     """
-    Store the new verifier in the attestation technologies database
+    Read a verifier in the attestation technologies database
     """
     ret = retrieve_verifier(verifier)
 
@@ -133,6 +133,15 @@ def insert_whitelist(whitelist):
 
     return ret
 
+def read_whitelist(whitelist):
+
+    """
+    Read a whitelist in the whitelists database
+    """
+    ret = retrieve_whitelist(whitelist)
+
+    return ret
+
 def delete_whitelist(whitelist):
 
     """
@@ -148,6 +157,15 @@ def insert_policy(policy):
     Store the new policy for an entity in the policy database
     """
     ret = store_policy(policy)
+
+    return ret
+
+def read_policy(policy):
+
+    """
+    read a policy for an entity in the policy database
+    """
+    ret = retrieve_policy(policy)
 
     return ret
 
