@@ -179,6 +179,10 @@ async def ra_entity():
     """
     if "entity_uuid" not in body:
         return {"Error": "entity_uuid field must be present"}, 422
+
+    if body["entity_uuid"] in threads:
+        return {"Error": "attestation process already started for entity_uuid " + str(body["entity_uuid"])}, 409
+
     try:
         se = threading.Event()
         t = threading.Thread(target=attest_entity, args=[body, se])
@@ -186,7 +190,7 @@ async def ra_entity():
         threads[body["entity_uuid"]] = { "thread": t, "stop_event": se }
         t.start()
     
-        return {"Message": "attestation started succesfully"}
+        return {"Message": "attestation thread started succesfully"}
 
     except Exception as error:
 

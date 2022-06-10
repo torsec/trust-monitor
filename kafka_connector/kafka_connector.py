@@ -45,7 +45,7 @@ def run_kafka_consumer(stop_event, entity, topics):
             print("Received message has None topic")
             continue
 
-        _str =msg.value().decode('utf-8')
+        _str = msg.value().decode('utf-8')
         print("Message value: %s", _str)
         result = json.loads(_str)
         key_list = map(lambda x: x["att_tech"], report["state"])
@@ -65,9 +65,9 @@ def run_kafka_consumer(stop_event, entity, topics):
                     )
                     break
         else:
-        #
-        # add the result, in the report, if it's NOT present
-        #
+            #
+            # add the result, in the report, if it's NOT present
+            #
             report["state"].append(
                         {
                             "att_tech": result["att_tech"],
@@ -76,7 +76,7 @@ def run_kafka_consumer(stop_event, entity, topics):
                     )
 
         #
-        # build the report if it's possible
+        # build the report if it's possible, and clear the report state
         #
         if len(report["state"]) == len(entity["att_tech"]):
 
@@ -86,8 +86,11 @@ def run_kafka_consumer(stop_event, entity, topics):
                 if res["trust"] == False:
                     report["trust"] = False
                     break
+                else:
+                    report["trust"] = True
 
             run_kafka_producer(report, config["kafka_topics"]["attestation_report_topic"])
+            report["state"] = []
 
 def run_kafka_producer(message, topic):
     """
