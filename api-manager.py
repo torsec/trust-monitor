@@ -6,6 +6,8 @@ from core import (
     delete_att_tech,
     retrieve_att_tech,
     insert_entity,
+    start_attestation,
+    stop_attestation,
     update_entity,
     read_entity,
     delete_entity,
@@ -18,9 +20,6 @@ from core import (
     attest_entity,
     read_tm_status
 )
-
-threads = {}
-t_lock = threading.Lock()
 
 def test(body, se):
     print("thread " + str(body["entity_uuid"]) + " started!")
@@ -184,23 +183,12 @@ async def ra_entity():
     if "entity_uuid" not in body:
         return {"Error": "entity_uuid field must be present"}, 422
 
-    if body["entity_uuid"] in threads:
-        return {"Error": "attestation process already started for entity_uuid " + str(body["entity_uuid"])}, 409
+    ret = start_attestation(body)
 
-    try:
-        se = threading.Event()
-        t = threading.Thread(target=attest_entity, args=[body, se])
-        #t = threading.Thread(target=test, args=[body, se])
-        t_lock.acquire()
-        threads[body["entity_uuid"]] = { "thread": t, "stop_event": se }
-        t_lock.release()
-        t.start()
-    
-        return {"Message": "attestation thread started succesfully"}
+    if "error" in ret.keys():
+        return ret, 500
 
-    except Exception as error:
-        t_lock.release()
-        return {"Error": error.__str__()}, 500
+    return ret
 
 @app.route('/attest_entity', methods=['DELETE'])
 async def stop_ra_entity():
@@ -219,21 +207,12 @@ async def stop_ra_entity():
     if "entity_uuid" not in body:
         return {"Error": "entity_uuid field must be present"}, 422
 
-    if body["entity_uuid"] not in threads:
-        return {"Error": "there is no attestation process for entity_uuid " + str(body["entity_uuid"])}, 422
+    ret = stop_attestation(body)
 
-    try:
-        threads[body["entity_uuid"]]["stop_event"].set()
-        threads[body["entity_uuid"]]["thread"].join()
-        t_lock.acquire()
-        del threads[body["entity_uuid"]]
-        t_lock.release()
+    if "error" in ret.keys():
+        return ret, 500
 
-        return {"Message": "attestation stopped succesfully"}
-
-    except Exception as error:
-        t_lock.release()
-        return {"Error": error.__str__()}, 500
+    return ret
 
 @app.route('/verifier')
 async def get_verifier():

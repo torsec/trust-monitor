@@ -19,6 +19,9 @@ tm_status = {
 }
 tm_status_lock = threading.Lock()
 
+threads = {}
+t_lock = threading.Lock()
+
 def insert_entity(entity):
     """
     Store the new entity in the instances database
@@ -59,6 +62,47 @@ def update_entity(entity):
 
     return ret
 
+def start_attestation(entity):
+    """
+    Start the attestation process for the specified entity
+    """
+    if entity["entity_uuid"] in threads:
+        return {"error": "attestation process already started for entity_uuid " + str(entity["entity_uuid"])} # 409
+
+    try:
+        se = threading.Event()
+        t = threading.Thread(target=attest_entity, args=[entity, se])
+        #t = threading.Thread(target=test, args=[body, se])
+        t_lock.acquire()
+        threads[entity["entity_uuid"]] = { "thread": t, "stop_event": se }
+        t_lock.release()
+        t.start()
+    
+        return {"message": "attestation thread started succesfully"}
+
+    except Exception as error:
+        t_lock.release()
+        return {"error": error.__str__()}
+
+def stop_attestation(entity):
+    """
+    Stop the attestation process for the specified entity
+    """
+    if entity["entity_uuid"] not in threads:
+        return {"error": "there is no attestation process for entity_uuid " + str(entity["entity_uuid"])} # 422
+
+    try:
+        threads[entity["entity_uuid"]]["stop_event"].set()
+        threads[entity["entity_uuid"]]["thread"].join()
+        t_lock.acquire()
+        del threads[entity["entity_uuid"]]
+        t_lock.release()
+
+        return {"message": "attestation stopped succesfully"}
+
+    except Exception as error:
+        t_lock.release()
+        return {"error": error.__str__()}, 500
 
 def attest_entity(entity_, se):
     """
