@@ -1,4 +1,3 @@
-from concurrent.futures import thread
 import threading
 from quart import Quart, request
 from core import (
@@ -16,10 +15,12 @@ from core import (
     insert_policy,
     read_policy,
     delete_policy,
-    attest_entity
+    attest_entity,
+    read_tm_status
 )
 
 threads = {}
+t_lock = threading.Lock()
 
 def test(body, se):
     print("thread " + str(body["entity_uuid"]) + " started!")
@@ -190,13 +191,15 @@ async def ra_entity():
         se = threading.Event()
         t = threading.Thread(target=attest_entity, args=[body, se])
         #t = threading.Thread(target=test, args=[body, se])
+        t_lock.acquire()
         threads[body["entity_uuid"]] = { "thread": t, "stop_event": se }
+        t_lock.release()
         t.start()
     
         return {"Message": "attestation thread started succesfully"}
 
     except Exception as error:
-
+        t_lock.release()
         return {"Error": error.__str__()}, 500
 
 @app.route('/attest_entity', methods=['DELETE'])
@@ -222,12 +225,14 @@ async def stop_ra_entity():
     try:
         threads[body["entity_uuid"]]["stop_event"].set()
         threads[body["entity_uuid"]]["thread"].join()
+        t_lock.acquire()
         del threads[body["entity_uuid"]]
+        t_lock.release()
 
         return {"Message": "attestation stopped succesfully"}
 
     except Exception as error:
-
+        t_lock.release()
         return {"Error": error.__str__()}, 500
 
 @app.route('/verifier')
@@ -488,6 +493,13 @@ async def remove_policy():
         return {"Error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
     return {"Message": "policy for entity " + ret["id"] + " deleted succesfully"}
+
+@app.route('/status')
+async def get_status():
+
+    ret = read_tm_status()
+
+    return ret
 
 if __name__ == "__main__":
     

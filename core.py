@@ -1,6 +1,6 @@
 import configparser
 import threading
-from database_connectors.instances import (retrieve_entity, store_entity, purge_entity, edit_entity)
+from database_connectors.instances import (retrieve_entity, store_entity, purge_entity, edit_entity, edit_state_entity)
 from database_connectors.verifiers import (store_verifier, purge_verifier, retrieve_verifier)
 from database_connectors.whitelists import (purge_whitelist, store_whitelist, retrieve_whitelist)
 from database_connectors.policies import (store_policy, purge_policy, retrieve_policy)
@@ -10,12 +10,20 @@ from kafka_connector.kafka_connector import run_kafka_consumer
 config = configparser.ConfigParser()
 config.read('config.ini')
 
-consumers = {}
+REGISTERED_STATUS = "registered"
+ATTESTING_STATUS = "attesting"
+
+#consumers = {}
+tm_status = {
+    "att_processes": []
+}
+tm_status_lock = threading.Lock()
 
 def insert_entity(entity):
     """
     Store the new entity in the instances database
     """
+    entity["state"] = REGISTERED_STATUS
     ret = store_entity(entity)
 
     if "error" in entity.keys() or "error_value" in entity.keys():
@@ -68,31 +76,68 @@ def attest_entity(entity_, se):
         return {"error": "no whitelist_uuid specified for the entity " + entity["entity_uuid"]}
     whitelist = retrieve_whitelist({ "_id": entity["whitelist_uuid"] })  # get the whitelist for the specified entity
 
-    #return
+    if entity["att_tech"] is None or entity["att_tech"] is []:
+        return {"error": "no attestatio technologies specified for the entity " + entity["entity_uuid"]}
 
-    stop_event = threading.Event()  # stop event for kafka consumer
-    kafka_consumer_thread = threading.Thread(target=run_kafka_consumer, args=[stop_event, entity, [config["kafka_topics"]["attestation_result_topic"]]])
-    kafka_consumer_thread.start()
+    #
+    # start the attestation results' consumer
+    #
+    try:
+        stop_event = threading.Event()  # stop event for kafka consumer
+        kafka_consumer_thread = threading.Thread(target=run_kafka_consumer, args=[stop_event, entity, [config["kafka_topics"]["attestation_result_topic"]]])
+        kafka_consumer_thread.start()
+    except Exception as error:
+        return {"error": error.__str__()}
 
-    if "att_tech" in entity.keys():
-        for tech in entity["att_tech"]:
-            verifier = retrieve_verifier({ "att_tech": tech })
-            t_entity = threading.Thread(target=verify_entity, args=[entity, verifier, whitelist, se])
+    #
+    # start a thread for each attestation technology
+    #
+    for tech in entity["att_tech"]:
+        verifier = retrieve_verifier({ "att_tech": tech })
+        t_entity = threading.Thread(target=verify_entity, args=[entity, verifier, whitelist, se])
 
-            t_attestation.append(t_entity)
-
+        t_attestation.append(t_entity)
+    try:
         for t in t_attestation:
             t.start()
-        #
-        # wait untill all verifiers stop the attestation
-        #
-        for t in t_attestation:
-            t.join()
+    except Exception as error:
+        se.set()
+        stop_event.set()
+        kafka_consumer_thread.join()
+        return {"error": error.__str__()}
+
+    edit_state_entity( {"entity_uuid": entity["entity_uuid"], "state": ATTESTING_STATUS} )
+
+    tm_status_lock.acquire()
+    tm_status["att_processes"].append(
+        {
+            "entity_uuid": entity["entity_uuid"],
+            "name": entity["name"],
+            "external_id": entity["external_id"],
+            "att_tech": entity["att_tech"]
+        }
+    )
+    tm_status_lock.release()
+
+    #
+    # wait untill all verifiers stop the attestation
+    #
+    for t in t_attestation:
+        t.join()
     #
     # stop the consumer
     #
     stop_event.set()
     kafka_consumer_thread.join()  
+
+    edit_state_entity( {"entity_uuid": entity["entity_uuid"], "state": REGISTERED_STATUS} )
+
+    tm_status_lock.acquire()
+    for i in range(len(tm_status["att_processes"])):
+        if tm_status["att_processes"][i]["entity_uuid"] == entity["entity_uuid"]:
+            del tm_status["att_processes"][i]
+            break
+    tm_status_lock.release()
 
     return
 
@@ -185,3 +230,13 @@ def delete_policy(policy):
     ret = purge_policy(policy)
 
     return ret
+
+def read_tm_status():
+    """
+    read the TM status
+    """
+    tm_status_lock.acquire()
+    tmp = tm_status
+    tm_status_lock.release()
+
+    return tm_status

@@ -175,6 +175,30 @@ def edit_entity(entity):
 
     return {"id": str(id)}
 
+def edit_state_entity(entity):
+    cur = conn.cursor()
+    id = -1
+
+    try:
+        if "state" in entity:
+            cur.execute("""
+                    UPDATE entities SET state=%s WHERE entity_uuid=%s
+                    RETURNING entity_uuid
+            """, (
+                entity.get("state"),
+                entity.get("entity_uuid")
+                )
+            )
+
+        id = cur.fetchone()[0]
+        conn.commit()
+
+    except Exception as error:
+        conn.rollback()
+        return {"error": error.__str__()}
+
+    return {"id": str(id)}
+
 def retrieve_entity(entity):
     cur = conn.cursor()
     
