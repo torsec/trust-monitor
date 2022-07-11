@@ -36,7 +36,6 @@ def store_report(report):
     schema = {
         "type" : "object",
         "properties" : {
-            "_id" : {"type" : "number"},
             "entity_uuid" : {"type" : "number"},
             "trust" : {"type" : "string"},
             "time" : {"type" : "string"},
@@ -54,7 +53,7 @@ def store_report(report):
             },
             "metadata" : { "type" : "object" }
         },
-        "required": ["_id", "entity_uuid", "trust", "time", "state", "metadata"],
+        "required": ["entity_uuid", "trust", "time", "state", "metadata"],
         "additionalProperties": False
     }
 

@@ -26,12 +26,14 @@ def insert_entity(entity):
     """
     Store the new entity in the instances database
     """
-    entity["state"] = REGISTERED_STATUS
+    
     ret = store_entity(entity)
 
     if "error" in entity.keys() or "error_value" in entity.keys():
         return ret
 
+    edit_state_entity( {"state": REGISTERED_STATUS, "entity_uuid": entity["entity_uuid"]} )
+    
     """
     Register entity for every attestation technology
     """
@@ -107,7 +109,7 @@ def stop_attestation(entity):
 def attest_entity(entity_, se):
     """
     Prameters:
-        - entity_ = entity object containing all information about the object
+        - entity_ = entity object containing just the entity_uuid
         - se = stop event for the verify thread
     """
     t_attestation = []
@@ -186,7 +188,6 @@ def attest_entity(entity_, se):
     return
 
 def delete_entity(entity):
-
     """
     Delete an entity from the instances database
     """
@@ -195,7 +196,6 @@ def delete_entity(entity):
     return ret
 
 def insert_att_tech(verifier):
-
     """
     Store the new verifier in the attestation technologies database
     """
@@ -204,7 +204,6 @@ def insert_att_tech(verifier):
     return ret
 
 def retrieve_att_tech(verifier):
-
     """
     Read a verifier in the attestation technologies database
     """
@@ -213,7 +212,6 @@ def retrieve_att_tech(verifier):
     return ret
 
 def delete_att_tech(verifier):
-
     """
     Delete a verifier from the attetstation technologies database
     """
@@ -222,7 +220,6 @@ def delete_att_tech(verifier):
     return ret
 
 def insert_whitelist(whitelist):
-
     """
     Store the new whitelist in the whitelists database
     """
@@ -231,7 +228,6 @@ def insert_whitelist(whitelist):
     return ret
 
 def read_whitelist(whitelist):
-
     """
     Read a whitelist in the whitelists database
     """
@@ -240,7 +236,6 @@ def read_whitelist(whitelist):
     return ret
 
 def delete_whitelist(whitelist):
-
     """
     Delete a whitelist from the whitelists database
     """
@@ -249,7 +244,6 @@ def delete_whitelist(whitelist):
     return ret
 
 def insert_policy(policy):
-
     """
     Store the new policy for an entity in the policy database
     """
@@ -258,7 +252,6 @@ def insert_policy(policy):
     return ret
 
 def read_policy(policy):
-
     """
     read a policy for an entity in the policy database
     """
@@ -267,7 +260,6 @@ def read_policy(policy):
     return ret
 
 def delete_policy(policy):
-
     """
     Delete a policy for an entity from the policy database
     """
@@ -283,4 +275,4 @@ def read_tm_status():
     tmp = tm_status
     tm_status_lock.release()
 
-    return tm_status
+    return tmp

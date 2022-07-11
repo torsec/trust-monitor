@@ -2,6 +2,7 @@ import configparser
 import json
 from confluent_kafka import Consumer, Producer
 from datetime import datetime
+from database_connectors.reports import store_report
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -90,6 +91,7 @@ def run_kafka_consumer(stop_event, entity, topics):
                     report["trust"] = True
 
             run_kafka_producer(report, config["kafka_topics"]["attestation_report_topic"])
+            store_report(report)   # store the report in the DB
             report["state"] = []
 
 def run_kafka_producer(message, topic):
