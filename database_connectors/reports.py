@@ -2,6 +2,7 @@ from pymongo import MongoClient
 from jsonschema import validate
 import os
 import configparser
+from datetime import datetime
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -65,6 +66,9 @@ def store_report(report):
     except Exception as error:
         return {"error_values": error.__str__()}
 
+    # fix the date object
+    report["time"] = datetime.strptime(report["time"], '%Y-%m-%d %H:%M:%S.%f')
+
     try:
         _id = reports.insert_one(report).inserted_id
     except Exception as error:
@@ -107,9 +111,11 @@ def retrieve_reports(request):
     except Exception as error:
         return {"error_values": error.__str__()}
 
-    #TODO
     try:
-        res = reports.find( {"entity_uuid": request["entity_uuid"]} )
+        if "from" in request.keys() and "to" in request.keys():
+            res = reports.find( {"entity_uuid": request["entity_uuid"]} ) # TODO: search an interval of dates
+        else:
+            res = reports.find( {"entity_uuid": request["entity_uuid"]} )
     except Exception as error:
         return {"error": error.__str__()}
 
