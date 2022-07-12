@@ -4,6 +4,7 @@ from database_connectors.instances import (retrieve_entity, store_entity, purge_
 from database_connectors.verifiers import (store_verifier, purge_verifier, retrieve_verifier)
 from database_connectors.whitelists import (purge_whitelist, store_whitelist, retrieve_whitelist)
 from database_connectors.policies import (store_policy, purge_policy, retrieve_policy)
+from database_connectors.reports import (store_report, retrieve_reports)
 from adapters_connector import (register_entity, verify_entity)
 from kafka_connector.kafka_connector import run_kafka_consumer
 
@@ -276,3 +277,17 @@ def read_tm_status():
     tm_status_lock.release()
 
     return tmp
+
+def read_report(request):
+    """
+    read from db reports for a specific entity
+    """
+    #TODO
+
+def inster_report(report):
+    """
+    save a report into the db
+    """
+    ret = store_report(report)
+
+    return ret

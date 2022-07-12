@@ -1,3 +1,4 @@
+from ssl import SSLContext
 import threading
 from quart import Quart, request
 from core import (
@@ -479,6 +480,20 @@ async def get_status():
     ret = read_tm_status()
 
     return ret
+
+@app.route('/report')
+async def get_report():
+    """
+    Get reports for a spacific entity
+
+    Body structure:
+    {
+        "entity_uuid": uuid,
+        "from": [att_tech_1, att_tech_2, ...], (optional)
+        "to": name (optional)
+    }
+    """
+    #TODO
 
 if __name__ == "__main__":
     

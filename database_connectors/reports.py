@@ -83,3 +83,37 @@ def purge_report(report):
         return {"error": "Object with _id " + str(report["_id"]) + " is not present"}
 
     return {"id": str(report["_id"])}
+
+"""
+Retrieve reports into a date range for a specific entity
+"""
+def retrieve_reports(request):
+    schema = {
+        "type" : "object",
+        "properties" : {
+            "entity_uuid" : {"type" : "number"},
+            "from" : {"type" : "string"},
+            "to" : {"type" : "string"}
+        },
+        "required": ["entity_uuid"],
+        "additionalProperties": False
+    }
+
+    """
+    Validation of the document received from the core application
+    """
+    try:
+        validate(request, schema=schema)
+    except Exception as error:
+        return {"error_values": error.__str__()}
+
+    #TODO
+    try:
+        res = reports.find( {"entity_uuid": request["entity_uuid"]} )
+    except Exception as error:
+        return {"error": error.__str__()}
+
+    if res is None:
+        return {"error": "report(s) for entity " + str(request["entity_uuid"]) + " not present"}
+
+    return res
