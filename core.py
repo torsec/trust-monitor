@@ -43,7 +43,7 @@ def insert_entity(entity):
         whitelist = retrieve_whitelist({ "_id": entity["whitelist_uuid"] })  # get the whitelist for the specified entity
     
     for tech in entity["att_tech"]:
-        verifier = retrieve_verifier(tech)
+        verifier = retrieve_verifier( {"att_tech": tech} )
         #print(verifier["att_tech"])
         register_entity(entity, whitelist, verifier) # we pass the same whitelist for all technologies
 
