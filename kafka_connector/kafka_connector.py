@@ -16,7 +16,10 @@ def delivery_report(err, msg):
     else:
         print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
 
-
+# TODO
+# in questo momento parte un thread per ogni entity attestata che legge sullo stesso topic
+# al momento non si controlla che i messaggi ricevuti siano dell'entity in questione
+# quindi bisogna aggiungere questo controllo in modo da poter crere i report correttamente
 def run_kafka_consumer(stop_event, entity, topics):
     properties = {}
     for property in config["kafka_consumer"].keys():

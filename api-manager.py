@@ -52,7 +52,6 @@ async def get_entity():
 
     return ret
 
-
 @app.route('/entity', methods=['POST'])
 async def add_entity():
     """
@@ -500,4 +499,4 @@ if __name__ == "__main__":
     #
     # start the API server
     #
-    app.run()
+    app.run(host="0.0.0.0")
