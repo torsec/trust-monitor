@@ -33,7 +33,7 @@ class KeyLimeAdapter():
         #
         # agent_uuid = external_id
         #
-        keylime_tenant_url = "https://" + verifier["metadata"]["tenant_ip"] + "/agents/" + entity["external_id"]
+        keylime_tenant_url = "https://" + verifier["metadata"]["tenant_ip"] + ":" + str(verifier["metadata"]["tenant_port"]) + "/agents/" + entity["external_id"]
 
         if "metadata" not in entity.keys():
             return {"error" : "metadata not found for entity " + str(entity["entity_uuid"])}
@@ -160,7 +160,7 @@ class KeyLimeAdapter():
         #
         # agent_id = external_id
         #
-        keylime_tenant_url = "https://" + verifier["metadata"]["tenant_ip"] + "/agents/" + entity["external_id"]
+        #keylime_tenant_url = "https://" + verifier["metadata"]["tenant_ip"] + "/agents/" + entity["external_id"]
 
         #
         # Request object state until the stop event is set
@@ -194,9 +194,9 @@ class KeyLimeAdapter():
         response = requests.delete(keylime_tenant_url, verify=False)
 
         if response.status_code == 200:
-            print(str({"state" : "entity " + entity["name"] + " succesfully registered in " + tech + " technology"}))
+            print(str({"state" : "entity " + entity["name"] + " succesfully deleted from " + tech + " technology"}))
         else:
-            return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
+            print(str({"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}))
 
     def delete(entity):
         """
