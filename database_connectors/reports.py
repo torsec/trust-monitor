@@ -38,7 +38,7 @@ def store_report(report):
         "type" : "object",
         "properties" : {
             "entity_uuid" : {"type" : "number"},
-            "trust" : {"type" : "string"},
+            "trust" : {"type" : "boolean"},
             "time" : {"type" : "string"},
             "state" : {
                 "type" : "array",
@@ -46,7 +46,7 @@ def store_report(report):
                     "type" : "object",
                     "properties" : {
                         "att_tech" : { "type" : "string" },
-                        "trust" : { "type" : "string" }
+                        "trust" : { "type" : "boolean" }
                     },
                     "required": ["att_tech", "trust"],
                     "additionalProperties": False
@@ -54,7 +54,7 @@ def store_report(report):
             },
             "metadata" : { "type" : "object" }
         },
-        "required": ["entity_uuid", "trust", "time", "state", "metadata"],
+        "required": ["entity_uuid", "trust", "time", "state"],
         "additionalProperties": False
     }
 

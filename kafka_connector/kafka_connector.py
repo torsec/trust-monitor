@@ -16,10 +16,6 @@ def delivery_report(err, msg):
     else:
         print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
 
-# TODO
-# in questo momento parte un thread per ogni entity attestata che legge sullo stesso topic
-# al momento non si controlla che i messaggi ricevuti siano dell'entity in questione
-# quindi bisogna aggiungere questo controllo in modo da poter crere i report correttamente
 def run_kafka_consumer(stop_event, entity, topics):
     properties = {}
     for property in config["kafka_consumer"].keys():
@@ -52,6 +48,10 @@ def run_kafka_consumer(stop_event, entity, topics):
         _str = msg.value().decode('utf-8')
         print("Message value: %s", _str)
         result = json.loads(_str)
+
+        if result["entity_uuid"] != report["entity_uuid"]:
+            continue
+
         key_list = map(lambda x: x["att_tech"], report["state"])
 
         #
@@ -94,7 +94,7 @@ def run_kafka_consumer(stop_event, entity, topics):
                     report["trust"] = True
 
             run_kafka_producer(report, config["kafka_topics"]["attestation_report_topic"])
-            store_report(report)   # store the report in the DB
+            #store_report(report)   # store the report in the DB
             report["state"] = []
 
 def run_kafka_producer(message, topic):
