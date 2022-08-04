@@ -2,8 +2,7 @@ import json
 import requests
 import time
 from kafka_connector.kafka_connector import run_kafka_producer
-from database_connectors.instances import retrieve_entity
-from database_connectors.whitelists import retrieve_whitelist
+from core import read_entity, read_whitelist
 
 tech = "keylime_v6_3_2"
 
@@ -45,9 +44,9 @@ class KeyLimeAdapter():
             child = []   # list of child objects
             a_lists = {} # list of child's whitelists
             for id in entity["child"]:
-                obj = retrieve_entity( {"entity_uuid": id} )
+                obj = read_entity( {"entity_uuid": id} )
                 child.append( obj )
-                w_list = retrieve_whitelist( {"_id": obj["whitelist_uuid"]} )
+                w_list = read_whitelist( {"_id": obj["whitelist_uuid"]} )
                 a_lists[id] = w_list["whitelist"]["a_list_data"]
         #
         # start building the body for the API request
@@ -198,11 +197,11 @@ class KeyLimeAdapter():
         else:
             print(str({"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}))
 
-    def delete(entity):
+    def delete(entity, verifier):
         """
         Keylime does not need an implemetation for the delete method
         """
         pass
 
-    def status():
+    def status(verifier):
         pass

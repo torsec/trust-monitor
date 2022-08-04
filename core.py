@@ -7,6 +7,7 @@ from database_connectors.policies import (store_policy, purge_policy, retrieve_p
 from database_connectors.reports import (store_report, retrieve_reports)
 from adapters_connector import (register_entity, verify_entity)
 from kafka_connector.kafka_connector import run_kafka_consumer
+import time
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -76,11 +77,20 @@ def start_attestation(entity):
         se = threading.Event()
         t = threading.Thread(target=attest_entity, args=[entity, se])
         #t = threading.Thread(target=test, args=[body, se])
+        
+        t.start()
+        time.sleep(1) # wait the thread has the time to start
+        
+        if not t.isAlive():
+            #
+            # si potrebbe aggiungere piu di un tentativo di far partire il thread
+            #
+            return {"error": "attestation thread failed to start"}
+    
         t_lock.acquire()
         threads[entity["entity_uuid"]] = { "thread": t, "stop_event": se }
         t_lock.release()
-        t.start()
-    
+
         return {"message": "attestation thread started succesfully"}
 
     except Exception as error:

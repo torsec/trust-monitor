@@ -31,20 +31,20 @@ def verify_entity(entity, verifier, whitelist, se):
     else:
         return {"error" : "no adapter found for attestation technology " + verifier["att_tech"] }
 
-def delete_entity(entity):
+def delete_entity(entity, verifier):
     if entity["att_tech"] in classes.keys():
         if hasattr(classes[entity["att_tech"]], 'delete') and callable(getattr(classes[entity["att_tech"]], 'delete')):
-            classes[entity["att_tech"]].delete()
+            classes[entity["att_tech"]].delete(entity, verifier)
         else:
             return {"error" : "no delete() method found for " + entity["att_tech"] + " adapter"} 
     else:
         return {"error" : "no adapter found for attestation technology " + entity["att_tech"] }
 
-def status(att_tech):
-    if att_tech in classes.keys():
-        if hasattr(classes[att_tech], 'status') and callable(getattr(classes[att_tech], 'status')):
-            classes[att_tech].status()
+def status(verifier):
+    if verifier["att_tech"] in classes.keys():
+        if hasattr(classes[verifier["att_tech"]], 'status') and callable(getattr(classes[verifier["att_tech"]], 'status')):
+            classes[verifier["att_tech"]].status(verifier)
         else:
-            return {"error" : "no status() method found for " + att_tech + " adapter"} 
+            return {"error" : "no status() method found for " + verifier["att_tech"] + " adapter"} 
     else:
-        return {"error" : "no adapter found for attestation technology " + att_tech }
+        return {"error" : "no adapter found for attestation technology " + verifier["att_tech"] }
