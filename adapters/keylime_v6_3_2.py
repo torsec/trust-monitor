@@ -2,7 +2,8 @@ import json
 import requests
 import time
 from kafka_connector.kafka_connector import run_kafka_producer
-from core import read_entity, read_whitelist
+#from core import read_entity, read_whitelist
+import core
 
 tech = "keylime_v6_3_2"
 
@@ -44,9 +45,9 @@ class KeyLimeAdapter():
             child = []   # list of child objects
             a_lists = {} # list of child's whitelists
             for id in entity["child"]:
-                obj = read_entity( {"entity_uuid": id} )
+                obj = core.read_entity( {"entity_uuid": id} )
                 child.append( obj )
-                w_list = read_whitelist( {"_id": obj["whitelist_uuid"]} )
+                w_list = core.read_whitelist( {"_id": obj["whitelist_uuid"]} )
                 a_lists[id] = w_list["whitelist"]["a_list_data"]
         #
         # start building the body for the API request
