@@ -100,7 +100,7 @@ async def add_entity():
     if "error" in ret.keys():
         return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "entity " + ret["id"] + " succesfully added"}
+    return {"Message": "entity " + ret["id"] + " successfully registered"}
 
 @app.route('/entity', methods=['DELETE'])
 async def remove_entity():
@@ -126,7 +126,7 @@ async def remove_entity():
     if "error" in ret.keys():
         return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "entity " + ret["id"] + " succesfully deleted"}
+    return {"Message": "entity " + ret["id"] + " successfully deleted"}
 
 @app.route('/entity', methods=['PUT'])
 async def modify_entity():
@@ -164,7 +164,7 @@ async def modify_entity():
     if "error" in ret.keys():
         return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "entity " + ret["id"] + " succesfully updated"}
+    return {"Message": "entity " + ret["id"] + " successfully updated"}
 
 @app.route('/attest_entity', methods=['POST'])
 async def ra_entity():
@@ -270,7 +270,7 @@ async def register_verifier():
     if "error" in ret.keys():
         return {"Error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "verfier " + ret["id"] + " added succesfully"}
+    return {"Message": "verfier " + ret["id"] + " successfully registered"}
 
 @app.route('/verifier', methods=['DELETE'])
 async def remove_verifier():
@@ -299,7 +299,7 @@ async def remove_verifier():
     if "error" in ret.keys():
         return {"Error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "verfier " + ret["id"] + " deleted succesfully"}
+    return {"Message": "verfier " + ret["id"] + " successfully deleted"}
 
 @app.route('/whitelist')
 async def get_whitelist():
@@ -362,7 +362,7 @@ async def upload_whitelist():
     if "error" in ret.keys():
         return {"Error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "whitelist " + ret["id"] + " added succesfully"}
+    return {"Message": "whitelist " + ret["id"] + " added successfully"}
 
 @app.route('/whitelist', methods=['DELETE'])
 async def remove_whitelist():
@@ -390,7 +390,7 @@ async def remove_whitelist():
     if "error" in ret.keys():
         return {"Error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "whitelist " + ret["id"] + " deleted succesfully"}
+    return {"Message": "whitelist " + ret["id"] + " successfully deleted"}
 
 @app.route('/policy')
 async def get_policy():
@@ -443,7 +443,7 @@ async def upload_policy():
     if "error" in ret.keys():
         return {"Error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "policy for entity " + ret["id"] + " added succesfully"}
+    return {"Message": "policy for entity " + ret["id"] + " added successfully"}
 
 @app.route('/policy', methods=['DELETE'])
 async def remove_policy():
@@ -471,7 +471,7 @@ async def remove_policy():
     if "error" in ret.keys():
         return {"Error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "policy for entity " + ret["id"] + " deleted succesfully"}
+    return {"Message": "policy for entity " + ret["id"] + " successfully deleted"}
 
 @app.route('/status')
 async def get_status():
@@ -488,11 +488,15 @@ async def get_report():
     Body structure:
     {
         "entity_uuid": uuid,
-        "from": [att_tech_1, att_tech_2, ...], (optional)
-        "to": name (optional)
+        "from": time_1, (optional)
+        "to": time_2 (optional)
     }
     """
     #TODO
+
+    body = await request.get_json()
+
+    return str(body["entity_uuid"])
 
 if __name__ == "__main__":
     

@@ -91,7 +91,7 @@ def start_attestation(entity):
         threads[entity["entity_uuid"]] = { "thread": t, "stop_event": se }
         t_lock.release()
 
-        return {"message": "attestation thread started succesfully"}
+        return {"message": "attestation thread started successfully"}
 
     except Exception as error:
         t_lock.release()
@@ -111,7 +111,7 @@ def stop_attestation(entity):
         del threads[entity["entity_uuid"]]
         t_lock.release()
 
-        return {"message": "attestation stopped succesfully"}
+        return {"message": "attestation stopped successfully"}
 
     except Exception as error:
         t_lock.release()

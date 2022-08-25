@@ -147,7 +147,7 @@ class KeyLimeAdapter():
         response_body = response.json()
 
         if response.status_code == 200:
-            print(str({"state" : "entity " + entity["name"] + " succesfully registered in " + tech + " technology"}))
+            print(str({"state" : "entity " + entity["name"] + " successfully registered in " + tech + " technology"}))
         else:
             return {"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}
 
@@ -194,7 +194,7 @@ class KeyLimeAdapter():
         response = requests.delete(keylime_tenant_url, verify=False)
 
         if response.status_code == 200:
-            print(str({"state" : "entity " + entity["name"] + " succesfully deleted from " + tech + " technology"}))
+            print(str({"state" : "entity " + entity["name"] + " successfully deleted from " + tech + " technology"}))
         else:
             print(str({"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}))
 
