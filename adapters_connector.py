@@ -3,17 +3,25 @@ import configparser
 config = configparser.ConfigParser()
 config.read('config.ini')
 
+classes = {}
+
 # Import all adapters (the name of the att_tech attribute of an entity must match the name of one of the adapters' scripts)
 # Adapters must be specified in the config.ini file:
 # [adapters]
 # file_name = class_name
-classes = {}
-for module in config["adapters"].keys():
-    class_ = config["adapters"][module]
-    classes[module] = getattr(__import__("adapters."+module, fromlist=[module]), class_)
+def refresh_adapters():
+    for module in config["adapters"].keys():
+        class_ = config["adapters"][module]
+        try:
+            classes[module] = getattr(__import__("adapters."+module, fromlist=[module]), class_)
+        except:
+            print("Adapter " + module + " NOT found!")
 
 
 def register_entity(entity, whitelist, verifier):
+
+    refresh_adapters()
+    
     if verifier["att_tech"] in classes.keys():
         if hasattr(classes[verifier["att_tech"]], 'register') and callable(getattr(classes[verifier["att_tech"]], 'register')):
             classes[verifier["att_tech"]].register(entity, whitelist, verifier)
@@ -23,6 +31,9 @@ def register_entity(entity, whitelist, verifier):
         return {"error" : "no adapter found for attestation technology " + verifier["att_tech"] }
 
 def verify_entity(entity, verifier, whitelist, se):
+
+    refresh_adapters()
+
     if verifier["att_tech"] in classes.keys():
         if hasattr(classes[verifier["att_tech"]], 'register') and callable(getattr(classes[verifier["att_tech"]], 'register')):
             classes[verifier["att_tech"]].attest(entity, verifier, whitelist, se, config["kafka_topics"]["attestation_result_topic"])
@@ -32,6 +43,9 @@ def verify_entity(entity, verifier, whitelist, se):
         return {"error" : "no adapter found for attestation technology " + verifier["att_tech"] }
 
 def delete_entity(entity, verifier):
+
+    refresh_adapters()
+
     if entity["att_tech"] in classes.keys():
         if hasattr(classes[entity["att_tech"]], 'delete') and callable(getattr(classes[entity["att_tech"]], 'delete')):
             classes[entity["att_tech"]].delete(entity, verifier)
@@ -41,6 +55,9 @@ def delete_entity(entity, verifier):
         return {"error" : "no adapter found for attestation technology " + entity["att_tech"] }
 
 def status(verifier):
+
+    refresh_adapters()
+
     if verifier["att_tech"] in classes.keys():
         if hasattr(classes[verifier["att_tech"]], 'status') and callable(getattr(classes[verifier["att_tech"]], 'status')):
             classes[verifier["att_tech"]].status(verifier)

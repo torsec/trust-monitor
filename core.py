@@ -282,9 +282,22 @@ def read_tm_status():
     """
     read the TM status
     """
+    config.read('config.ini')
+
+    classes = []
+    for module in config["adapters"].keys():
+        class_ = config["adapters"][module]
+        try:
+            val = getattr(__import__("adapters."+module, fromlist=[module]), class_)
+            classes.append(module)
+        except:
+            print("Adapter " + module + " NOT found!")
+    
     tm_status_lock.acquire()
     tmp = tm_status
     tm_status_lock.release()
+
+    tmp["adapters_loaded"] = classes
 
     return tmp
 
