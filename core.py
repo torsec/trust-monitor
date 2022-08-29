@@ -44,7 +44,7 @@ def insert_entity(entity):
         whitelist = retrieve_whitelist({ "_id": entity["whitelist_uuid"] })  # get the whitelist for the specified entity
     
     for tech in entity["att_tech"]:
-        verifier = retrieve_verifier( {"att_tech": tech} )
+        verifier = retrieve_verifier( {"att_tech": tech, "inf_id": entity["inf_id"]} )
         #print(verifier["att_tech"])
         register_entity(entity, whitelist, verifier) # we pass the same whitelist for all technologies
 
@@ -150,7 +150,7 @@ def attest_entity(entity_, se):
     # start a thread for each attestation technology
     #
     for tech in entity["att_tech"]:
-        verifier = retrieve_verifier({ "att_tech": tech })
+        verifier = retrieve_verifier({ "att_tech": tech, "inf_id": entity["inf_id"] })
         t_entity = threading.Thread(target=verify_entity, args=[entity, verifier, whitelist, se])
 
         t_attestation.append(t_entity)

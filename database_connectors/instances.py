@@ -234,15 +234,16 @@ def retrieve_entity(entity):
 
     obj = {
         "entity_uuid": res[0],
-        "att_tech": res[1],
-        "name": res[2],
-        "external_id": res[3],
-        "type": res[4],
-        "whitelist_uuid": res[5],
-        "child": res[6],
-        "parent": res[7],
-        "state": res[8],
-        "metadata": res[9]
+        "inf_id": res[1],
+        "att_tech": res[2],
+        "name": res[3],
+        "external_id": res[4],
+        "type": res[5],
+        "whitelist_uuid": res[6],
+        "child": res[7],
+        "parent": res[8],
+        "state": res[9],
+        "metadata": res[10]
     }
     
     return obj

@@ -190,9 +190,9 @@ async def ra_entity():
     ret = start_attestation(body)
 
     if "error" in ret.keys():
-        return ret, 500
+        return {"Error" : ret["error"]}, 500
 
-    return ret
+    return {"Message": ret["message"]}
 
 @app.route('/attest_entity', methods=['DELETE'])
 async def stop_ra_entity():
@@ -214,9 +214,9 @@ async def stop_ra_entity():
     ret = stop_attestation(body)
 
     if "error" in ret.keys():
-        return ret, 500
+        return {"Error" : ret["error"]}, 500
 
-    return ret
+    return {"Message": ret["message"]}
 
 @app.route('/verifier')
 async def get_verifier():
