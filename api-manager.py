@@ -38,15 +38,20 @@ async def get_entity():
     Read data about an object stored into the instances DB. Usage:
         /entity?entity_uuid=<id>
 
+    If no entity_uuid is provided it responds with the whole list of entities
     """
     entity_uuid = request.args.get('entity_uuid')
+    
     """
     Mandatory values
     """
-    if entity_uuid is None:
-        return {"Error": "entity_uuid field must be present in the URL"}, 422
+    #if entity_uuid is None:
+    #    return {"Error": "entity_uuid field must be present in the URL"}, 422
 
     ret = read_entity({"entity_uuid" : entity_uuid})
+
+    if isinstance(ret, list):
+        return {"entities": ret}
 
     if "error" in ret.keys():
         return {"Error": "entity " + str(entity_uuid) + " :" + ret["error"]}, 500

@@ -1,6 +1,6 @@
 import configparser
 import threading
-from database_connectors.instances import (retrieve_entity, store_entity, purge_entity, edit_entity, edit_state_entity)
+from database_connectors.instances import (retrieve_entity, retrieve_all_entities, store_entity, purge_entity, edit_entity, edit_state_entity)
 from database_connectors.verifiers import (store_verifier, purge_verifier, retrieve_verifier)
 from database_connectors.whitelists import (purge_whitelist, store_whitelist, retrieve_whitelist)
 from database_connectors.policies import (store_policy, purge_policy, retrieve_policy)
@@ -52,9 +52,12 @@ def insert_entity(entity):
 
 def read_entity(entity):
     """
-    Read an entity in the instances database
+    Read an entity or the whole list in the instances database
     """
-    ret = retrieve_entity(entity)
+    if entity["entity_uuid"] is None:
+        ret = retrieve_all_entities()
+    else:
+        ret = retrieve_entity(entity)
 
     return ret
 

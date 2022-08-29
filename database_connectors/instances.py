@@ -248,6 +248,44 @@ def retrieve_entity(entity):
     
     return obj
 
+def retrieve_all_entities():
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("""
+            SELECT * FROM entities
+        """
+        )
+        res = cur.fetchall()
+        conn.commit()
+    
+    except Exception as error:
+        conn.commit()
+        return {"error": error.__str__()}
+
+    if res is None:
+        return {"error": "no entity is present in the database"}
+
+    ret_list = []
+    for tup in res:
+        obj = {
+            "entity_uuid": tup[0],
+            "inf_id": tup[1],
+            "att_tech": tup[2],
+            "name": tup[3],
+            "external_id": tup[4],
+            "type": tup[5],
+            "whitelist_uuid": tup[6],
+            "child": tup[7],
+            "parent": tup[8],
+            "state": tup[9],
+            "metadata": tup[10]
+        }
+
+        ret_list.append(obj)
+    
+    return ret_list
+
 def purge_entity(entity):
     cur  = conn.cursor()
     id = -1
