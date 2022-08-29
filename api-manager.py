@@ -61,6 +61,7 @@ async def add_entity():
     Body structure:
     {
         "entity_uuid": uuid,
+        "inf_id: id,
         "att_tech": [att_tech_1, att_tech_2, ...], (optional)
         "name": name,
         "external_id": id,
@@ -83,6 +84,8 @@ async def add_entity():
     """
     if "entity_uuid" not in body:
         return {"Error": "entity_uuid field must be present"}, 422
+    if "inf_id" not in body:
+        return {"Error": "inf_id field must be present"}, 422
     if "name" not in body:
         return {"Error": "name must field be present"}, 422
     if "external_id" not in body:
@@ -221,18 +224,31 @@ async def get_verifier():
     Read data about a verfier stored into the verfiers DB. Usage:
         /verifier?att_tech=<att_tech_name>
 
+    Body structure:
+    {
+        "att_tech": name,
+        "inf_id": id
+    }
+
     """
-    att_tech = request.args.get('att_tech')
+    #att_tech = request.args.get('att_tech')
+    body = await request.get_json()
+
     """
     Mandatory values
     """
-    if att_tech is None:
-        return {"Error": "att_tech field must be present in the URL"}, 422
+    if "att_tech" not in body:
+        return {"Error": "att_tech field must be present"}, 422
+    if "inf_id" not in body:
+        return {"Error": "inf_id field must be present"}, 422
+   
+    #if att_tech is None:
+    #    return {"Error": "att_tech field must be present in the URL"}, 422
 
-    ret = retrieve_att_tech({ "att_tech": att_tech })
+    ret = retrieve_att_tech(body)
 
     if "error" in ret.keys():
-        return {"Error": "verifier " + str(att_tech) + " :" + ret["error"]}, 500
+        return {"Error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
 
     return ret
 
@@ -244,6 +260,7 @@ async def register_verifier():
     Body structure:
     {
         "att_tech": name,
+        "inf_id": id,
         "metadata": {
             ...
         }
@@ -257,6 +274,8 @@ async def register_verifier():
     """
     if "att_tech" not in body:
         return {"Error": "att_tech field must be present"}, 422
+    if "inf_id" not in body:
+        return {"Error": "inf_id field must be present"}, 422
     if "metadata" not in body:
         return {"Error": "metadata field must be present"}, 422
 
@@ -280,7 +299,8 @@ async def remove_verifier():
 
     Body structure:
     {
-        "att_tech": name
+        "att_tech": name,
+        "inf_id": id
     }
     """
 
@@ -291,6 +311,8 @@ async def remove_verifier():
     """
     if "att_tech" not in body:
         return {"Error": "att_tech field must be present"}, 422
+    if "inf_id" not in body:
+        return {"Error": "inf_id field must be present"}, 422
 
     """
     Delete an attestation technology from the TM

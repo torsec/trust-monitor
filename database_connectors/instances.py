@@ -23,6 +23,7 @@ def store_entity(entity):
         "type" : "object",
         "properties" : {
             "entity_uuid" : { "type" : "number" },
+            "inf_id" : { "type" : "number" },
             "att_tech" : { 
                 "type" : "array",
                 "items" : { "type" : "string" }
@@ -39,7 +40,7 @@ def store_entity(entity):
             "state" : { "type" : "string" },
             "metadata" : { "type" : "object" }
         },
-        "required": ["entity_uuid", "name", "external_id", "type"],
+        "required": ["entity_uuid", "inf_id", "name", "external_id", "type"],
         "additionalProperties": False
     }
 
@@ -56,11 +57,12 @@ def store_entity(entity):
 
     try:
         cur.execute("""
-                INSERT INTO entities (entity_uuid,att_tech,name,external_id,type,whitelist_uuid,child,parent,state, metadata)
-                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+                INSERT INTO entities (entity_uuid,inf_id,att_tech,name,external_id,type,whitelist_uuid,child,parent,state,metadata)
+                VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
                 RETURNING entity_uuid
         """, (
             entity.get("entity_uuid"),
+            entity.get("inf_id"),
             entity.get("att_tech"),
             entity.get("name"),
             entity.get("external_id"),
@@ -86,6 +88,16 @@ def edit_entity(entity):
     id = -1
 
     try:
+        if "inf_id" in entity:
+            cur.execute("""
+                    UPDATE entities SET inf_id=%s WHERE entity_uuid=%s
+                    RETURNING entity_uuid
+            """, (
+                entity.get("inf_id"),
+                entity.get("entity_uuid")
+                )
+            )
+
         if "att_tech" in entity:
             cur.execute("""
                     UPDATE entities SET att_tech=%s WHERE entity_uuid=%s

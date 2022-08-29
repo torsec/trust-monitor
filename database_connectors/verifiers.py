@@ -23,9 +23,10 @@ def store_verifier(verifier):
          "type" : "object",
         "properties" : {
             "att_tech" : { "type" : "string" },
+            "inf_id" : { "type" : "number" },
             "metadata" : { "type" : "object" }
         },
-        "required": ["att_tech", "metadata"],
+        "required": ["att_tech", "inf_id", "metadata"],
         "additionalProperties": False
     }
 
@@ -42,11 +43,12 @@ def store_verifier(verifier):
 
     try:
         cur.execute("""
-                INSERT INTO verifiers (att_tech,metadata)
-                VALUES (%s,%s)
+                INSERT INTO verifiers (att_tech,inf_id,metadata)
+                VALUES (%s,%s,%s)
                 RETURNING att_tech
         """, (
             verifier.get("att_tech"),
+            verifier.get("inf_id"),
             str(verifier.get("metadata")).replace("\'", "\"")
             )
         )
@@ -64,9 +66,10 @@ def retrieve_verifier(verifier):
 
     try:
         cur.execute("""
-                SELECT * FROM verifiers WHERE att_tech=%s
+                SELECT * FROM verifiers WHERE att_tech=%s AND inf_id=%s
         """, (
             verifier.get("att_tech"),
+            verifier.get("inf_id")
             )
         )
         res = cur.fetchone()
@@ -79,7 +82,7 @@ def retrieve_verifier(verifier):
     if res is None:
         return {"error": "entity_uuid " + str(verifier["att_tech"]) + " not present"}
     
-    return { "att_tech": res[0], "metadata": res[1] }
+    return { "att_tech": res[0], "inf_id": res[1], "metadata": res[2] }
 
 def purge_verifier(verifier):
     cur = conn.cursor()
@@ -87,10 +90,11 @@ def purge_verifier(verifier):
 
     try:
         cur.execute("""
-                DELETE FROM verifiers WHERE att_tech=%s
+                DELETE FROM verifiers WHERE att_tech=%s AND inf_id=%s
                 RETURNING att_tech
         """, (
             verifier.get("att_tech"),
+            verifier.get("inf_id")
             )
         )
         id = cur.fetchall()[0][0]
