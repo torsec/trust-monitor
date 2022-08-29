@@ -2,7 +2,7 @@ import configparser
 import json
 from confluent_kafka import Consumer, Producer
 from datetime import datetime
-from database_connectors.reports import store_report
+import core
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -28,7 +28,7 @@ def run_kafka_consumer(stop_event, entity, topics):
 
     report = {
         "entity_uuid": entity["entity_uuid"],
-        "trust": True,
+        "trust": False,
         "state": []
     }
 
@@ -94,8 +94,12 @@ def run_kafka_consumer(stop_event, entity, topics):
                     report["trust"] = True
 
             run_kafka_producer(report, config["kafka_topics"]["attestation_report_topic"])
-            #store_report(report)   # store the report in the DB
+            ret = core.insert_report(report)   # store the report in the DB
+            # print(ret)
             report["state"] = []
+            
+            if '_id' in report.keys():  # remove '_id' attribute added after the insert_report
+                del report["_id"]
 
 def run_kafka_producer(message, topic):
     """
@@ -106,7 +110,7 @@ def run_kafka_producer(message, topic):
         properties[property] = config["kafka_producer"][property]
 
     kafka_producer = Producer(properties)
-
+    # print(message)
     kafka_producer.produce(topic, json.dumps(message) ,callback=delivery_report)
 
     kafka_producer.flush()

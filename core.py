@@ -292,9 +292,11 @@ def read_report(request):
     """
     read from db reports for a specific entity
     """
-    #TODO
+    ret = retrieve_reports(request)
 
-def inster_report(report):
+    return ret
+
+def insert_report(report):
     """
     save a report into the db
     """

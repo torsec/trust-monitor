@@ -19,7 +19,8 @@ from core import (
     read_policy,
     delete_policy,
     attest_entity,
-    read_tm_status
+    read_tm_status,
+    read_report
 )
 
 def test(body, se):
@@ -488,15 +489,29 @@ async def get_report():
     Body structure:
     {
         "entity_uuid": uuid,
-        "from": time_1, (optional)
-        "to": time_2 (optional)
+        "from": time_1, (optional) ISOFormat %Y-%m-%dT%H:%M:%S
+        "to": time_2 (optional) ISOFormat %Y-%m-%dT%H:%M:%S
     }
     """
     #TODO
 
     body = await request.get_json()
 
-    return str(body["entity_uuid"])
+    """
+    Mandatory values
+    """
+    if "entity_uuid" not in body:
+        return {"Error": "entity_uuid field must be present"}, 422
+
+    ret = read_report(body)
+
+    if "error_values" in ret.keys():
+        return {"Error": ret["error_values"]}, 422
+
+    if "error" in ret.keys():
+        return {"Error": ret["error"]}, 500
+
+    return ret
 
 if __name__ == "__main__":
     

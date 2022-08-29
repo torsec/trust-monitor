@@ -112,14 +112,32 @@ def retrieve_reports(request):
         return {"error_values": error.__str__()}
 
     try:
-        if "from" in request.keys() and "to" in request.keys():
-            res = reports.find( {"entity_uuid": request["entity_uuid"]} ) # TODO: search an interval of dates
+        if "from" in request.keys():
+            if "to" in request.keys():
+                res = reports.find( {"entity_uuid": request["entity_uuid"], "time": {
+                    "$gt": datetime.strptime(request["from"], "%Y-%m-%dT%H:%M:%S"),     #datetime.strptime(request["from"], "%Y-%m-%dT%H:%M:%S").isoformat(),
+                    "$lt": datetime.strptime(request["to"], "%Y-%m-%dT%H:%M:%S")       #datetime.strptime(request["to"], "%Y-%m-%dT%H:%M:%S").isoformat()
+                }} )
+            else:
+                res = reports.find( {"entity_uuid": request["entity_uuid"], "time":{
+                    "$gt": datetime.strptime(request["from"], "%Y-%m-%dT%H:%M:%S")
+                }} )
+        elif "to" in request.keys():
+            res = reports.find( {"entity_uuid": request["entity_uuid"], "time": {
+                "$lt": datetime.strptime(request["to"], "%Y-%m-%dT%H:%M:%S")
+            }} )
         else:
             res = reports.find( {"entity_uuid": request["entity_uuid"]} )
+
     except Exception as error:
         return {"error": error.__str__()}
 
     if res is None:
         return {"error": "report(s) for entity " + str(request["entity_uuid"]) + " not present"}
 
-    return res
+    return_list = []
+    for report in res:
+        report['_id'] = str(report['_id']) # convert ObjectID to string for json serialization
+        return_list.append(report)
+
+    return {"report_list": return_list}
