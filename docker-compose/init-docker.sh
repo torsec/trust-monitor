@@ -2,11 +2,11 @@
 
 # create instances database
 docker exec -it postgres psql -U postgres -c 'CREATE DATABASE instances'
-docker exec -it postgres psql -U postgres -d instances -c 'CREATE TABLE IF NOT EXISTS entities (entity_uuid integer, att_tech text[], name text, external_id text, type text, whitelist_uuid integer, child integer[], parent integer, state text, metadata json, PRIMARY KEY(entity_uuid))'
+docker exec -it postgres psql -U postgres -d instances -c 'CREATE TABLE IF NOT EXISTS entities (entity_uuid integer, inf_id integer, att_tech text[], name text, external_id text, type text, whitelist_uuid integer, child integer[], parent integer, state text, metadata json, PRIMARY KEY(entity_uuid))'
 
 # create verifiers database
 docker exec -it postgres psql -U postgres -c 'CREATE DATABASE attestation_tech'
-docker exec -it postgres psql -U postgres -d attestation_tech -c 'CREATE TABLE IF NOT EXISTS verifiers (att_tech text, metadata json, PRIMARY KEY(att_tech))'
+docker exec -it postgres psql -U postgres -d attestation_tech -c 'CREATE TABLE IF NOT EXISTS verifiers (att_tech text, inf_id integer, metadata json, PRIMARY KEY(att_tech, inf_id))'
 
 # create policy database
 docker exec -it postgres psql -U postgres -c 'CREATE DATABASE policy'
