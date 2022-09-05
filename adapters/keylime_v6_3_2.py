@@ -4,6 +4,7 @@ import time
 from kafka_connector.kafka_connector import run_kafka_producer
 #from core import read_entity, read_whitelist
 import core
+from waiting import wait, TimeoutExpired
 
 tech = "keylime_v6_3_2"
 
@@ -41,7 +42,7 @@ class KeyLimeAdapter():
         if tech not in entity["metadata"].keys():
             return {"error" : tech + " data not present into metadata field for entity " + str(entity["entity_uuid"])}
 
-        if "child" in entity.keys():
+        if entity["child"] is not None:
             child = []   # list of child objects
             a_lists = {} # list of child's whitelists
             for id in entity["child"]:
@@ -98,7 +99,7 @@ class KeyLimeAdapter():
         if "e_list_data" in entity["metadata"][tech].keys():
             data["e_list_data"] = entity["metadata"][tech]["e_list_data"]
 
-        if "child" in entity.keys():
+        if entity["child"] is not None:
             data["pods"] = {}
             for obj in child:
                 data["pods"][obj["external_id"]] = { "a_list_data": a_lists[obj["entity_uuid"]]}
@@ -143,7 +144,11 @@ class KeyLimeAdapter():
         """
 
         #print(data)
+        startTime = time.time()
         response = requests.post(keylime_tenant_url, json=data, verify=False)
+        executionTime = (time.time() - startTime)
+        print("EXECUTION TIME POST: " + str(executionTime) + " s")
+
         response_body = response.json()
 
         if response.status_code == 200:
@@ -166,7 +171,10 @@ class KeyLimeAdapter():
         # Request object state until the stop event is set
         #
         while not se.is_set():
+            startTime = time.time()
             response = requests.get(keylime_tenant_url, verify=False)
+            executionTime = (time.time() - startTime)
+            print("EXECUTION TIME GET: " + str(executionTime) + " s")
 
             response_body = response.json()
 
@@ -178,20 +186,33 @@ class KeyLimeAdapter():
                     "att_tech": tech,
                     "trust": True
                 }, topic )
-                time.sleep(1)
+                #time.sleep(10)
+                try:
+                    if wait(lambda : se.is_set(), timeout_seconds=10, sleep_seconds=0.1) is True:
+                        break
+                except TimeoutExpired:
+                    pass
             else:
                 run_kafka_producer( {
                     "entity_uuid": entity["entity_uuid"],
                     "att_tech": tech,
                     "trust": False
                 }, topic )
-                time.sleep(1)
+                #time.sleep(1)
+                try:
+                    if wait(lambda : se.is_set(), timeout_seconds=10, sleep_seconds=0.1) is True:
+                        break
+                except TimeoutExpired:
+                    pass
 
         #
         # Remove the object from the framework and stop the attestation
         #
 
+        startTime = time.time()
         response = requests.delete(keylime_tenant_url, verify=False)
+        executionTime = (time.time() - startTime)
+        print("EXECUTION TIME DELETE: " + str(executionTime) + " s")
 
         if response.status_code == 200:
             print(str({"state" : "entity " + entity["name"] + " successfully deleted from " + tech + " technology"}))

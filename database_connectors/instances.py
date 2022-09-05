@@ -168,12 +168,13 @@ def edit_entity(entity):
                 )
             )
 
-        if "metatdata" in entity:
+        if "metadata" in entity:
+            print(str(entity.get("metadata")).replace("\'", "\""))
             cur.execute("""
-                    UPDATE entities SET metatdata=%s WHERE entity_uuid=%s
+                    UPDATE entities SET metadata=%s WHERE entity_uuid=%s
                     RETURNING entity_uuid
             """, (
-                entity.get("metatdata"),
+                str(entity.get("metadata")).replace("\'", "\""),
                 entity.get("entity_uuid")
                 )
             )

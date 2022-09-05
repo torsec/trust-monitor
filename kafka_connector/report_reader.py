@@ -17,7 +17,7 @@ def consumer():
     print("Start consuming reports...")
     
     while True:
-        msg = kafka_consumer.poll(1.0) # every second check if there is some message
+        msg = kafka_consumer.poll(5.0) # every second check if there is some message
 
         if msg is None:
             print("No message found!")
