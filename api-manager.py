@@ -23,13 +23,6 @@ from core import (
     read_report
 )
 
-def test(body, se):
-    print("thread " + str(body["entity_uuid"]) + " started!")
-    while not se.is_set():
-        pass
-
-    print("thread " + str(body["entity_uuid"]) + " stopped!")
-
 app = Quart(__name__)
 
 @app.route('/entity')

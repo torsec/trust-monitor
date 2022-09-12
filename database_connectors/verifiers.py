@@ -80,7 +80,7 @@ def retrieve_verifier(verifier):
         return {"error": error.__str__()}
 
     if res is None:
-        return {"error": "entity_uuid " + str(verifier["att_tech"]) + " not present"}
+        return {"error": "attestation technology " + str(verifier["att_tech"]) + " with inf_id " + str(verifier["inf_id"]) + " not present"}
     
     return { "att_tech": res[0], "inf_id": res[1], "metadata": res[2] }
 
