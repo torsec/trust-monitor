@@ -180,7 +180,7 @@ class KeyLimeAdapter():
 
             #print(response_body)
 
-            if response_body['results']['operational_state'] in [3, 4, 5, 6]:  # trusted state
+            if response_body['results']['operational_state'] == 3: # in [3, 4, 5, 6]:  # trusted state
                 run_kafka_producer( {
                     "entity_uuid": entity["entity_uuid"],
                     "att_tech": tech,
@@ -215,7 +215,7 @@ class KeyLimeAdapter():
         print("EXECUTION TIME DELETE: " + str(executionTime) + " s")
 
         if response.status_code == 200:
-            print(str({"state" : "entity " + entity["name"] + " successfully deleted from " + tech + " technology"}))
+            print(str({"state" : "entity " + str(entity["entity_uuid"]) + " successfully deleted from " + tech + " technology"}))
         else:
             print(str({"error" : "Response code: " + str(response.status_code) + ", Status: \"" + response_body['status'] + "\""}))
 

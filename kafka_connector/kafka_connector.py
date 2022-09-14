@@ -1,11 +1,43 @@
 import configparser
 import json
+from time import sleep
 from confluent_kafka import Consumer, Producer
+from confluent_kafka.admin import AdminClient, NewTopic
 from datetime import datetime
 import core
 
 config = configparser.ConfigParser()
 config.read('config.ini')
+
+admin = AdminClient({'bootstrap.servers': config["kafka_producer"]["bootstrap.servers"]})
+
+def new_topic(topic):
+    """
+    topic (string): name of the topic
+    """
+    fs = admin.create_topics( [NewTopic(topic, num_partitions=3, replication_factor=1)] )
+
+    for topic, f in fs.items():
+        try:
+            f.result()  # The result itself is None
+            print("Topic {} created".format(topic))
+        except Exception as e:
+            raise Exception("Failed to create topic {}: {}".format(topic, e))
+
+
+def remove_topic(topic):
+    """
+    topic (string): name of the topic
+    """
+    fs = admin.delete_topics( [topic] , operation_timeout=30)
+
+    # Wait for operation to finish.
+    for topic, f in fs.items():
+        try:
+            f.result()  # The result itself is None
+            print("Topic {} deleted".format(topic))
+        except Exception as e:
+            raise Exception("Failed to delete topic {}: {}".format(topic, e))
 
 
 def delivery_report(err, msg):
@@ -15,6 +47,7 @@ def delivery_report(err, msg):
         print('Message delivery failed: {}'.format(err))
     else:
         print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
+
 
 def run_kafka_consumer(stop_event, entity, topics):
     properties = {}
@@ -49,8 +82,8 @@ def run_kafka_consumer(stop_event, entity, topics):
         print("Message value: %s", _str)
         result = json.loads(_str)
 
-        if result["entity_uuid"] != report["entity_uuid"]:
-            continue
+        #if result["entity_uuid"] != report["entity_uuid"]:
+        #    continue
 
         key_list = map(lambda x: x["att_tech"], report["state"])
 

@@ -6,7 +6,7 @@ from database_connectors.whitelists import (purge_whitelist, store_whitelist, re
 from database_connectors.policies import (store_policy, purge_policy, retrieve_policy)
 from database_connectors.reports import (store_report, retrieve_reports)
 from adapters_connector import (register_entity, verify_entity)
-from kafka_connector.kafka_connector import run_kafka_consumer
+from kafka_connector.kafka_connector import (run_kafka_consumer, new_topic, remove_topic)
 import time
 
 config = configparser.ConfigParser()
@@ -88,13 +88,13 @@ def start_attestation(entity):
             #
             # si potrebbe aggiungere piu di un tentativo di far partire il thread
             #
-            return {"error": "attestation thread failed to start"}
+            return {"error": "entity " + str(entity["entity_uuid"]) + " - attestation thread failed to start"}
     
         t_lock.acquire()
         threads[entity["entity_uuid"]] = { "thread": t, "stop_event": se }
         t_lock.release()
 
-        return {"message": "attestation thread started successfully"}
+        return {"message": "entity " + str(entity["entity_uuid"]) + " - attestation thread started successfully"}
 
     except Exception as error:
         t_lock.release()
@@ -114,7 +114,7 @@ def stop_attestation(entity):
         del threads[entity["entity_uuid"]]
         t_lock.release()
 
-        return {"message": "attestation stopped successfully"}
+        return {"message": "entity " + str(entity["entity_uuid"]) + " - attestation stopped successfully"}
 
     except Exception as error:
         t_lock.release()
@@ -127,6 +127,7 @@ def attest_entity(entity_, se):
         - se = stop event for the verify thread
     """
     t_attestation = []
+    topic = ""
 
     entity = retrieve_entity(entity_)
     if "error" in entity:
@@ -144,7 +145,12 @@ def attest_entity(entity_, se):
     #
     try:
         stop_event = threading.Event()  # stop event for kafka consumer
-        kafka_consumer_thread = threading.Thread(target=run_kafka_consumer, args=[stop_event, entity, [config["kafka_topics"]["attestation_result_topic"]]])
+
+        # create a new topic for the entity
+        topic = config["kafka_topics"]["attestation_result_topic"] + "_entity_" + str(entity["entity_uuid"])
+        new_topic(topic)
+
+        kafka_consumer_thread = threading.Thread(target=run_kafka_consumer, args=[stop_event, entity, [topic]])
         kafka_consumer_thread.start()
     except Exception as error:
         return {"error": error.__str__()}
@@ -154,7 +160,7 @@ def attest_entity(entity_, se):
     #
     for tech in entity["att_tech"]:
         verifier = retrieve_verifier({ "att_tech": tech, "inf_id": entity["inf_id"] })
-        t_entity = threading.Thread(target=verify_entity, args=[entity, verifier, whitelist, se])
+        t_entity = threading.Thread(target=verify_entity, args=[entity, verifier, whitelist, se, topic])
 
         t_attestation.append(t_entity)
     try:
@@ -198,6 +204,12 @@ def attest_entity(entity_, se):
             del tm_status["att_processes"][i]
             break
     tm_status_lock.release()
+
+    try:
+        remove_topic(topic)
+    except Exception as error:
+        return {"error": error.__str__()}
+
 
     return
 
