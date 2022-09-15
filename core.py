@@ -127,7 +127,7 @@ def attest_entity(entity_, se):
         - se = stop event for the verify thread
     """
     t_attestation = []
-    topic = ""
+    topic = ""          # topic created for each attestation process
 
     entity = retrieve_entity(entity_)
     if "error" in entity:
@@ -144,15 +144,19 @@ def attest_entity(entity_, se):
     # start the attestation results' consumer
     #
     try:
-        stop_event = threading.Event()  # stop event for kafka consumer
-
         # create a new topic for the entity
         topic = config["kafka_topics"]["attestation_result_topic"] + "_entity_" + str(entity["entity_uuid"])
         new_topic(topic)
+    except Exception as error:
+        return {"error": error.__str__()}
+
+    try:
+        stop_event = threading.Event()  # stop event for kafka consumer
 
         kafka_consumer_thread = threading.Thread(target=run_kafka_consumer, args=[stop_event, entity, [topic]])
         kafka_consumer_thread.start()
     except Exception as error:
+        remove_topic(topic)
         return {"error": error.__str__()}
 
     #
@@ -170,6 +174,7 @@ def attest_entity(entity_, se):
         se.set()
         stop_event.set()
         kafka_consumer_thread.join()
+        remove_topic(topic)
         return {"error": error.__str__()}
 
     edit_state_entity( {"entity_uuid": entity["entity_uuid"], "state": ATTESTING_STATUS} )

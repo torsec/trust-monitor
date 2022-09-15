@@ -188,7 +188,7 @@ class KeyLimeAdapter():
                 }, topic )
                 #time.sleep(10)
                 try:
-                    if wait(lambda : se.is_set(), timeout_seconds=10, sleep_seconds=0.1) is True:
+                    if wait(lambda : se.is_set(), timeout_seconds=1, sleep_seconds=0.1) is True: # wait 10 s
                         break
                 except TimeoutExpired:
                     pass

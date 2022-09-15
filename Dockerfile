@@ -6,10 +6,16 @@ WORKDIR /trust-monitor
 # Install app dependencies
 COPY ./requirements.txt ./
 
-RUN pip install -r requirements.txt
+RUN pip3 install -r requirements.txt
 
 # Bundle app source
-COPY . /trust-monitor
+COPY ./adapters /trust-monitor/adapters
+COPY ./database_connectors /trust-monitor/database_connectors
+COPY ./kafka_connector /trust-monitor/kafka_connector
+COPY ./adapters_connector.py /trust-monitor/
+COPY ./api-manager.py /trust-monitor/
+COPY ./config.ini /trust-monitor/
+COPY ./core.py /trust-monitor/
 
 ENV QUART_APP api-manager:app
-CMD [ "python3", "api-manager.py" ]
+CMD [ "quart", "run" ]

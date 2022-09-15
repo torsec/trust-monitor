@@ -65,11 +65,13 @@ def run_kafka_consumer(stop_event, entity, topics):
         "state": []
     }
 
-    while not stop_event.is_set():
-        msg = kafka_consumer.poll(2) # every 2 seconds check if there is some message
+    msg = None
+
+    while not stop_event.is_set() or msg is not None:
+        msg = kafka_consumer.poll(5) # every 2 seconds check if there is some message
 
         if msg is None:
-            print("No message found!")
+            #print("No message found!")
             continue
         if msg.error():
             print("Consumer error: {}".format(msg.error()))
