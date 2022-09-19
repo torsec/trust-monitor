@@ -8,13 +8,14 @@ import core
 
 config = configparser.ConfigParser()
 config.read('config.ini')
-
+#print(config["kafka_producer"]["bootstrap.servers"])
 admin = AdminClient({'bootstrap.servers': config["kafka_producer"]["bootstrap.servers"]})
 
 def new_topic(topic):
     """
     topic (string): name of the topic
     """
+    print(admin.list_topics().topics)
     fs = admin.create_topics( [NewTopic(topic, num_partitions=3, replication_factor=1)] )
 
     for topic, f in fs.items():
@@ -53,7 +54,7 @@ def run_kafka_consumer(stop_event, entity, topics):
     properties = {}
     for property in config["kafka_consumer"].keys():
         properties[property] = config["kafka_consumer"][property]
-
+    print(properties)
     kafka_consumer = Consumer(properties)
 
     #topics = [config["kafka_topics"]["attestation_result_topic"]]
@@ -143,7 +144,7 @@ def run_kafka_producer(message, topic):
     properties = {}
     for property in config["kafka_producer"].keys():
         properties[property] = config["kafka_producer"][property]
-
+    #print(properties)
     kafka_producer = Producer(properties)
     # print(message)
     kafka_producer.produce(topic, json.dumps(message) ,callback=delivery_report)

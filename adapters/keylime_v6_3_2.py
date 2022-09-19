@@ -144,10 +144,10 @@ class KeyLimeAdapter():
         """
 
         #print(data)
-        startTime = time.time()
+        #startTime = time.time()
         response = requests.post(keylime_tenant_url, json=data, verify=False)
-        executionTime = (time.time() - startTime)
-        print("EXECUTION TIME POST: " + str(executionTime) + " s")
+        #executionTime = (time.time() - startTime)
+        #print("EXECUTION TIME POST: " + str(executionTime) + " s")
 
         response_body = response.json()
 
@@ -171,10 +171,10 @@ class KeyLimeAdapter():
         # Request object state until the stop event is set
         #
         while not se.is_set():
-            startTime = time.time()
+            #startTime = time.time()
             response = requests.get(keylime_tenant_url, verify=False)
-            executionTime = (time.time() - startTime)
-            print("EXECUTION TIME GET: " + str(executionTime) + " s")
+            #executionTime = (time.time() - startTime)
+            #print("EXECUTION TIME GET: " + str(executionTime) + " s")
 
             response_body = response.json()
 
@@ -209,10 +209,10 @@ class KeyLimeAdapter():
         # Remove the object from the framework and stop the attestation
         #
 
-        startTime = time.time()
+        #startTime = time.time()
         response = requests.delete(keylime_tenant_url, verify=False)
-        executionTime = (time.time() - startTime)
-        print("EXECUTION TIME DELETE: " + str(executionTime) + " s")
+        #executionTime = (time.time() - startTime)
+        #print("EXECUTION TIME DELETE: " + str(executionTime) + " s")
 
         if response.status_code == 200:
             print(str({"state" : "entity " + str(entity["entity_uuid"]) + " successfully deleted from " + tech + " technology"}))

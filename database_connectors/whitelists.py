@@ -44,7 +44,7 @@ def store_whitelist(whitelist):
                     "hash_algo" : {"type" : "string"}
                 },
                 "required": ["att_tech", "hash_algo"],
-                "additionalProperties": False
+                "additionalProperties": True
             },
             "whitelist" : {"type" : "object"}
         },

@@ -1,4 +1,5 @@
 import configparser
+import importlib
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -13,7 +14,7 @@ def refresh_adapters():
     for module in config["adapters"].keys():
         class_ = config["adapters"][module]
         try:
-            classes[module] = getattr(__import__("adapters."+module, fromlist=[module]), class_)
+            classes[module] = getattr(importlib.import_module("."+module, "adapters"), class_) #__import__("adapters."+module, fromlist=[module]), class_
         except:
             print("Adapter " + module + " NOT found!")
 

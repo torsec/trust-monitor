@@ -535,25 +535,25 @@ async def get_report():
 
     return ret
 
-#if __name__ == "__main__":
+if __name__ == "__main__":
     
 #
 # start the API server
 #
-if "tls" in config:
-    if "ca_certs" not in config["tls"]:
-        raise Exception("No ca_certs specified in tls section of config.ini")
-    if "certfile" not in config["tls"]:
-        raise Exception("No certfile specified in tls section of config.ini")
-    if "keyfile" not in config["tls"]:
-        raise Exception("No keyfile specified in config.ini")
+    if "tls" in config:
+        if "ca_certs" not in config["tls"]:
+            raise Exception("No ca_certs specified in tls section of config.ini")
+        if "certfile" not in config["tls"]:
+            raise Exception("No certfile specified in tls section of config.ini")
+        if "keyfile" not in config["tls"]:
+            raise Exception("No keyfile specified in config.ini")
 
-    app.run(
-        host="0.0.0.0", 
-        ca_certs=config["tls"]["ca_certs"], 
-        certfile=config["tls"]["certfile"],  
-        keyfile=config["tls"]["keyfile"]
-    )
-else:
-    app.run(host="0.0.0.0")
+        app.run(
+            host="0.0.0.0", 
+            ca_certs=config["tls"]["ca_certs"], 
+            certfile=config["tls"]["certfile"],  
+            keyfile=config["tls"]["keyfile"]
+        )
+    else:
+        app.run(host="0.0.0.0")
     

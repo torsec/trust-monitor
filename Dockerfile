@@ -18,4 +18,4 @@ COPY ./config.ini /trust-monitor/
 COPY ./core.py /trust-monitor/
 
 ENV QUART_APP api-manager:app
-CMD [ "quart", "run" ]
+CMD [ "python3", "api-manager.py" ]

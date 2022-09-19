@@ -25,6 +25,7 @@ quart==0.17.0
 requests==2.27.1
 toml==0.10.2
 urllib3==1.26.9
+waiting==1.4.1
 Werkzeug==2.1.2
 wsproto==1.1.0
 zipp==3.8.0

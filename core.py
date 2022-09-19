@@ -8,6 +8,7 @@ from database_connectors.reports import (store_report, retrieve_reports)
 from adapters_connector import (register_entity, verify_entity)
 from kafka_connector.kafka_connector import (run_kafka_consumer, new_topic, remove_topic)
 import time
+import importlib
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -129,6 +130,10 @@ def attest_entity(entity_, se):
     t_attestation = []
     topic = ""          # topic created for each attestation process
 
+
+    #startTime = time.time()
+        
+
     entity = retrieve_entity(entity_)
     if "error" in entity:
         return entity
@@ -146,7 +151,9 @@ def attest_entity(entity_, se):
     try:
         # create a new topic for the entity
         topic = config["kafka_topics"]["attestation_result_topic"] + "_entity_" + str(entity["entity_uuid"])
+        #print("PRIMA creazione topic")
         new_topic(topic)
+        #print("DOPO creazione topic")
     except Exception as error:
         return {"error": error.__str__()}
 
@@ -189,6 +196,9 @@ def attest_entity(entity_, se):
         }
     )
     tm_status_lock.release()
+
+    #executionTime = (time.time() - startTime)
+    #print("EXECUTION TIME: " + str(executionTime) + " s")
 
     #
     # wait untill all verifiers stop the attestation
@@ -307,11 +317,11 @@ def read_tm_status():
     classes = []
     for module in config["adapters"].keys():
         class_ = config["adapters"][module]
-        try:
-            val = getattr(__import__("adapters."+module, fromlist=[module]), class_)
-            classes.append(module)
-        except:
-            print("Adapter " + module + " NOT found!")
+        #try:
+        val = getattr(importlib.import_module("."+module, "adapters"), class_) #__import__("adapters."+module, fromlist=[module]), class_
+        classes.append(module)
+        #except:
+            #print("Adapter " + module + " NOT found!")
     
     tm_status_lock.acquire()
     tmp = tm_status
