@@ -1,5 +1,6 @@
 import configparser
 import json
+import sys
 from time import sleep
 from confluent_kafka import Consumer, Producer
 from confluent_kafka.admin import AdminClient, NewTopic
@@ -15,7 +16,7 @@ def new_topic(topic):
     """
     topic (string): name of the topic
     """
-    print(admin.list_topics().topics)
+    #print(admin.list_topics().topics)
     fs = admin.create_topics( [NewTopic(topic, num_partitions=3, replication_factor=1)] )
 
     for topic, f in fs.items():
@@ -45,9 +46,9 @@ def delivery_report(err, msg):
     """ Called once for each message produced to indicate delivery result.
         Triggered by poll() or flush(). """
     if err is not None:
-        print('Message delivery failed: {}'.format(err))
-    else:
-        print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
+        print('Message delivery failed: {}'.format(err), file=sys.stderr)
+    # else:
+        # print('Message delivered to {} [{}]'.format(msg.topic(), msg.partition()))
 
 
 def run_kafka_consumer(stop_event, entity, topics):
@@ -82,7 +83,7 @@ def run_kafka_consumer(stop_event, entity, topics):
             continue
 
         _str = msg.value().decode('utf-8')
-        print("Message value: %s", _str)
+        # print("Message value: %s", _str)
         result = json.loads(_str)
 
         #if result["entity_uuid"] != report["entity_uuid"]:

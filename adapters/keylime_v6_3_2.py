@@ -6,6 +6,10 @@ from kafka_connector.kafka_connector import run_kafka_producer
 import core
 from waiting import wait, TimeoutExpired
 
+# Disable insecure TLS requests warnings
+from requests.packages.urllib3.exceptions import InsecureRequestWarning
+requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+
 tech = "keylime_v6_3_2"
 
 class KeyLimeAdapter():

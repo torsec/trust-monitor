@@ -21,6 +21,7 @@ from core import (
     read_report
 )
 import configparser
+from logger import logger
 
 config = configparser.ConfigParser()
 config.read('config.ini')

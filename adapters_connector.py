@@ -1,5 +1,6 @@
 import configparser
 import importlib
+import sys
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -16,7 +17,7 @@ def refresh_adapters():
         try:
             classes[module] = getattr(importlib.import_module("."+module, "adapters"), class_) #__import__("adapters."+module, fromlist=[module]), class_
         except:
-            print("Adapter " + module + " NOT found!")
+            print("Adapter " + module + " NOT found!", file=sys.stderr)
 
 
 def register_entity(entity, whitelist, verifier):
