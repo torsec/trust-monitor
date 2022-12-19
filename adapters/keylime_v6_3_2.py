@@ -1,13 +1,13 @@
-import json
+#import json
 import requests
-import time
+#import time
 from kafka_connector.kafka_connector import run_kafka_producer
 #from core import read_entity, read_whitelist
 import core
 from waiting import wait, TimeoutExpired
 
 # Disable insecure TLS requests warnings
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 tech = "keylime_v6_3_2"
@@ -192,7 +192,7 @@ class KeyLimeAdapter():
                 }, topic )
                 #time.sleep(10)
                 try:
-                    if wait(lambda : se.is_set(), timeout_seconds=1, sleep_seconds=0.1) is True: # wait 10 s
+                    if wait(lambda : se.is_set(), timeout_seconds=5, sleep_seconds=0.1) is True: # wait 5 s
                         break
                 except TimeoutExpired:
                     pass

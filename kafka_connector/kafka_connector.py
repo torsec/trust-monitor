@@ -1,7 +1,7 @@
 import configparser
 import json
 import sys
-from time import sleep
+#from time import sleep
 from confluent_kafka import Consumer, Producer
 from confluent_kafka.admin import AdminClient, NewTopic
 from datetime import datetime
@@ -71,7 +71,7 @@ def run_kafka_consumer(stop_event, entity, topics):
     msg = None
 
     while not stop_event.is_set() or msg is not None:
-        msg = kafka_consumer.poll(5) # every 2 seconds check if there is some message
+        msg = kafka_consumer.poll(5) # every 5 seconds check if there is some message
 
         if msg is None:
             #print("No message found!")
