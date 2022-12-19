@@ -550,11 +550,12 @@ if __name__ == "__main__":
             raise Exception("No keyfile specified in config.ini")
 
         app.run(
-            host="0.0.0.0", 
+            host="0.0.0.0",
+            port=config["tls"]["port"],
             ca_certs=config["tls"]["ca_certs"], 
             certfile=config["tls"]["certfile"],  
             keyfile=config["tls"]["keyfile"]
         )
     else:
-        app.run(host="0.0.0.0")
+        app.run(host="0.0.0.0", port=config["api-manager"]["port"])
     

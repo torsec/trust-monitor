@@ -6,6 +6,7 @@ from confluent_kafka import Consumer, Producer
 from confluent_kafka.admin import AdminClient, NewTopic
 from datetime import datetime
 import core
+import requests
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -129,8 +130,13 @@ def run_kafka_consumer(stop_event, entity, topics):
                     break
                 else:
                     report["trust"] = True
-
-            run_kafka_producer(report, config["kafka_topics"]["attestation_report_topic"])
+            #
+            # POST on the SPI DM
+            #
+            requests.post("http://" + config["spi-dm"]["address"] + ":" + config["spi-dm"]["port"] + "/api/normalize/trustmonitor",
+                          json=report
+            )
+            #run_kafka_producer(report, config["kafka_topics"]["attestation_report_topic"])
             ret = core.insert_report(report)   # store the report in the DB
             # print(ret)
             report["state"] = []
