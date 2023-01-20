@@ -68,7 +68,7 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: "prova"
 
   trust-monitor:
-      image: trust-monitor:0.8.10
+      image: trust-monitor:0.9
       hostname: trust-monitor
       container_name: trust-monitor
       networks:

@@ -1,0 +1,136 @@
+/** Body */
+
+@media screen and (min-width: 992px) {
+  html,
+  body,
+  .container-fluid,
+  .row {
+    height: 100vh !important;
+  }
+}
+
+/** Colors */
+
+.bg-custom {
+  background-color: green !important;
+}
+
+.navbar-custom .navbar-brand,
+.navbar-custom .navbar-text,
+.navbar-custom .navbar-user {
+  color: white;
+}
+
+.btn-outline-white {
+  color: white;
+  border-color: white;
+}
+
+.white-toggler.navbar-toggler {
+  border-color: white;
+}
+
+.white-toggler .navbar-toggler-icon {
+  background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(255,255,255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+}
+
+.list-group-item {
+  background-color: rgb(231, 231, 231);
+  border-radius: 0px;
+  border-style: none;
+  border-bottom-style: solid;
+}
+
+.list-group-item.active {
+  background-color: #2dab4f;
+  border-color: #2dab4f;
+  border-radius: 0px;
+  box-shadow: none;
+}
+
+.sidebar {
+  background-color: rgb(231, 231, 231);
+}
+
+.togglemenu {
+  background-color: rgb(231, 231, 231);
+  margin-top: 0.5rem;
+  margin-bottom: -0.5rem;
+  margin-right: -1rem;
+  margin-left: -1rem;
+  margin: 0.5 -1 -0.5 -1rem;
+}
+
+.urgent {
+  color: red !important;
+}
+
+/** Typography */
+
+.navbar-user {
+  font-size: 1.75rem;
+  color: white;
+}
+
+/** Elements */
+
+.round {
+  border-radius: 24px;
+  width: 48px;
+  color: white;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+}
+
+.round:hover {
+  color: white;
+}
+
+/* Login */
+
+.login {
+  height: 100%;
+  display: -ms-flexbox;
+  display: -webkit-box;
+  display: flex;
+  -ms-flex-align: center;
+  -ms-flex-pack: center;
+  -webkit-box-align: center;
+  align-items: center;
+  -webkit-box-pack: center;
+  justify-content: center;
+  padding-top: 40px;
+  padding-bottom: 40px;
+  background-color: #f5f5f5;
+}
+
+.form-signin {
+  width: 100%;
+  max-width: 330px;
+  padding: 15px;
+  margin: 0 auto;
+}
+.form-signin .checkbox {
+  font-weight: 400;
+}
+.form-signin .form-control {
+  position: relative;
+  box-sizing: border-box;
+  height: auto;
+  padding: 10px;
+  font-size: 16px;
+}
+.form-signin .form-control:focus {
+  z-index: 2;
+}
+.form-signin input[type="email"] {
+  margin-bottom: -1px;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0;
+}
+.form-signin input[type="password"] {
+  margin-bottom: 10px;
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+}
