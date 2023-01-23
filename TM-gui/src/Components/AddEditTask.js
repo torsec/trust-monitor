@@ -85,12 +85,13 @@ export function AddEditTask({ ...props }) {
           name: name,
           external_id: externalId,
           type: type,
-          whitelist_uuid: parseInt(whitelistUiid, 10),
+          whitelist_uuid: whitelistUiid ? parseInt(whitelistUiid, 10) : null,
           child: child ? child.split(",").map( val => parseInt(val, 10)) : null,
           metadata: JSON.parse(metadata)
         };
         if (editedEntity.child === null) delete editedEntity.child;
         if (editedEntity.whitelist_uuid === null) delete editedEntity.whitelist_uuid;
+        if (editedEntity.att_tech === null) delete editedEntity.att_tech;
 
         const tmp = editedEntity;
         editEntity(tmp);
@@ -115,12 +116,13 @@ export function AddEditTask({ ...props }) {
           name: name,
           external_id: externalId,
           type: type,
-          whitelist_uuid: parseInt(whitelistUiid, 10),
+          whitelist_uuid: whitelistUiid ? parseInt(whitelistUiid, 10) : null,
           child: child ? child.split(",").map( val => parseInt(val, 10)) : null,
           metadata: metadata ? JSON.parse(metadata) : {}
         };
         if (newEntity.child === null) delete newEntity.child;
         if (newEntity.whitelist_uuid === null) delete newEntity.whitelist_uuid;
+        if (newEntity.att_tech === null) delete newEntity.att_tech;
 
         const tmp = newEntity;
         addEntity(tmp);

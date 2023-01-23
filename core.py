@@ -41,7 +41,7 @@ def insert_entity(entity):
     Register entity for every attestation technology
     """
     whitelist = None   
-    if entity["whitelist_uuid"] is not None:
+    if "whitelist_uuid" in entity.keys():
         whitelist = retrieve_whitelist({ "_id": entity["whitelist_uuid"] })  # get the whitelist for the specified entity
     
     for tech in entity["att_tech"]:
@@ -139,11 +139,13 @@ def attest_entity(entity_, se):
         return entity
 
     if entity["whitelist_uuid"] is None:
+        print({"error": "no whitelist_uuid specified for the entity " + entity["entity_uuid"]})
         return {"error": "no whitelist_uuid specified for the entity " + entity["entity_uuid"]}
     whitelist = retrieve_whitelist({ "_id": entity["whitelist_uuid"] })  # get the whitelist for the specified entity
 
     if entity["att_tech"] is None or entity["att_tech"] is []:
-        return {"error": "no attestatio technologies specified for the entity " + entity["entity_uuid"]}
+        print({"error": "no attestation technologies specified for the entity " + entity["entity_uuid"]})
+        return {"error": "no attestation technologies specified for the entity " + entity["entity_uuid"]}
 
     #
     # start the attestation results' consumer
@@ -155,6 +157,7 @@ def attest_entity(entity_, se):
         new_topic(topic)
         #print("DOPO creazione topic")
     except Exception as error:
+        print({"error": error.__str__()})
         return {"error": error.__str__()}
 
     try:
@@ -164,6 +167,7 @@ def attest_entity(entity_, se):
         kafka_consumer_thread.start()
     except Exception as error:
         remove_topic(topic)
+        print({"error": error.__str__()})
         return {"error": error.__str__()}
 
     #

@@ -96,6 +96,7 @@ def retrieve_reports(request):
         "type" : "object",
         "properties" : {
             "entity_uuid" : {"type" : "number"},
+            "last" : {"type" : "boolean"},
             "from" : {"type" : "string"},
             "to" : {"type" : "string"}
         },
@@ -112,22 +113,25 @@ def retrieve_reports(request):
         return {"error_values": error.__str__()}
 
     try:
-        if "from" in request.keys():
-            if "to" in request.keys():
+        if "last" in request.keys() and request["last"] is True:
+            res = reports.find( {"entity_uuid": request["entity_uuid"]} ).sort([("time",-1)]).limit(1)
+        else:
+            if "from" in request.keys():
+                if "to" in request.keys():
+                    res = reports.find( {"entity_uuid": request["entity_uuid"], "time": {
+                        "$gt": datetime.strptime(request["from"], "%Y-%m-%dT%H:%M:%S"),     #datetime.strptime(request["from"], "%Y-%m-%dT%H:%M:%S").isoformat(),
+                        "$lt": datetime.strptime(request["to"], "%Y-%m-%dT%H:%M:%S")       #datetime.strptime(request["to"], "%Y-%m-%dT%H:%M:%S").isoformat()
+                    }} )
+                else:
+                    res = reports.find( {"entity_uuid": request["entity_uuid"], "time":{
+                        "$gt": datetime.strptime(request["from"], "%Y-%m-%dT%H:%M:%S")
+                    }} )
+            elif "to" in request.keys():
                 res = reports.find( {"entity_uuid": request["entity_uuid"], "time": {
-                    "$gt": datetime.strptime(request["from"], "%Y-%m-%dT%H:%M:%S"),     #datetime.strptime(request["from"], "%Y-%m-%dT%H:%M:%S").isoformat(),
-                    "$lt": datetime.strptime(request["to"], "%Y-%m-%dT%H:%M:%S")       #datetime.strptime(request["to"], "%Y-%m-%dT%H:%M:%S").isoformat()
+                    "$lt": datetime.strptime(request["to"], "%Y-%m-%dT%H:%M:%S")
                 }} )
             else:
-                res = reports.find( {"entity_uuid": request["entity_uuid"], "time":{
-                    "$gt": datetime.strptime(request["from"], "%Y-%m-%dT%H:%M:%S")
-                }} )
-        elif "to" in request.keys():
-            res = reports.find( {"entity_uuid": request["entity_uuid"], "time": {
-                "$lt": datetime.strptime(request["to"], "%Y-%m-%dT%H:%M:%S")
-            }} )
-        else:
-            res = reports.find( {"entity_uuid": request["entity_uuid"]} )
+                res = reports.find( {"entity_uuid": request["entity_uuid"]} )
 
     except Exception as error:
         return {"error": error.__str__()}

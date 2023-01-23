@@ -68,11 +68,80 @@ const editEntity = async (entity) => {
   }
 };
 
+const attestEntity = async (uuid) => {
+  const response = await fetch('/attest_entity', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      "entity_uuid": uuid
+    }),
+  });
+  const body = await response.json();
+  if (response.ok) {
+    return body;
+  } else {
+    throw body.error;
+  }
+}
+
+const stopAttestEntity = async (uuid) => {
+  const response = await fetch('/attest_entity', {
+    method: "DELETE",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      "entity_uuid": uuid
+    }),
+  });
+  const body = await response.json();
+  if (response.ok) {
+    return body;
+  } else {
+    throw body.error;
+  }
+}
+
+const getStatus = async () => {
+  const response = await fetch("/status");
+  const body = await response.json();
+  if (response.ok) {
+    return body;
+  } else {
+    throw body.error;
+  }
+}
+
+const getEntityReport = async (uuid) => {
+  const response = await fetch('/report', {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({
+      "entity_uuid": uuid,
+      "last": true
+    }),
+  });
+  const body = await response.json();
+  if (response.ok) {
+    return body.report_list[0].trust;
+  } else {
+    throw body.error;
+  }
+}
+
 const API = {
   getTasksByFilter,
   getAllEntities,
   addEntity,
   deleteEntity,
-  editEntity
+  editEntity,
+  attestEntity,
+  stopAttestEntity,
+  getStatus,
+  getEntityReport
 };
 export default API;

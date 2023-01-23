@@ -138,7 +138,7 @@ def run_kafka_consumer(stop_event, entity, topics):
             )
             #run_kafka_producer(report, config["kafka_topics"]["attestation_report_topic"])
             ret = core.insert_report(report)   # store the report in the DB
-            # print(ret)
+            #print(ret)
             report["state"] = []
             
             if '_id' in report.keys():  # remove '_id' attribute added after the insert_report

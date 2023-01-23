@@ -13,11 +13,11 @@ export function Sidebar({...props}) {
         key={index} 
         onClick={() => {
                         setRefresh(true);
-                        setActiveFilter(val.name);
+                        setActiveFilter("/"+val.name.toLowerCase());
                         setFilterLoading(true);
                     }}
-        className={`list-group-item list-group-item-action ${activeFilter === val.name ? 'active': ''}`} 
-        to={`/filter/${val.name}`}>{val.name}
+        className={`list-group-item list-group-item-action ${activeFilter === "/"+val.name.toLowerCase() || (val.name === "Entities" && activeFilter === "/") ? 'active': ''}`} 
+        to={`/${val.name.toLowerCase()}`}>{val.name}
     </Link>);
     return (
         <>

@@ -1,13 +1,13 @@
 import { Container, Row, Collapse } from "react-bootstrap";
-import { Sidebar, EntityList, AddEditTask, ButtonRounded } from "./";
+import { Sidebar, EntityList, AddEditTask, ButtonRounded, Status } from "./";
 import { useState, useEffect } from "react";
 import API from "../API";
 import { useRouteMatch } from "react-router-dom";
 
 export function Main({ ...props }) {
   const { menuFilters, toggle, user } = props;
-  const filter = useRouteMatch().params.filter;
-
+  const filter = useRouteMatch().path;
+ 
   const [entitiesList, setEntitiesList] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(filter ? false : true);
@@ -15,27 +15,42 @@ export function Main({ ...props }) {
   const [showModal, setShowModal] = useState(false);
   const [refresh, setRefresh] = useState(true);
   const [entityToEdit, setEntityToEdit] = useState();
+  const [attestLoading, setAttestLoading] = useState(false);
+  const [uuidAttest, setUuidAttest] = useState();
+  const [status, setStatus] = useState({});
 
   useEffect(() => {
     const getEntities = async () => {
       try {
         let list = [];
-        if (true /*!filter*/) {
+        let temp = {};
+        if (filter === "/") {
           list = await API.getAllEntities();
           setLoading(false);
-        } else {
-          if (menuFilters.find((item) => item.name === filter)) {
-            list = await API.getTasksByFilter(filter);
-          } else {
-            list = await API.getTasksByFilter("All");
+        }else {
+          setLoading(true);
+          temp = await API.getStatus();
+          
+          for (let i = 0; i < temp.att_processes.length; i++){
+            const val = temp.att_processes[i];
+            let trust = await API.getEntityReport(val.entity_uuid);
+            for (let index = 0; index < temp.att_processes.length; index++) {
+              if (temp.att_processes[index].entity_uuid === val.entity_uuid){
+                temp.att_processes[index]["trust"] = trust;
+              }
+            }
           }
+
+          setStatus(temp);
+          setLoading(false);
         }
+        
         setEntitiesList(list);
         if (filterLoading) {
           setFilterLoading(false);
         }
       } catch (err) {
-        setError(err.error);
+        console.log(err);
       }
     };
     if (refresh) {
@@ -43,6 +58,20 @@ export function Main({ ...props }) {
       setRefresh(false);
     }
   }, [refresh, filter]);
+
+  const attestEntity = async (uuid, start) => {
+    setAttestLoading(true);
+    setUuidAttest(uuid);
+    if(start){
+      await API.attestEntity(uuid);
+    }
+    else {
+      await API.stopAttestEntity(uuid);
+    }
+    setRefresh(true);
+    setAttestLoading(false);
+    setUuidAttest(-1);
+  }
 
   const selectEntityToEdit = (uuid) => {
     const list = [...entitiesList];
@@ -98,26 +127,47 @@ export function Main({ ...props }) {
               />
             </nav>
           </Collapse>
-          <EntityList
-            entitiesList={entitiesList}
-            selectEntityToEdit={selectEntityToEdit}
-            deleteEntity={deleteEntity}
-            filter={filter}
-            loading={loading}
-            error={error}
-            filterLoading={filterLoading}
-          />
-          <ButtonRounded addTaskFunc={handleShowNewTask} />
-          <AddEditTask
-            user={user}
-            editEntity={editEntity}
-            addEntity={addEntity}
-            setRefresh={setRefresh}
-            entityToEdit={entityToEdit}
-            show={showModal}
-            onHide={handleCloseNewTask}
-          />
-       
+          { (filter === "/") ?
+            <>
+              <EntityList
+              entitiesList={entitiesList}
+              selectEntityToEdit={selectEntityToEdit}
+              deleteEntity={deleteEntity}
+              attestEntity={attestEntity}
+              attestLoading={attestLoading}
+              uuidAttest={uuidAttest}
+              setUuidAttest={setUuidAttest}
+              filter={filter}
+              loading={loading}
+              error={error}
+              filterLoading={filterLoading}
+            />
+            <ButtonRounded addTaskFunc={handleShowNewTask} />
+            <AddEditTask
+              user={user}
+              editEntity={editEntity}
+              addEntity={addEntity}
+              setRefresh={setRefresh}
+              entityToEdit={entityToEdit}
+              show={showModal}
+              onHide={handleCloseNewTask}
+            />
+          </>
+          :
+          (
+            (filter === "/status") ?
+            <Status
+              status={status}
+              error={error}
+              loading={loading}
+              filterLoading={filterLoading}
+              attestLoading={attestLoading}
+              attestEntity={attestEntity}
+            />
+            :
+            ""
+          )
+          }
       </Container>
     </main>
   );

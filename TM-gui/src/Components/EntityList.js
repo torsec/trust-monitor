@@ -2,15 +2,15 @@ import { EntityItem } from '.';
 import { Alert, Spinner, Button } from 'react-bootstrap';
 
 export function EntityList({ ...props }) {
-    const { entitiesList, selectEntityToEdit, deleteEntity, filter, loading, error, filterLoading } = props;
+    const { entitiesList, selectEntityToEdit, deleteEntity, attestEntity, attestLoading, uuidAttest, setUuidAttest, filter, loading, error, filterLoading } = props;
 
     const orderedList = [...entitiesList].sort( (a, b) => a.entity_uuid - b.entity_uuid )
 
-    const entities = [...orderedList].map( (entity) => <EntityItem key={entity.entity_uuid} {...entity} deleteEntity={deleteEntity} selectEntityToEdit={selectEntityToEdit} />);
+    const entities = [...orderedList].map( (entity) => <EntityItem key={entity.entity_uuid} {...entity} deleteEntity={deleteEntity} attestEntity={attestEntity} attestLoading={attestLoading} uuidAttest={uuidAttest} setUuidAttest={setUuidAttest} selectEntityToEdit={selectEntityToEdit} />);
     return (
         <div className="col-lg-8 pt-3">
             <div className="d-flex justify-content-center align-items-center">
-                <h1 className="d-flex justify-content-center">{filter || 'All'}</h1> {filterLoading && <span className="ml-4"><Spinner animation="border" role="status" variant="warning" /> </span>}
+                <h1 className="d-flex justify-content-center">{filter === "/" ? 'Entities' : ""}</h1> {filterLoading && <span className="ml-4"><Spinner animation="border" role="status" variant="warning" /> </span>}
             </div>
             
             {loading ? 

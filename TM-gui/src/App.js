@@ -22,6 +22,28 @@ function App() {
     <>
         <Router>
           <Switch>
+          <Route path="/entities">
+              <Redirect to="/"/>
+            </Route>
+            <Route path="/verifiers">
+            <Header
+                    toggleFunc={hideShow}
+                    title="Trust Monitor GUI"
+                  />
+            </Route>
+            <Route path="/status">
+            <Header
+                    toggleFunc={hideShow}
+                    title="Trust Monitor GUI"
+                  />
+                  <Main toggle={toggle} menuFilters={menuFilters} />
+            </Route>
+            <Route path="/whitelists">
+            <Header
+                    toggleFunc={hideShow}
+                    title="Trust Monitor GUI"
+                  />
+            </Route>
             <Route path="/">
               <Header
                     toggleFunc={hideShow}

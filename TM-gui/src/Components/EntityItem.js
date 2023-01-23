@@ -1,10 +1,10 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { Button, Collapse, Card } from 'react-bootstrap';
-import { faUser , faPencilAlt, faTrash } from "@fortawesome/free-solid-svg-icons";
+import { Button, Collapse, Card, Spinner } from 'react-bootstrap';
+import { faUser , faPencilAlt, faTrash, faPlay, faStop } from "@fortawesome/free-solid-svg-icons";
 import { useState } from 'react';
 
 export function EntityItem({...props}) {
-    const { entity_uuid, inf_id, att_tech, name, external_id, type, whitelist_uuid, child, parent, metadata, state, deleteEntity, selectEntityToEdit, deleted, edited, isNew } = props;
+    const { entity_uuid, inf_id, att_tech, name, external_id, type, whitelist_uuid, child, parent, metadata, state, deleteEntity, attestEntity, attestLoading, uuidAttest, setUuidAttest, selectEntityToEdit, deleted, edited, isNew } = props;
     
     const [open, setOpen] = useState(false);
 
@@ -19,7 +19,18 @@ export function EntityItem({...props}) {
             <td className="col-1 d-flex align-items-center justify-content-center">{whitelist_uuid}</td>
             <td className="col-2 d-flex align-items-center justify-content-center">{child ? child.toString() : ""}</td>
             <td className="col-1 d-flex align-items-center justify-content-center">{parent}</td>
-            <td className="col-2 d-flex align-items-center justify-content-center">{state}</td>
+            <td className="col-2 d-flex align-items-center justify-content-center">
+                <>
+                    <p>{state}</p>
+                    { (attestLoading && entity_uuid === uuidAttest) ? <Spinner as="span" animation="grow" size="sm" role="status" aria-hidden="true"/> : (
+                        state === "registered" ?
+                        <FontAwesomeIcon className="mr-1" icon={faPlay} onClick={() => attestEntity(entity_uuid, true) } />
+                        :
+                        <FontAwesomeIcon className=" text-danger mr-1" icon={faStop} onClick={() => attestEntity(entity_uuid, false) } />
+                        )
+                    }
+                </>
+            </td>
             <td className="col-2 d-flex align-items-center justify-content-center">
             <>
                 <Button

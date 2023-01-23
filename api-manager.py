@@ -504,7 +504,7 @@ async def get_status():
 
     return ret
 
-@app.route('/report')
+@app.route('/report', methods=['POST'])
 async def get_report():
     """
     Get reports for a spacific entity
@@ -512,6 +512,7 @@ async def get_report():
     Body structure:
     {
         "entity_uuid": uuid,
+        "last": true, (optional) boolean
         "from": time_1, (optional) ISOFormat %Y-%m-%dT%H:%M:%S
         "to": time_2 (optional) ISOFormat %Y-%m-%dT%H:%M:%S
     }

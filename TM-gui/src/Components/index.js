@@ -7,4 +7,5 @@ import EntityItem from './EntityItem';
 import Header from './Header';
 import Main from './Main';
 import InitialSpinner from './InitialSpinner'
-export { Sidebar, EntityList, EntityItem, AddEditTask, ButtonRounded, Search, Main, Header, InitialSpinner };
+import Status from './Status';
+export { Sidebar, EntityList, EntityItem, AddEditTask, ButtonRounded, Search, Main, Header, InitialSpinner, Status };
