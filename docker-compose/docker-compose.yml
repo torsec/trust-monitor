@@ -80,6 +80,9 @@ services:
         - kafka1
         - postgres
         - mongo
+      volumes:
+        - '../:/var/log/trust-monitor'
+
   tm-gui:
       image: cinghio/tm-gui:0.2
       hostname: tm-gui
