@@ -3,10 +3,14 @@ import { Sidebar, EntityList, AddEditTask, ButtonRounded, Status } from "./";
 import { useState, useEffect } from "react";
 import API from "../API";
 import { useRouteMatch } from "react-router-dom";
+import { useKeycloak } from "@react-keycloak/web";
 
 export function Main({ ...props }) {
   const { menuFilters, toggle, user } = props;
   const filter = useRouteMatch().path;
+  //const { keycloak } = useKeycloak();
+
+  //const isLoggedIn = keycloak.authenticated;
  
   const [entitiesList, setEntitiesList] = useState([]);
   const [error, setError] = useState("");
@@ -113,7 +117,7 @@ export function Main({ ...props }) {
   };
 
   //const tasks = API.getTasks(filter);
-  return (
+  return ( true /*isLoggedIn*/ ?
     <main>
       <Container fluid>
        
@@ -170,6 +174,8 @@ export function Main({ ...props }) {
           }
       </Container>
     </main>
+    :
+    <p>Not Authenticated</p>
   );
 }
 

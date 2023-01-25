@@ -68,11 +68,26 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: "prova"
 
   trust-monitor:
-      image: trust-monitor:0.9
+      image: cinghio/trust-monitor:0.11
       hostname: trust-monitor
       container_name: trust-monitor
       networks:
         default:
           ipv4_address: 172.20.0.10
       ports:
-        - "5000:5000"
+        - "5080:5080"
+      depends_on:
+        - kafka1
+        - postgres
+        - mongo
+  tm-gui:
+      image: cinghio/tm-gui:0.2
+      hostname: tm-gui
+      container_name: tm-gui
+      networks:
+        default:
+          ipv4_address: 172.20.0.11
+      ports:
+        - "8080:80"
+      depends_on:
+        - trust-monitor

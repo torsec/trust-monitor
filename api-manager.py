@@ -1,4 +1,5 @@
 from quart import Quart, request
+from quart_cors import cors
 from core import (
     delete_policy,
     insert_att_tech,
@@ -27,6 +28,7 @@ config = configparser.ConfigParser()
 config.read('config.ini')
 
 app = Quart(__name__)
+app = cors(app, allow_origin="*")
 
 @app.route('/entity')
 async def get_entity():

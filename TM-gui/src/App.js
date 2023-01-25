@@ -9,17 +9,36 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
+import Keycloak from 'keycloak-js';
+import { ReactKeycloakProvider } from "@react-keycloak/web";
 import API from "./API";
 
 function App() {
   const [toggle, setToggle] = useState(false);
+  //const [keycloak, setKeycloak] = useState(null)
+  const [authenticated, setAuthenticated] = useState(false)
+
+  /*const keycloak = new Keycloak({
+    url: "http://localhost:8080/auth",
+    realm: "tmrealm",
+    clientId: "tmclient",
+  });*/
+
+  /*useEffect(()=>{
+    
+
+    keycloak.init({ onLoad: 'login-required' }).then(authenticated => {
+      setKeycloak(keycloak)
+      setAuthenticated(authenticated)
+    })
+  }, [])*/
 
   const hideShow = () => {
     setToggle((toggle) => !toggle);
   };
 
   return (
-    <>
+    /*<ReactKeycloakProvider authClient={keycloak}>*/
         <Router>
           <Switch>
           <Route path="/entities">
@@ -53,8 +72,8 @@ function App() {
             </Route>
           </Switch>
         </Router>
-    </>
-  );
+    /*</ReactKeycloakProvider>*/
+    );
 }
 
 export default App;

@@ -1,4 +1,7 @@
-/* import dayjs from 'dayjs'; */
+
+const ip = "127.0.0.1"
+const port = "5080"
+const baseURL = `http://${ip}:${port}`
 
 const getTasksByFilter = async (selectedFilter) => {
   const response = await fetch(`/api/tasks?filter=${selectedFilter}`);
@@ -11,7 +14,7 @@ const getTasksByFilter = async (selectedFilter) => {
 };
 
 const getAllEntities = async () => {
-  const response = await fetch("/entity");
+  const response = await fetch(`${baseURL}/entity`);
   const body = await response.json();
   if (response.ok) {
     return body.entities;
@@ -21,7 +24,7 @@ const getAllEntities = async () => {
 };
 
 const addEntity = async (entity) => {
-  const response = await fetch(`/entity`, {
+  const response = await fetch(`${baseURL}/entity`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -37,7 +40,7 @@ const addEntity = async (entity) => {
 };
 
 const deleteEntity = async (uuid) => {
-  const response = await fetch(`/entity`, {
+  const response = await fetch(`${baseURL}/entity`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -53,7 +56,7 @@ const deleteEntity = async (uuid) => {
 };
 
 const editEntity = async (entity) => {
-  const response = await fetch(`/entity`, {
+  const response = await fetch(`${baseURL}/entity`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -69,7 +72,7 @@ const editEntity = async (entity) => {
 };
 
 const attestEntity = async (uuid) => {
-  const response = await fetch('/attest_entity', {
+  const response = await fetch(`${baseURL}/attest_entity`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -87,7 +90,7 @@ const attestEntity = async (uuid) => {
 }
 
 const stopAttestEntity = async (uuid) => {
-  const response = await fetch('/attest_entity', {
+  const response = await fetch(`${baseURL}/attest_entity`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -105,7 +108,7 @@ const stopAttestEntity = async (uuid) => {
 }
 
 const getStatus = async () => {
-  const response = await fetch("/status");
+  const response = await fetch(`${baseURL}/status`);
   const body = await response.json();
   if (response.ok) {
     return body;
@@ -115,7 +118,7 @@ const getStatus = async () => {
 }
 
 const getEntityReport = async (uuid) => {
-  const response = await fetch('/report', {
+  const response = await fetch(`${baseURL}/report`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

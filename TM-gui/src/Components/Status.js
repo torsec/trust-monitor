@@ -24,13 +24,18 @@ export function Status({ ...props }) {
                             <th className="col-2 d-flex align-items-center justify-content-center" scope="col">Loaded Adapters</th>
                         </tr>
                     </thead>
+                    {status.adapters_loaded.length > 0 ?
                     <tbody>
                         {status.adapters_loaded.map(element => 
                             <td className="col-2 d-flex align-items-center justify-content-center">{element}</td>
                         )}
                     </tbody>
+                    :
+                    <p>None</p>
+                    }
                 </table>
                 <h2>Attestation processes</h2>
+                {status.att_processes.length > 0 ?
                 <table className="table">
                     <thead>
                         <tr className="d-flex">
@@ -61,6 +66,9 @@ export function Status({ ...props }) {
                     )}
                     </tbody>
                 </table>
+                :
+                <p>None</p>
+                }
             </>
             }
         </div>
