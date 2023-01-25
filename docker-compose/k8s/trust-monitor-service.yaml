@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: trust-monitor
+  name: trust-monitor
+spec:
+  ports:
+  - nodePort: 30203
+    port: 5080
+    protocol: TCP
+    targetPort: 5080
+  selector:
+    io.kompose.service: trust-monitor
+  sessionAffinity: None
+  type: NodePort

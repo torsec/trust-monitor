@@ -43,7 +43,7 @@ services:
       - zoo1
 
   postgres:
-    image: postgres
+    image: cinghio/tm-databases:0.1
     hostname: postgres
     container_name: postgres
     networks:

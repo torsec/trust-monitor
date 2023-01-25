@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    io.kompose.service: tm-gui
+  name: tm-gui
+spec:
+  ports:
+  - nodePort: 32008
+    port: 80
+    protocol: TCP
+    targetPort: 80
+  selector:
+    io.kompose.service: tm-gui
+  sessionAffinity: None
+  type: NodePort
