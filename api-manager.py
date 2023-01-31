@@ -44,7 +44,7 @@ async def get_entity():
     Mandatory values
     """
     #if entity_uuid is None:
-    #    return {"Error": "entity_uuid field must be present in the URL"}, 422
+    #    return {"error": "entity_uuid field must be present in the URL"}, 422
 
     ret = read_entity({"entity_uuid" : entity_uuid})
 
@@ -52,7 +52,7 @@ async def get_entity():
         return {"entities": ret}
 
     if "error" in ret.keys():
-        return {"Error": "entity " + str(entity_uuid) + " :" + ret["error"]}, 500
+        return {"error": "entity " + str(entity_uuid) + " :" + ret["error"]}, 500
 
     return ret
 
@@ -86,15 +86,15 @@ async def add_entity():
     Mandatory values
     """
     if "entity_uuid" not in body:
-        return {"Error": "entity_uuid field must be present"}, 422
+        return {"error": "entity_uuid field must be present"}, 422
     if "inf_id" not in body:
-        return {"Error": "inf_id field must be present"}, 422
+        return {"error": "inf_id field must be present"}, 422
     if "name" not in body:
-        return {"Error": "name must field be present"}, 422
+        return {"error": "name must field be present"}, 422
     if "external_id" not in body:
-        return {"Error": "external_id field must be present"}, 422
+        return {"error": "external_id field must be present"}, 422
     if "type" not in body:
-        return {"Error": "type field must be present"}, 422
+        return {"error": "type field must be present"}, 422
 
     """
     Insert new entity in the TM
@@ -102,12 +102,12 @@ async def add_entity():
     ret = insert_entity(body)
 
     if "error_values" in ret.keys():
-        return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error_values"]}, 422
+        return {"error": "entity " + str(body["entity_uuid"]) + " :" + ret["error_values"]}, 422
 
     if "error" in ret.keys():
-        return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+        return {"error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "entity " + ret["id"] + " successfully registered"}
+    return {"message": "entity " + ret["id"] + " successfully registered"}
 
 @app.route('/entity', methods=['DELETE'])
 async def remove_entity():
@@ -126,14 +126,14 @@ async def remove_entity():
     Mandatory values
     """
     if "entity_uuid" not in body:
-        return {"Error": "entity_uuid field must be present"}, 422
+        return {"error": "entity_uuid field must be present"}, 422
 
     ret = delete_entity(body)
 
     if "error" in ret.keys():
-        return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+        return {"error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "entity " + ret["id"] + " successfully deleted"}
+    return {"message": "entity " + ret["id"] + " successfully deleted"}
 
 @app.route('/entity', methods=['PUT'])
 async def modify_entity():
@@ -164,14 +164,14 @@ async def modify_entity():
     Mandatory values
     """
     if "entity_uuid" not in body:
-        return {"Error": "entity_uuid field must be present"}, 422
+        return {"error": "entity_uuid field must be present"}, 422
 
     ret = update_entity(body)
 
     if "error" in ret.keys():
-        return {"Error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+        return {"error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "entity " + ret["id"] + " successfully updated"}
+    return {"message": "entity " + ret["id"] + " successfully updated"}
 
 @app.route('/attest_entity', methods=['POST'])
 async def ra_entity():
@@ -188,14 +188,14 @@ async def ra_entity():
     Mandatory values
     """
     if "entity_uuid" not in body:
-        return {"Error": "entity_uuid field must be present"}, 422
+        return {"error": "entity_uuid field must be present"}, 422
 
     ret = start_attestation(body)
 
     if "error" in ret.keys():
-        return {"Error" : ret["error"]}, 500
+        return {"error" : ret["error"]}, 500
 
-    return {"Message": ret["message"]}
+    return {"message": ret["message"]}
 
 @app.route('/attest_entity', methods=['DELETE'])
 async def stop_ra_entity():
@@ -212,14 +212,14 @@ async def stop_ra_entity():
     Mandatory values
     """
     if "entity_uuid" not in body:
-        return {"Error": "entity_uuid field must be present"}, 422
+        return {"error": "entity_uuid field must be present"}, 422
 
     ret = stop_attestation(body)
 
     if "error" in ret.keys():
-        return {"Error" : ret["error"]}, 500
+        return {"error" : ret["error"]}, 500
 
-    return {"Message": ret["message"]}
+    return {"message": ret["message"]}
 
 @app.route('/verifier')
 async def get_verifier():
@@ -241,17 +241,17 @@ async def get_verifier():
     Mandatory values
     """
     if "att_tech" not in body:
-        return {"Error": "att_tech field must be present"}, 422
+        return {"error": "att_tech field must be present"}, 422
     if "inf_id" not in body:
-        return {"Error": "inf_id field must be present"}, 422
+        return {"error": "inf_id field must be present"}, 422
    
     #if att_tech is None:
-    #    return {"Error": "att_tech field must be present in the URL"}, 422
+    #    return {"error": "att_tech field must be present in the URL"}, 422
 
     ret = retrieve_att_tech(body)
 
     if "error" in ret.keys():
-        return {"Error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
+        return {"error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
 
     return ret
 
@@ -276,11 +276,11 @@ async def register_verifier():
     Mandatory values
     """
     if "att_tech" not in body:
-        return {"Error": "att_tech field must be present"}, 422
+        return {"error": "att_tech field must be present"}, 422
     if "inf_id" not in body:
-        return {"Error": "inf_id field must be present"}, 422
+        return {"error": "inf_id field must be present"}, 422
     if "metadata" not in body:
-        return {"Error": "metadata field must be present"}, 422
+        return {"error": "metadata field must be present"}, 422
 
     """
     Insert new attestation technology in the TM
@@ -288,12 +288,12 @@ async def register_verifier():
     ret = insert_att_tech(body)
 
     if "error_values" in ret.keys():
-        return {"Error": "verifier " + str(body["att_tech"]) + " :" + ret["error_values"]}, 422
+        return {"error": "verifier " + str(body["att_tech"]) + " :" + ret["error_values"]}, 422
 
     if "error" in ret.keys():
-        return {"Error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
+        return {"error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "verfier " + ret["id"] + " successfully registered"}
+    return {"message": "verfier " + ret["id"] + " successfully registered"}
 
 @app.route('/verifier', methods=['DELETE'])
 async def remove_verifier():
@@ -313,9 +313,9 @@ async def remove_verifier():
     Mandatory values
     """
     if "att_tech" not in body:
-        return {"Error": "att_tech field must be present"}, 422
+        return {"error": "att_tech field must be present"}, 422
     if "inf_id" not in body:
-        return {"Error": "inf_id field must be present"}, 422
+        return {"error": "inf_id field must be present"}, 422
 
     """
     Delete an attestation technology from the TM
@@ -323,9 +323,9 @@ async def remove_verifier():
     ret = delete_att_tech(body)
 
     if "error" in ret.keys():
-        return {"Error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
+        return {"error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "verfier " + ret["id"] + " successfully deleted"}
+    return {"message": "verfier " + ret["id"] + " successfully deleted"}
 
 @app.route('/whitelist')
 async def get_whitelist():
@@ -339,12 +339,12 @@ async def get_whitelist():
     Mandatory values
     """
     if whitelist_uuid is None:
-        return {"Error": "whitelist_uuid field must be present in the URL"}, 422
+        return {"error": "whitelist_uuid field must be present in the URL"}, 422
 
     ret = read_whitelist({ "_id": int(whitelist_uuid) })
 
     if "error" in ret.keys():
-        return {"Error": "whitelist " + str(whitelist_uuid) + " :" + ret["error"]}, 500
+        return {"error": "whitelist " + str(whitelist_uuid) + " :" + ret["error"]}, 500
 
     return ret
 
@@ -371,11 +371,11 @@ async def upload_whitelist():
     Mandatory values
     """
     if "_id" not in body:
-        return {"Error": "_id field must be present"}, 422
+        return {"error": "_id field must be present"}, 422
     if "metadata" not in body:
-        return {"Error": "metadata field must be present"}, 422
+        return {"error": "metadata field must be present"}, 422
     if "whitelist" not in body:
-        return {"Error": "whitelist field must be present"}, 422
+        return {"error": "whitelist field must be present"}, 422
 
     """
     Insert new whitelist in the TM
@@ -383,12 +383,12 @@ async def upload_whitelist():
     ret = insert_whitelist(body)
 
     if "error_values" in ret.keys():
-        return {"Error": "whitelist " + str(body["_id"]) + " :" + ret["error_values"]}, 422
+        return {"error": "whitelist " + str(body["_id"]) + " :" + ret["error_values"]}, 422
 
     if "error" in ret.keys():
-        return {"Error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
+        return {"error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "whitelist " + ret["id"] + " added successfully"}
+    return {"message": "whitelist " + ret["id"] + " added successfully"}
 
 @app.route('/whitelist', methods=['DELETE'])
 async def remove_whitelist():
@@ -406,7 +406,7 @@ async def remove_whitelist():
     Mandatory values
     """
     if "_id" not in body:
-        return {"Error": "_id field must be present"}, 422
+        return {"error": "_id field must be present"}, 422
 
     """
     Delete a whitelist from the TM
@@ -414,9 +414,9 @@ async def remove_whitelist():
     ret = delete_whitelist(body)
 
     if "error" in ret.keys():
-        return {"Error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
+        return {"error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "whitelist " + ret["id"] + " successfully deleted"}
+    return {"message": "whitelist " + ret["id"] + " successfully deleted"}
 
 @app.route('/policy')
 async def get_policy():
@@ -430,12 +430,12 @@ async def get_policy():
     Mandatory values
     """
     if entity_uuid is None:
-        return {"Error": "entity_uuid field must be present in the URL"}, 422
+        return {"error": "entity_uuid field must be present in the URL"}, 422
 
     ret = read_policy( {"entity_uuid": int(entity_uuid)} )
 
     if "error" in ret.keys():
-        return {"Error": "policy for entity " + str(entity_uuid) + " :" + ret["error"]}, 500
+        return {"error": "policy for entity " + str(entity_uuid) + " :" + ret["error"]}, 500
 
     return ret
 
@@ -457,9 +457,9 @@ async def upload_policy():
     Mandatory values
     """
     if "entity_uuid" not in body:
-        return {"Error": "entity_uuid field must be present"}, 422
+        return {"error": "entity_uuid field must be present"}, 422
     if "policy" not in body:
-        return {"Error": "policy field must be present"}, 422
+        return {"error": "policy field must be present"}, 422
 
     """
     Insert a policy for an entity in the TM
@@ -467,9 +467,9 @@ async def upload_policy():
     ret = insert_policy(body)
 
     if "error" in ret.keys():
-        return {"Error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+        return {"error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "policy for entity " + ret["id"] + " added successfully"}
+    return {"message": "policy for entity " + ret["id"] + " added successfully"}
 
 @app.route('/policy', methods=['DELETE'])
 async def remove_policy():
@@ -487,7 +487,7 @@ async def remove_policy():
     Mandatory values
     """
     if "entity_uuid" not in body:
-        return {"Error": "entity_uuid field must be present"}, 422
+        return {"error": "entity_uuid field must be present"}, 422
 
     """
     Delete a policy for an entity from the TM
@@ -495,9 +495,9 @@ async def remove_policy():
     ret = delete_policy(body)
 
     if "error" in ret.keys():
-        return {"Error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+        return {"error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"Message": "policy for entity " + ret["id"] + " successfully deleted"}
+    return {"message": "policy for entity " + ret["id"] + " successfully deleted"}
 
 @app.route('/status')
 async def get_status():
@@ -527,15 +527,15 @@ async def get_report():
     Mandatory values
     """
     if "entity_uuid" not in body:
-        return {"Error": "entity_uuid field must be present"}, 422
+        return {"error": "entity_uuid field must be present"}, 422
 
     ret = read_report(body)
 
     if "error_values" in ret.keys():
-        return {"Error": ret["error_values"]}, 422
+        return {"error": ret["error_values"]}, 422
 
     if "error" in ret.keys():
-        return {"Error": ret["error"]}, 500
+        return {"error": ret["error"]}, 500
 
     return ret
 

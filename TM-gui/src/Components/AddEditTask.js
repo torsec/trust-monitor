@@ -214,12 +214,13 @@ export function AddEditTask({ ...props }) {
           </Form.Group>
           <Form.Group>
             <Form.Label>
-              Attestation technologies
+              Attestation technologies <span className="urgent">*</span>
             </Form.Label>
             <Form.Control
+              requested
               type="text"
               value={attTech}
-              placeholder="attestation technologies"
+              placeholder="[att_tech_1,att_tech_2,...]"
               onChange={(event) => handleChangeAttTech(event)}
             />
             <Form.Control.Feedback type="invalid">
@@ -291,7 +292,7 @@ export function AddEditTask({ ...props }) {
             <Form.Control
               type="text"
               value={child}
-              placeholder="child"
+              placeholder="[uuid_1,uuid_2,...]"
               onChange={(event) => handleChangeChild(event)}
             />
             <Form.Control.Feedback type="invalid">
