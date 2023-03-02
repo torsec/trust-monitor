@@ -23,6 +23,7 @@ from core import (
 )
 import configparser
 from logger import logger
+import requests
 
 config = configparser.ConfigParser()
 config.read('config.ini')
@@ -34,10 +35,22 @@ app = cors(app, allow_origin="*")
 async def get_entity():
     """
     Read data about an object stored into the instances DB. Usage:
-        /entity?entity_uuid=<id>
+        /entity?entity_uuid=<id>&token=<access_token>
 
     If no entity_uuid is provided it responds with the whole list of entities
     """
+
+    #token verification
+    token = request.args.get('token')
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={
+        'access_token': token
+    }, headers=headers)
+    response_body = response.json()
+    if('error' in response_body):
+        return {"error": response_body['error_description']}, 401
+    #END token verification
+
     entity_uuid = request.args.get('entity_uuid')
     
     """
