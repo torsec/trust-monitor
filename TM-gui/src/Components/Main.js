@@ -6,7 +6,7 @@ import { useRouteMatch } from "react-router-dom";
 import { useKeycloak } from "@react-keycloak/web";
 
 export function Main({ ...props }) {
-  const { menuFilters, toggle, user } = props;
+  const { menuFilters, toggle, user, token } = props;
   const filter = useRouteMatch().path;
   //const { keycloak } = useKeycloak();
 
@@ -128,6 +128,7 @@ export function Main({ ...props }) {
                 setRefresh={setRefresh}
                 filter={filter}
                 setFilterLoading={setFilterLoading}
+                token={token}
               />
             </nav>
           </Collapse>

@@ -7,16 +7,19 @@ import {
   BrowserRouter as Router,
   Switch,
   Route,
-  Redirect,
+  Redirect
 } from "react-router-dom";
-import Keycloak from 'keycloak-js';
-import { ReactKeycloakProvider } from "@react-keycloak/web";
+//import Keycloak from 'keycloak-js';
+//import { ReactKeycloakProvider } from "@react-keycloak/web";
 import API from "./API";
 
 function App() {
   const [toggle, setToggle] = useState(false);
   //const [keycloak, setKeycloak] = useState(null)
-  const [authenticated, setAuthenticated] = useState(false)
+  const [tokenCheck, setTokenCheck] = useState(true);
+  const [error, setError] = useState("");
+  const [authenticated, setAuthenticated] = useState(false);
+  const [token, setToken] = useState();
 
   /*const keycloak = new Keycloak({
     url: "http://localhost:8080/auth",
@@ -33,16 +36,51 @@ function App() {
     })
   }, [])*/
 
+  useEffect(() => {
+
+    const checkToken = async (token) => {
+      //try{
+        const resp = await API.verifyToken(token);
+        if(resp.error){
+          setError(resp.error_description);
+          setTokenCheck(false);
+          setAuthenticated(false);
+        }
+        else{
+          setAuthenticated(true);
+          setTokenCheck(false);
+        }
+      //}
+      //catch(err){
+        /*setError(err);
+        setTokenCheck(false);
+        setAuthenticated(false);*/
+      //}
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    let tmp = params.get('token');
+    console.log(tmp);
+    setToken(tmp);
+
+    if(tokenCheck){
+      checkToken(token);
+    }
+
+  }, [tokenCheck, token]);
+
   const hideShow = () => {
     setToggle((toggle) => !toggle);
   };
 
   return (
     /*<ReactKeycloakProvider authClient={keycloak}>*/
+    <>
+    {tokenCheck ? <InitialSpinner/> : ( authenticated ?
         <Router>
           <Switch>
           <Route path="/entities">
-              <Redirect to="/"/>
+              <Redirect to={`/?token=${token}`}/>
             </Route>
             <Route path="/verifiers">
             <Header
@@ -68,10 +106,15 @@ function App() {
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
-                  <Main toggle={toggle} menuFilters={menuFilters} />
+                  <Main toggle={toggle} menuFilters={menuFilters} token={token} />
             </Route>
           </Switch>
         </Router>
+        :
+        <p>{error}</p>
+      )
+    }
+    </>
     /*</ReactKeycloakProvider>*/
     );
 }
