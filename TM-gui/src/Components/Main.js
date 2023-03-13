@@ -29,7 +29,7 @@ export function Main({ ...props }) {
         let list = [];
         let temp = {};
         if (filter === "/") {
-          list = await API.getAllEntities();
+          list = await API.getAllEntities(token);
           setLoading(false);
         }else {
           setLoading(true);

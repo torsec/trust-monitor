@@ -31,6 +31,17 @@ config.read('config.ini')
 app = Quart(__name__)
 app = cors(app, allow_origin="*")
 
+def verify_token(token):
+    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
+    response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={
+        'access_token': token
+    }, headers=headers)
+    response_body = response.json()
+    if('error' in response_body):
+        return False, response_body['error_description']
+    else:
+        return True, 'Token verified correctly'
+
 @app.route('/entity')
 async def get_entity():
     """
@@ -42,13 +53,9 @@ async def get_entity():
 
     #token verification
     token = request.args.get('token')
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={
-        'access_token': token
-    }, headers=headers)
-    response_body = response.json()
-    if('error' in response_body):
-        return {"error": response_body['error_description']}, 401
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
     #END token verification
 
     entity_uuid = request.args.get('entity_uuid')
@@ -514,6 +521,13 @@ async def remove_policy():
 
 @app.route('/status')
 async def get_status():
+
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
 
     ret = read_tm_status()
 

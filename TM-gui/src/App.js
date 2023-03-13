@@ -19,8 +19,11 @@ function App() {
   const [tokenCheck, setTokenCheck] = useState(true);
   const [error, setError] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
-  const [token, setToken] = useState();
-
+  //const [token, setToken] = useState();
+  
+  const params = new URLSearchParams(window.location.search);
+  const token = params.get('token');
+  console.log(token);
   /*const keycloak = new Keycloak({
     url: "http://localhost:8080/auth",
     realm: "tmrealm",
@@ -36,9 +39,9 @@ function App() {
     })
   }, [])*/
 
-  useEffect(() => {
+  //useEffect(() => {
 
-    const checkToken = async (token) => {
+    /*const checkToken = async (token) => {
       //try{
         const resp = await API.verifyToken(token);
         if(resp.error){
@@ -52,22 +55,22 @@ function App() {
         }
       //}
       //catch(err){
-        /*setError(err);
-        setTokenCheck(false);
-        setAuthenticated(false);*/
+        //setError(err);
+        //setTokenCheck(false);
+        //setAuthenticated(false);
       //}
-    };
+    };*/
 
-    const params = new URLSearchParams(window.location.search);
-    let tmp = params.get('token');
-    console.log(tmp);
-    setToken(tmp);
+    //const params = new URLSearchParams(window.location.search);
+    //token = params.get('token');
+    //console.log(token);
+    //setToken(tmp);
 
-    if(tokenCheck){
+    /*if(tokenCheck){
       checkToken(token);
-    }
+    }*/
 
-  }, [tokenCheck, token]);
+  //}, [/*tokenCheck,*/ token]);
 
   const hideShow = () => {
     setToggle((toggle) => !toggle);
@@ -76,7 +79,7 @@ function App() {
   return (
     /*<ReactKeycloakProvider authClient={keycloak}>*/
     <>
-    {tokenCheck ? <InitialSpinner/> : ( authenticated ?
+    {/*tokenCheck*/ false ? <InitialSpinner/> : ( /*authenticated*/ true ?
         <Router>
           <Switch>
           <Route path="/entities">

@@ -1,5 +1,5 @@
 
-const ip = "130.192.1.50"
+const ip = "127.0.0.1"
 const port = "5080"
 const baseURL = `http://${ip}:${port}`
 
@@ -13,8 +13,8 @@ const getTasksByFilter = async (selectedFilter) => {
   }
 };
 
-const getAllEntities = async () => {
-  const response = await fetch(`${baseURL}/entity`);
+const getAllEntities = async (token) => {
+  const response = await fetch(`${baseURL}/entity?token=${token}`);
   const body = await response.json();
   if (response.ok) {
     return body.entities;
@@ -23,8 +23,8 @@ const getAllEntities = async () => {
   }
 };
 
-const addEntity = async (entity) => {
-  const response = await fetch(`${baseURL}/entity`, {
+const addEntity = async (entity, token) => {
+  const response = await fetch(`${baseURL}/entity?token=${token}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
