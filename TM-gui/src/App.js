@@ -96,7 +96,7 @@ function App() {
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
-                  <Main toggle={toggle} menuFilters={menuFilters} />
+                  <Main toggle={toggle} menuFilters={menuFilters} token={token}/>
             </Route>
             <Route path="/whitelists">
             <Header
@@ -109,7 +109,7 @@ function App() {
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
-                  <Main toggle={toggle} menuFilters={menuFilters} token={token} />
+                  <Main toggle={toggle} menuFilters={menuFilters} token={token}/>
             </Route>
           </Switch>
         </Router>

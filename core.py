@@ -85,7 +85,7 @@ def start_attestation(entity):
         t.start()
         time.sleep(1) # wait the thread has the time to start
         
-        if not t.isAlive():
+        if not t.is_alive():
             #
             # si potrebbe aggiungere piu di un tentativo di far partire il thread
             #
@@ -175,6 +175,10 @@ def attest_entity(entity_, se):
     #
     for tech in entity["att_tech"]:
         verifier = retrieve_verifier({ "att_tech": tech, "inf_id": entity["inf_id"] })
+        if 'error' in verifier:
+            remove_topic(topic)
+            print({"error": verifier['error']})
+            return {"error": verifier['error']}
         t_entity = threading.Thread(target=verify_entity, args=[entity, verifier, whitelist, se, topic])
 
         t_attestation.append(t_entity)

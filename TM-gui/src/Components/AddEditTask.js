@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import API from "../API";
 
 export function AddEditTask({ ...props }) {
-  const { addEntity, editEntity, setRefresh, entityToEdit, onHide, show, user } =
+  const { addEntity, editEntity, setRefresh, entityToEdit, onHide, show, user, token } =
     props;
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
@@ -94,9 +94,10 @@ export function AddEditTask({ ...props }) {
         if (editedEntity.att_tech === null) delete editedEntity.att_tech;
 
         const tmp = editedEntity;
-        editEntity(tmp);
-        API.editEntity(tmp)
+        
+        API.editEntity(tmp, token)
           .then(() => {
+            editEntity(tmp);
             setRefresh(true);
             setLoading(false);
             onHide();
@@ -125,9 +126,10 @@ export function AddEditTask({ ...props }) {
         if (newEntity.att_tech === null) delete newEntity.att_tech;
 
         const tmp = newEntity;
-        addEntity(tmp);
-        API.addEntity(tmp)
+        
+        API.addEntity(tmp, token)
           .then(() => {
+            addEntity(tmp);
             setRefresh(true);
             setLoading(false);
             onHide();
@@ -220,7 +222,7 @@ export function AddEditTask({ ...props }) {
               requested
               type="text"
               value={attTech}
-              placeholder="[att_tech_1,att_tech_2,...]"
+              placeholder="att_tech_1,att_tech_2,..."
               onChange={(event) => handleChangeAttTech(event)}
             />
             <Form.Control.Feedback type="invalid">

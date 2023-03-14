@@ -1,9 +1,9 @@
-import { Container, Row, Collapse } from "react-bootstrap";
+import { Container, Row, Collapse, ListGroup } from "react-bootstrap";
 import { Sidebar, EntityList, AddEditTask, ButtonRounded, Status } from "./";
 import { useState, useEffect } from "react";
 import API from "../API";
 import { useRouteMatch } from "react-router-dom";
-import { useKeycloak } from "@react-keycloak/web";
+//import { useKeycloak } from "@react-keycloak/web";
 
 export function Main({ ...props }) {
   const { menuFilters, toggle, user, token } = props;
@@ -33,7 +33,7 @@ export function Main({ ...props }) {
           setLoading(false);
         }else {
           setLoading(true);
-          temp = await API.getStatus();
+          temp = await API.getStatus(token);
           
           for (let i = 0; i < temp.att_processes.length; i++){
             const val = temp.att_processes[i];
@@ -55,6 +55,7 @@ export function Main({ ...props }) {
         }
       } catch (err) {
         console.log(err);
+        setError(err);
       }
     };
     if (refresh) {
@@ -67,10 +68,10 @@ export function Main({ ...props }) {
     setAttestLoading(true);
     setUuidAttest(uuid);
     if(start){
-      await API.attestEntity(uuid);
+      await API.attestEntity(uuid, token);
     }
     else {
-      await API.stopAttestEntity(uuid);
+      await API.stopAttestEntity(uuid, token);
     }
     setRefresh(true);
     setAttestLoading(false);
@@ -90,7 +91,7 @@ export function Main({ ...props }) {
         else return entity;
       })
     );
-    await API.deleteEntity(uuid);
+    await API.deleteEntity(uuid, token);
     setRefresh(true);
   };
 
@@ -132,46 +133,49 @@ export function Main({ ...props }) {
               />
             </nav>
           </Collapse>
-          { (filter === "/") ?
-            <>
-              <EntityList
-              entitiesList={entitiesList}
-              selectEntityToEdit={selectEntityToEdit}
-              deleteEntity={deleteEntity}
-              attestEntity={attestEntity}
-              attestLoading={attestLoading}
-              uuidAttest={uuidAttest}
-              setUuidAttest={setUuidAttest}
-              filter={filter}
-              loading={loading}
-              error={error}
-              filterLoading={filterLoading}
-            />
-            <ButtonRounded addTaskFunc={handleShowNewTask} />
-            <AddEditTask
-              user={user}
-              editEntity={editEntity}
-              addEntity={addEntity}
-              setRefresh={setRefresh}
-              entityToEdit={entityToEdit}
-              show={showModal}
-              onHide={handleCloseNewTask}
-            />
-          </>
-          :
-          (
-            (filter === "/status") ?
-            <Status
-              status={status}
-              error={error}
-              loading={loading}
-              filterLoading={filterLoading}
-              attestLoading={attestLoading}
-              attestEntity={attestEntity}
-            />
+          { error ? <span className="urgent">{error}</span> :
+            ((filter === "/") ?
+              <>
+                <EntityList
+                entitiesList={entitiesList}
+                selectEntityToEdit={selectEntityToEdit}
+                deleteEntity={deleteEntity}
+                attestEntity={attestEntity}
+                attestLoading={attestLoading}
+                uuidAttest={uuidAttest}
+                setUuidAttest={setUuidAttest}
+                filter={filter}
+                loading={loading}
+                error={error}
+                filterLoading={filterLoading}
+              />
+              <ButtonRounded addTaskFunc={handleShowNewTask} />
+              <AddEditTask
+                user={user}
+                editEntity={editEntity}
+                addEntity={addEntity}
+                setRefresh={setRefresh}
+                entityToEdit={entityToEdit}
+                show={showModal}
+                onHide={handleCloseNewTask}
+                token={token}
+              />
+            </>
             :
-            ""
-          )
+            (
+              (filter === "/status") ?
+              <Status
+                status={status}
+                error={error}
+                loading={loading}
+                filterLoading={filterLoading}
+                attestLoading={attestLoading}
+                attestEntity={attestEntity}
+              />
+              :
+              ""
+            )
+            )
           }
       </Container>
     </main>

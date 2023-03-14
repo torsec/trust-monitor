@@ -39,8 +39,8 @@ const addEntity = async (entity, token) => {
   }
 };
 
-const deleteEntity = async (uuid) => {
-  const response = await fetch(`${baseURL}/entity`, {
+const deleteEntity = async (uuid, token) => {
+  const response = await fetch(`${baseURL}/entity?token=${token}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -55,8 +55,8 @@ const deleteEntity = async (uuid) => {
   }
 };
 
-const editEntity = async (entity) => {
-  const response = await fetch(`${baseURL}/entity`, {
+const editEntity = async (entity, token) => {
+  const response = await fetch(`${baseURL}/entity?token=${token}`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -71,8 +71,8 @@ const editEntity = async (entity) => {
   }
 };
 
-const attestEntity = async (uuid) => {
-  const response = await fetch(`${baseURL}/attest_entity`, {
+const attestEntity = async (uuid, token) => {
+  const response = await fetch(`${baseURL}/attest_entity?token=${token}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -89,8 +89,8 @@ const attestEntity = async (uuid) => {
   }
 }
 
-const stopAttestEntity = async (uuid) => {
-  const response = await fetch(`${baseURL}/attest_entity`, {
+const stopAttestEntity = async (uuid, token) => {
+  const response = await fetch(`${baseURL}/attest_entity?token=${token}`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -107,8 +107,8 @@ const stopAttestEntity = async (uuid) => {
   }
 }
 
-const getStatus = async () => {
-  const response = await fetch(`${baseURL}/status`);
+const getStatus = async (token) => {
+  const response = await fetch(`${baseURL}/status?token=${token}`);
   const body = await response.json();
   if (response.ok) {
     return body;
@@ -117,8 +117,8 @@ const getStatus = async () => {
   }
 }
 
-const getEntityReport = async (uuid) => {
-  const response = await fetch(`${baseURL}/report`, {
+const getEntityReport = async (uuid, token) => {
+  const response = await fetch(`${baseURL}/report?token=${token}`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -136,7 +136,7 @@ const getEntityReport = async (uuid) => {
   }
 }
 
-const verifyToken = async (token) => {
+/*const verifyToken = async (token) => {
   var details = {
     'access_token': token
   };
@@ -162,7 +162,7 @@ const verifyToken = async (token) => {
   } else {
     return body;
   }
-};
+};*/
 
 const API = {
   getTasksByFilter,
@@ -174,6 +174,6 @@ const API = {
   stopAttestEntity,
   getStatus,
   getEntityReport,
-  verifyToken
+  //verifyToken
 };
 export default API;
