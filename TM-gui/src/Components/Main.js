@@ -1,5 +1,5 @@
 import { Container, Row, Collapse, ListGroup } from "react-bootstrap";
-import { Sidebar, EntityList, AddEditTask, ButtonRounded, Status } from "./";
+import { Sidebar, EntityList, AddEditTask, ButtonRounded, Status, VerifierList } from "./";
 import { useState, useEffect } from "react";
 import API from "../API";
 import { useRouteMatch } from "react-router-dom";
@@ -13,6 +13,7 @@ export function Main({ ...props }) {
   //const isLoggedIn = keycloak.authenticated;
  
   const [entitiesList, setEntitiesList] = useState([]);
+  const [verifiersList, setVerifiersList] = useState([]);
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(filter ? false : true);
   const [filterLoading, setFilterLoading] = useState(filter ? true : false);
@@ -30,26 +31,34 @@ export function Main({ ...props }) {
         let temp = {};
         if (filter === "/") {
           list = await API.getAllEntities(token);
+          setEntitiesList(list);
           setLoading(false);
         }else {
-          setLoading(true);
-          temp = await API.getStatus(token);
-          
-          for (let i = 0; i < temp.att_processes.length; i++){
-            const val = temp.att_processes[i];
-            let trust = await API.getEntityReport(val.entity_uuid);
-            for (let index = 0; index < temp.att_processes.length; index++) {
-              if (temp.att_processes[index].entity_uuid === val.entity_uuid){
-                temp.att_processes[index]["trust"] = trust;
+          if (filter === "/status") {
+            setLoading(true);
+            temp = await API.getStatus(token);
+            
+            for (let i = 0; i < temp.att_processes.length; i++){
+              const val = temp.att_processes[i];
+              let trust = await API.getEntityReport(val.entity_uuid);
+              for (let index = 0; index < temp.att_processes.length; index++) {
+                if (temp.att_processes[index].entity_uuid === val.entity_uuid){
+                  temp.att_processes[index]["trust"] = trust;
+                }
               }
             }
-          }
 
-          setStatus(temp);
-          setLoading(false);
+            setStatus(temp);
+            setLoading(false);
+          }
+          else{
+            setLoading(true);
+            list = await API.getAllVerifiers(token);
+            setVerifiersList(list);
+            setLoading(false);
+          }
         }
         
-        setEntitiesList(list);
         if (filterLoading) {
           setFilterLoading(false);
         }
@@ -173,7 +182,18 @@ export function Main({ ...props }) {
                 attestEntity={attestEntity}
               />
               :
-              ""
+              (
+                (filter === "/verifiers") ?
+                <VerifierList
+                  verifiers={verifiersList}
+                  filter={filter}
+                  loading={loading}
+                  error={error}
+                  filterLoading={filterLoading}
+                />
+                :
+                ""
+              )
             )
             )
           }

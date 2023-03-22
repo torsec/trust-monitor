@@ -90,6 +90,7 @@ function App() {
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
+                  <Main toggle={toggle} menuFilters={menuFilters} token={token}/>
             </Route>
             <Route path="/status">
             <Header

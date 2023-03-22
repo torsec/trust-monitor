@@ -23,6 +23,16 @@ const getAllEntities = async (token) => {
   }
 };
 
+const getAllVerifiers = async (token) => {
+  const response = await fetch(`${baseURL}/verifier?token=${token}`);
+  const body = await response.json();
+  if (response.ok) {
+    return body;
+  } else {
+    throw body.error;
+  }
+};
+
 const addEntity = async (entity, token) => {
   const response = await fetch(`${baseURL}/entity?token=${token}`, {
     method: "POST",
@@ -167,6 +177,7 @@ const getEntityReport = async (uuid, token) => {
 const API = {
   getTasksByFilter,
   getAllEntities,
+  getAllVerifiers,
   addEntity,
   deleteEntity,
   editEntity,
