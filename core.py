@@ -1,7 +1,7 @@
 import configparser
 import threading
 from database_connectors.instances import (retrieve_entity, retrieve_all_entities, store_entity, purge_entity, edit_entity, edit_state_entity)
-from database_connectors.verifiers import (store_verifier, purge_verifier, retrieve_verifier)
+from database_connectors.verifiers import (store_verifier, purge_verifier, retrieve_verifier, retrieve_all_verifiers)
 from database_connectors.whitelists import (purge_whitelist, store_whitelist, retrieve_whitelist)
 from database_connectors.policies import (store_policy, purge_policy, retrieve_policy)
 from database_connectors.reports import (store_report, retrieve_reports)
@@ -111,9 +111,10 @@ def stop_attestation(entity):
     try:
         threads[entity["entity_uuid"]]["stop_event"].set()
         threads[entity["entity_uuid"]]["thread"].join()
-        t_lock.acquire()
-        del threads[entity["entity_uuid"]]
-        t_lock.release()
+        if entity["entity_uuid"] in threads:
+            t_lock.acquire()
+            del threads[entity["entity_uuid"]]
+            t_lock.release()
 
         return {"message": "entity " + str(entity["entity_uuid"]) + " - attestation stopped successfully"}
 
@@ -166,6 +167,11 @@ def attest_entity(entity_, se):
         kafka_consumer_thread = threading.Thread(target=run_kafka_consumer, args=[stop_event, entity, [topic]])
         kafka_consumer_thread.start()
     except Exception as error:
+        if entity["entity_uuid"] in threads:
+            t_lock.acquire()
+            del threads[entity["entity_uuid"]]
+            t_lock.release()
+
         remove_topic(topic)
         print({"error": error.__str__()})
         return {"error": error.__str__()}
@@ -186,6 +192,11 @@ def attest_entity(entity_, se):
         for t in t_attestation:
             t.start()
     except Exception as error:
+        if entity["entity_uuid"] in threads:
+            t_lock.acquire()
+            del threads[entity["entity_uuid"]]
+            t_lock.release()
+
         se.set()
         stop_event.set()
         kafka_consumer_thread.join()
@@ -229,6 +240,11 @@ def attest_entity(entity_, se):
     tm_status_lock.release()
 
     try:
+        if entity["entity_uuid"] in threads:
+            t_lock.acquire()
+            del threads[entity["entity_uuid"]]
+            t_lock.release()
+
         remove_topic(topic)
     except Exception as error:
         return {"error": error.__str__()}
@@ -257,6 +273,14 @@ def retrieve_att_tech(verifier):
     Read a verifier in the attestation technologies database
     """
     ret = retrieve_verifier(verifier)
+
+    return ret
+
+def retrieve_all_att_tech():
+    """
+    Read all verifiers in the attestation technologies database
+    """
+    ret = retrieve_all_verifiers()
 
     return ret
 

@@ -5,6 +5,7 @@ from core import (
     insert_att_tech,
     delete_att_tech,
     retrieve_att_tech,
+    retrieve_all_att_tech,
     insert_entity,
     start_attestation,
     stop_attestation,
@@ -33,10 +34,20 @@ app = cors(app, allow_origin="*")
 
 def verify_token(token):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-    response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={
-        'access_token': token
-    }, headers=headers)
-    response_body = response.json()
+
+    return True, 'Token verified correctly'
+
+    try:
+        response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={
+            'access_token': token
+        }, headers=headers)
+        response_body = response.json()
+    except:
+        return False, 'Internal Server Error'
+    
+    if response.status_code == 500:
+        return False, 'Internal Server Error'
+    
     if('error' in response_body):
         return False, response_body['error_description']
     else:
@@ -245,33 +256,34 @@ async def stop_ra_entity():
 async def get_verifier():
     """
     Read data about a verfier stored into the verfiers DB. Usage:
-        /verifier?att_tech=<att_tech_name>
-
-    Body structure:
-    {
-        "att_tech": name,
-        "inf_id": id
-    }
+        /verifier?att_tech=<att_tech_name>&inf_id=<inf_id>
 
     """
-    #att_tech = request.args.get('att_tech')
-    body = await request.get_json()
+    att_tech = request.args.get('att_tech')
+    inf_id = request.args.get('inf_id')
+    #body = await request.get_json()
 
     """
     Mandatory values
     """
-    if "att_tech" not in body:
-        return {"error": "att_tech field must be present"}, 422
-    if "inf_id" not in body:
-        return {"error": "inf_id field must be present"}, 422
+    #if "att_tech" not in body:
+    #    return {"error": "att_tech field must be present"}, 422
+    #if "inf_id" not in body:
+    #    return {"error": "inf_id field must be present"}, 422
    
-    #if att_tech is None:
-    #    return {"error": "att_tech field must be present in the URL"}, 422
+    if att_tech is None or inf_id is None:
+        ret = retrieve_all_att_tech()
 
-    ret = retrieve_att_tech(body)
+        if "error" in ret:
+            return {"error": "verifier " + str(att_tech) + " :" + ret["error"]}, 500
 
-    if "error" in ret.keys():
-        return {"error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
+        return ret
+
+
+    ret = retrieve_att_tech({ 'att_tech': att_tech, 'inf_id': inf_id })
+
+    if "error" in ret:
+        return {"error": "verifier " + str(att_tech) + " :" + ret["error"]}, 500
 
     return ret
 

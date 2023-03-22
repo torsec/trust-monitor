@@ -84,6 +84,35 @@ def retrieve_verifier(verifier):
     
     return { "att_tech": res[0], "inf_id": res[1], "metadata": res[2] }
 
+def retrieve_all_verifiers():
+    cur = conn.cursor()
+
+    try:
+        cur.execute("""
+                SELECT * FROM verifiers
+        """)
+        res = cur.fetchall()
+        conn.commit()
+
+    except Exception as error:
+        conn.commit()
+        return {"error": error.__str__()}
+
+    if res is None:
+        return {"error": "no verifier is present in the database"}
+
+    ret_list = []
+    for tup in res:
+        obj = {
+            "att_tech": tup[0],
+            "inf_id": tup[1],
+            "metadata": tup[2]
+        }
+
+        ret_list.append(obj)
+    
+    return ret_list
+
 def purge_verifier(verifier):
     cur = conn.cursor()
     id = 0
