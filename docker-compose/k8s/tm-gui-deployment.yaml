@@ -24,7 +24,7 @@ spec:
         io.kompose.service: tm-gui
     spec:
       containers:
-        - image: cinghio/tm-gui:0.3
+        - image: cinghio/tm-gui:0.5
           name: tm-gui
           ports:
             - containerPort: 80
