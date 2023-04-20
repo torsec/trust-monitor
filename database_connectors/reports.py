@@ -5,7 +5,7 @@ import configparser
 from datetime import datetime
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('config/config.ini')
 
 client = None
 try:

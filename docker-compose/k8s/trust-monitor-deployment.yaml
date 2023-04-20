@@ -33,6 +33,8 @@ spec:
           volumeMounts:
             - mountPath: /var/log/trust-monitor
               name: trust-monitor-claim0
+            - mountPath: /trust-monitor/config
+              name: trust-monitor-claim0
       hostname: trust-monitor
       restartPolicy: Always
       volumes:

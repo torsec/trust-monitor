@@ -4,7 +4,7 @@ import logging
 import sys
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('config/config.ini')
 
 if not os.path.exists(config["log_file"]["path"]):
     os.makedirs(config["log_file"]["path"])

@@ -9,7 +9,7 @@ import core
 import requests
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('config/config.ini')
 #print(config["kafka_producer"]["bootstrap.servers"])
 admin = AdminClient({'bootstrap.servers': config["kafka_producer"]["bootstrap.servers"]})
 

@@ -4,7 +4,7 @@ import configparser
 from jsonschema import validate
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('config/config.ini')
 
 try:
     conn  = psycopg2.connect(

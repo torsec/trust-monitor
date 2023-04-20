@@ -11,7 +11,7 @@ import time
 import importlib
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('config/config.ini')
 
 REGISTERED_STATUS = "registered"
 ATTESTING_STATUS = "attesting"
@@ -344,7 +344,7 @@ def read_tm_status():
     """
     read the TM status
     """
-    config.read('config.ini')
+    config.read('config/config.ini')
 
     classes = []
     for module in config["adapters"].keys():

@@ -27,7 +27,7 @@ from logger import logger
 import requests
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('config/config.ini')
 
 app = Quart(__name__)
 app = cors(app, allow_origin="*")
@@ -35,7 +35,7 @@ app = cors(app, allow_origin="*")
 def verify_token(token):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    return True, 'Token verified correctly'
+    #return True, 'Token verified correctly'
 
     try:
         response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={
@@ -256,9 +256,17 @@ async def stop_ra_entity():
 async def get_verifier():
     """
     Read data about a verfier stored into the verfiers DB. Usage:
-        /verifier?att_tech=<att_tech_name>&inf_id=<inf_id>
+        /verifier?token=<token>&att_tech=<att_tech_name>&inf_id=<inf_id>
 
     """
+
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+
     att_tech = request.args.get('att_tech')
     inf_id = request.args.get('inf_id')
     #body = await request.get_json()
@@ -585,11 +593,11 @@ if __name__ == "__main__":
 #
     if "tls" in config:
         if "ca_certs" not in config["tls"]:
-            raise Exception("No ca_certs specified in tls section of config.ini")
+            raise Exception("No ca_certs specified in tls section of config/config.ini")
         if "certfile" not in config["tls"]:
-            raise Exception("No certfile specified in tls section of config.ini")
+            raise Exception("No certfile specified in tls section of config/config.ini")
         if "keyfile" not in config["tls"]:
-            raise Exception("No keyfile specified in config.ini")
+            raise Exception("No keyfile specified in config/config.ini")
 
         app.run(
             host="0.0.0.0",

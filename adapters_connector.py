@@ -3,12 +3,12 @@ import importlib
 import sys
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('config/config.ini')
 
 classes = {}
 
 # Import all adapters (the name of the att_tech attribute of an entity must match the name of one of the adapters' scripts)
-# Adapters must be specified in the config.ini file:
+# Adapters must be specified in the config/config.ini file:
 # [adapters]
 # file_name = class_name
 def refresh_adapters():

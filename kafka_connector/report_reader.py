@@ -2,7 +2,7 @@ from confluent_kafka import Consumer
 import configparser
 
 config = configparser.ConfigParser()
-config.read('config.ini')
+config.read('config/config.ini')
 
 def consumer():
     properties = {}

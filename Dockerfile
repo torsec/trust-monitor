@@ -15,7 +15,7 @@ COPY ./kafka_connector /trust-monitor/kafka_connector
 COPY ./adapters_connector.py /trust-monitor/
 COPY ./api-manager.py /trust-monitor/
 COPY ./logger.py /trust-monitor/
-COPY ./config.ini /trust-monitor/
+COPY ./config /trust-monitor/
 COPY ./core.py /trust-monitor/
 
 ENV QUART_APP api-manager:app
