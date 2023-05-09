@@ -5,3 +5,5 @@ kafka_connector/kafka_reader.py
 ca/
 ssl_cert/
 rabbitmq_connector/
+TM-gui/.cert/
+trust-monitor.log
