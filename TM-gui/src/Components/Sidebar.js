@@ -5,7 +5,7 @@ import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useState } from 'react';
 
 export function Sidebar({...props}) {
-    const { menuFilters, setRefresh, filter, setFilterLoading, token } = props;
+    const { menuFilters, setRefresh, filter, setFilterLoading, session } = props;
 
     const [activeFilter, setActiveFilter] = useState(filter || 'All');
 
@@ -17,7 +17,7 @@ export function Sidebar({...props}) {
                         setFilterLoading(true);
                     }}
         className={`list-group-item list-group-item-action ${activeFilter === "/"+val.name.toLowerCase() || (val.name === "Entities" && activeFilter === "/") ? 'active': ''}`} 
-        to={`/${val.name.toLowerCase()}`+`?token=${token}`}>{val.name}
+        to={`/${val.name.toLowerCase()}`+`?session=${session}`}>{val.name}
     </Link>);
     return (
         <>

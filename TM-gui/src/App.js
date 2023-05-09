@@ -22,8 +22,8 @@ function App() {
   //const [token, setToken] = useState();
   
   const params = new URLSearchParams(window.location.search);
-  const token = params.get('token');
-  console.log(token);
+  const session = params.get('session');
+  console.log(session);
   /*const keycloak = new Keycloak({
     url: "http://localhost:8080/auth",
     realm: "tmrealm",
@@ -83,21 +83,21 @@ function App() {
         <Router>
           <Switch>
           <Route path="/entities">
-              <Redirect to={`/?token=${token}`}/>
+              <Redirect to={`/?session=${session}`}/>
             </Route>
             <Route path="/verifiers">
             <Header
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
-                  <Main toggle={toggle} menuFilters={menuFilters} token={token}/>
+                  <Main toggle={toggle} menuFilters={menuFilters} session={session}/>
             </Route>
             <Route path="/status">
             <Header
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
-                  <Main toggle={toggle} menuFilters={menuFilters} token={token}/>
+                  <Main toggle={toggle} menuFilters={menuFilters} session={session}/>
             </Route>
             <Route path="/whitelists">
             <Header
@@ -110,7 +110,7 @@ function App() {
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
-                  <Main toggle={toggle} menuFilters={menuFilters} token={token}/>
+                  <Main toggle={toggle} menuFilters={menuFilters} session={session}/>
             </Route>
           </Switch>
         </Router>

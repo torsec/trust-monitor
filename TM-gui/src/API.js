@@ -1,7 +1,7 @@
 
-const ip = "127.0.0.1" //"130.192.1.50"
-const port = "5080"
-const baseURL = `http://${ip}:${port}`
+const ip = "130.192.1.50" //"127.0.0.1"
+const port = "5080" //"5443"
+const baseURL = `https://${ip}:${port}`
 
 const getTasksByFilter = async (selectedFilter) => {
   const response = await fetch(`/api/tasks?filter=${selectedFilter}`);

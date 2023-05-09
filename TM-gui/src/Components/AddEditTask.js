@@ -3,7 +3,7 @@ import { useState, useEffect } from "react";
 import API from "../API";
 
 export function AddEditTask({ ...props }) {
-  const { addEntity, editEntity, setRefresh, entityToEdit, onHide, show, user, token } =
+  const { addEntity, editEntity, setRefresh, entityToEdit, onHide, show, user, session } =
     props;
   const [error, setError] = useState();
   const [loading, setLoading] = useState(false);
@@ -95,7 +95,7 @@ export function AddEditTask({ ...props }) {
 
         const tmp = editedEntity;
         
-        API.editEntity(tmp, token)
+        API.editEntity(tmp, session)
           .then(() => {
             editEntity(tmp);
             setRefresh(true);
@@ -127,7 +127,7 @@ export function AddEditTask({ ...props }) {
 
         const tmp = newEntity;
         
-        API.addEntity(tmp, token)
+        API.addEntity(tmp, session)
           .then(() => {
             addEntity(tmp);
             setRefresh(true);

@@ -6,7 +6,7 @@ import { useRouteMatch } from "react-router-dom";
 //import { useKeycloak } from "@react-keycloak/web";
 
 export function Main({ ...props }) {
-  const { menuFilters, toggle, user, token } = props;
+  const { menuFilters, toggle, user, session } = props;
   const filter = useRouteMatch().path;
   //const { keycloak } = useKeycloak();
 
@@ -30,13 +30,13 @@ export function Main({ ...props }) {
         let list = [];
         let temp = {};
         if (filter === "/") {
-          list = await API.getAllEntities(token);
+          list = await API.getAllEntities(session);
           setEntitiesList(list);
           setLoading(false);
         }else {
           if (filter === "/status") {
             setLoading(true);
-            temp = await API.getStatus(token);
+            temp = await API.getStatus(session);
             
             for (let i = 0; i < temp.att_processes.length; i++){
               const val = temp.att_processes[i];
@@ -53,7 +53,7 @@ export function Main({ ...props }) {
           }
           else{
             setLoading(true);
-            list = await API.getAllVerifiers(token);
+            list = await API.getAllVerifiers(session);
             setVerifiersList(list);
             setLoading(false);
           }
@@ -63,8 +63,15 @@ export function Main({ ...props }) {
           setFilterLoading(false);
         }
       } catch (err) {
-        console.log(err);
-        setError(err);
+        //setEntitiesList([]);
+        if(Object.keys(err).length === 0){
+          console.log(JSON.stringify(err));
+          setError("Error Trust Monitor: net::ERR_CERT_AUTHORITY_INVALID");
+        }
+        else{
+          console.log(err);
+          setError(err);
+        }
       }
     };
     if (refresh) {
@@ -77,10 +84,10 @@ export function Main({ ...props }) {
     setAttestLoading(true);
     setUuidAttest(uuid);
     if(start){
-      await API.attestEntity(uuid, token);
+      await API.attestEntity(uuid, session);
     }
     else {
-      await API.stopAttestEntity(uuid, token);
+      await API.stopAttestEntity(uuid, session);
     }
     setRefresh(true);
     setAttestLoading(false);
@@ -100,7 +107,7 @@ export function Main({ ...props }) {
         else return entity;
       })
     );
-    await API.deleteEntity(uuid, token);
+    await API.deleteEntity(uuid, session);
     setRefresh(true);
   };
 
@@ -138,7 +145,7 @@ export function Main({ ...props }) {
                 setRefresh={setRefresh}
                 filter={filter}
                 setFilterLoading={setFilterLoading}
-                token={token}
+                session={session}
               />
             </nav>
           </Collapse>
@@ -167,7 +174,7 @@ export function Main({ ...props }) {
                 entityToEdit={entityToEdit}
                 show={showModal}
                 onHide={handleCloseNewTask}
-                token={token}
+                session={session}
               />
             </>
             :
