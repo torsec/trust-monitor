@@ -25,7 +25,7 @@ spec:
         io.kompose.service: trust-monitor
     spec:
       containers:
-        - image: cinghio/trust-monitor:0.3
+        - image: cinghio/trust-monitor:0.5
           name: trust-monitor
           ports:
             - containerPort: 5080

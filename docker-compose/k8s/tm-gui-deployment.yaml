@@ -24,10 +24,10 @@ spec:
         io.kompose.service: tm-gui
     spec:
       containers:
-        - image: cinghio/tm-gui:0.5
+        - image: cinghio/tm-gui:0.11
           name: tm-gui
           ports:
-            - containerPort: 80
+            - containerPort: 443
           resources: {}
       hostname: tm-gui
       restartPolicy: Always

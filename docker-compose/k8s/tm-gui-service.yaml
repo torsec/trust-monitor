@@ -7,9 +7,9 @@ metadata:
 spec:
   ports:
   - nodePort: 32008
-    port: 80
+    port: 443
     protocol: TCP
-    targetPort: 80
+    targetPort: 443
   selector:
     io.kompose.service: tm-gui
   sessionAffinity: None
