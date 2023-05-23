@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  annotations:
+    kompose.cmd: kompose convert
+    kompose.version: 1.26.0 (40646f47)
+  creationTimestamp: null
+  labels:
+    io.kompose.service: keylime-registrar
+  name: keylime-registrar
+spec:
+  ports:
+    - name: "8890"
+      port: 8890
+      targetPort: 8890
+    - name: "8891"
+      port: 8891
+      targetPort: 8891
+  selector:
+    io.kompose.service: keylime-registrar
