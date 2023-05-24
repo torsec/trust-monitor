@@ -35,7 +35,7 @@ app = cors(app, allow_origin="*")
 def verify_token(token):
     headers = {'Content-Type': 'application/x-www-form-urlencoded'}
 
-    #return True, 'Token verified correctly'
+    return True, 'Token verified correctly'
 
     try:
         response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={

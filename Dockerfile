@@ -17,7 +17,7 @@ COPY ./api-manager.py /trust-monitor/
 COPY ./logger.py /trust-monitor/
 COPY ./config /trust-monitor/
 COPY ./core.py /trust-monitor/
-COPY ./ssl_cert /trust-monitor/ssl_cert/
+#COPY ./ssl_cert /trust-monitor/ssl_cert/
 
 ENV QUART_APP api-manager:app
 CMD [ "python3", "api-manager.py" ]
