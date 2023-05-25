@@ -22,7 +22,7 @@ export function Sidebar({...props}) {
     return (
         <>
             <SidebarSearch />
-            <ButtonGroup className="d-flex list-group list-group-flush">
+            <ButtonGroup className="d-flex"> {/*list-group list-group-flush*/}
                 {buttons}
             </ButtonGroup>                           
         </>
