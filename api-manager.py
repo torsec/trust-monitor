@@ -398,7 +398,8 @@ async def upload_whitelist():
         “_id”: uuid,
         "metadata": {
                 "att_tech": att_tech,
-                "hash_algo": hash_algo
+                "hash_algo": hash_algo,
+                “whitelist_url”: "url" (optional)
         },
         “whitelist”: {
                ...
@@ -415,6 +416,8 @@ async def upload_whitelist():
     if "metadata" not in body:
         return {"error": "metadata field must be present"}, 422
     if "whitelist" not in body:
+        #if "whitelist_url" not in body["metadata"]:
+        #    return {"error": "whitelist_url field must be present in metadata, whitelist is not specified"}, 422
         return {"error": "whitelist field must be present"}, 422
 
     """

@@ -9,6 +9,7 @@ from adapters_connector import (register_entity, verify_entity)
 from kafka_connector.kafka_connector import (run_kafka_consumer, new_topic, remove_topic)
 import time
 import importlib
+import requests
 
 config = configparser.ConfigParser()
 config.read('config/config.ini')
@@ -296,6 +297,16 @@ def insert_whitelist(whitelist):
     """
     Store the new whitelist in the whitelists database
     """
+
+    #if "whitelist_url" in whitelist["metadata"]:
+    #    if whitelist["metadata"]["whitelist_url"] is not None:
+    #        ret_whitelist = requests.get(whitelist["metadata"]["whitelist_url"])
+
+    #        if ret_whitelist.status_code is not 200:
+    #            return {"error": ret_whitelist.json()["status"]}
+            
+    #        whitelist["whitelist"] = ret_whitelist.json() #{"a_list_data" :ret_whitelist.text().split("\n")}
+
     ret = store_whitelist(whitelist)
 
     return ret
