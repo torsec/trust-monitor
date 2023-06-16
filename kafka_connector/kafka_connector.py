@@ -63,6 +63,7 @@ def run_kafka_consumer(stop_event, entity, topics):
     kafka_consumer.subscribe(topics)
 
     report = {
+        "pilot": "SADE",
         "entity_uuid": entity["entity_uuid"],
         "trust": False,
         "state": []
