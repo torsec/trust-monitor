@@ -95,7 +95,7 @@ async def add_entity():
     Body structure:
     {
         "entity_uuid": uuid,
-        "inf_id: id,
+        "inf_id": id,
         "att_tech": [att_tech_1, att_tech_2, ...], (optional)
         "name": name,
         "external_id": id,
@@ -110,6 +110,13 @@ async def add_entity():
         }
     }
     """
+
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
 
     body = await request.get_json()
     
@@ -151,6 +158,13 @@ async def remove_entity():
     }
     """
 
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+
     body = await request.get_json()
 
     """
@@ -189,6 +203,13 @@ async def modify_entity():
     }
     """
 
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+
     body = await request.get_json()
 
     """
@@ -213,6 +234,13 @@ async def ra_entity():
     }
     """
 
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+
     body = await request.get_json()
 
     """
@@ -236,6 +264,13 @@ async def stop_ra_entity():
         "entity_uuid": uuid
     }
     """
+
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
 
     body = await request.get_json()
 
@@ -310,6 +345,13 @@ async def register_verifier():
     }
     """
 
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+
     body = await request.get_json()
 
     """
@@ -347,6 +389,13 @@ async def remove_verifier():
     }
     """
 
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+
     body = await request.get_json()
 
     """
@@ -374,6 +423,14 @@ async def get_whitelist():
         /whitelist?whitelist_uuid=<whitelist_uuid>
 
     """
+
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+
     whitelist_uuid = request.args.get('whitelist_uuid')
     """
     Mandatory values
@@ -405,6 +462,14 @@ async def upload_whitelist():
         }
     }
     """
+
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+
     body = await request.get_json()
 
     """
@@ -440,6 +505,14 @@ async def remove_whitelist():
         "_id": uuid
     }
     """
+
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+    
     body = await request.get_json()
 
     """
@@ -465,6 +538,14 @@ async def get_policy():
         /policy?entity_uuid=<entity_uuid>
 
     """
+
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+
     entity_uuid = request.args.get('entity_uuid')
     """
     Mandatory values
@@ -490,6 +571,13 @@ async def upload_policy():
         "policy": policy
     }
     """
+
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
 
     body = await request.get_json()
 
@@ -521,6 +609,14 @@ async def remove_policy():
         "entity_uuid": uuid
     }
     """
+
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
+
     body = await request.get_json()
 
     """
@@ -566,7 +662,13 @@ async def get_report():
         "to": time_2 (optional) ISOFormat %Y-%m-%dT%H:%M:%S
     }
     """
-    #TODO
+    
+    #token verification
+    token = request.args.get('token')
+    success, descriprion = verify_token(token)
+    if success is False:
+        return {"error": descriprion}, 401
+    #END token verification
 
     body = await request.get_json()
 

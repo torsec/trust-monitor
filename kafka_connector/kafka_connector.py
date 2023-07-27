@@ -134,8 +134,9 @@ def run_kafka_consumer(stop_event, entity, topics):
             #
             # POST on the SPI DM
             #
-            requests.post("http://" + config["spi-dm"]["address"] + ":" + config["spi-dm"]["port"] + "/api/normalize/trustmonitor",
-                          json=report
+            requests.post("https://" + config["spi-dm"]["address"] + ":" + config["spi-dm"]["port"] + "/api/normalize/trustmonitor",
+                          json=report,
+                          verify=False
             )
             #run_kafka_producer(report, config["kafka_topics"]["attestation_report_topic"])
             ret = core.insert_report(report)   # store the report in the DB

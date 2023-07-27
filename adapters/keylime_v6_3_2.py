@@ -72,6 +72,7 @@ class KeyLimeAdapter():
             return {"error" : "no agent_ip field specified in " + str(tech) + " metadata"}
 
         data["agent_ip"] = entity["metadata"][tech]["agent_ip"]
+        data["agent_port"] = entity["metadata"][tech]["agent_port"]
         data["ptype"] = 0
         data["file_data"] = ""
 
