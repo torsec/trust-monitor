@@ -38,9 +38,9 @@ def verify_token(token):
     #return True, 'Token verified correctly'
 
     try:
-        response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={
+        response = requests.post("https://" + config["spi-idm"]["address"] + ":" + config["spi-idm"]["port"] + "/auth/realms/fishy-realm/protocol/openid-connect/userinfo", data={
             'access_token': token
-        }, headers=headers)
+        }, headers=headers, verify=False)
         response_body = response.json()
     except:
         return False, 'Internal Server Error'
@@ -51,7 +51,7 @@ def verify_token(token):
     if('error' in response_body):
         return False, response_body['error_description']
     else:
-        return True, 'Token verified correctly'
+        return True, response_body['preferred_username']
 
 @app.route('/entity')
 async def get_entity():
@@ -80,7 +80,7 @@ async def get_entity():
     ret = read_entity({"entity_uuid" : entity_uuid})
 
     if isinstance(ret, list):
-        return {"entities": ret}
+        return {"entities": ret, "username": descriprion}
 
     if "error" in ret.keys():
         return {"error": "entity " + str(entity_uuid) + " :" + ret["error"]}, 500
@@ -145,7 +145,7 @@ async def add_entity():
     if "error" in ret.keys():
         return {"error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"message": "entity " + ret["id"] + " successfully registered"}
+    return {"message": "entity " + ret["id"] + " successfully registered", "username": descriprion}
 
 @app.route('/entity', methods=['DELETE'])
 async def remove_entity():
@@ -178,7 +178,7 @@ async def remove_entity():
     if "error" in ret.keys():
         return {"error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"message": "entity " + ret["id"] + " successfully deleted"}
+    return {"message": "entity " + ret["id"] + " successfully deleted", "username": descriprion}
 
 @app.route('/entity', methods=['PUT'])
 async def modify_entity():
@@ -223,7 +223,7 @@ async def modify_entity():
     if "error" in ret.keys():
         return {"error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
 
-    return {"message": "entity " + ret["id"] + " successfully updated"}
+    return {"message": "entity " + ret["id"] + " successfully updated", "username": descriprion}
 
 @app.route('/attest_entity', methods=['POST'])
 async def ra_entity():
@@ -254,7 +254,7 @@ async def ra_entity():
     if "error" in ret.keys():
         return {"error" : ret["error"]}, 500
 
-    return {"message": ret["message"]}
+    return {"message": ret["message"], "username": descriprion}
 
 @app.route('/attest_entity', methods=['DELETE'])
 async def stop_ra_entity():
@@ -285,7 +285,7 @@ async def stop_ra_entity():
     if "error" in ret.keys():
         return {"error" : ret["error"]}, 500
 
-    return {"message": ret["message"]}
+    return {"message": ret["message"], "username": descriprion}
 
 @app.route('/verifier')
 async def get_verifier():
@@ -320,13 +320,15 @@ async def get_verifier():
         if "error" in ret:
             return {"error": "verifier " + str(att_tech) + " :" + ret["error"]}, 500
 
-        return ret
+        return {"verifiers": ret, "username": descriprion}
 
 
     ret = retrieve_att_tech({ 'att_tech': att_tech, 'inf_id': inf_id })
 
     if "error" in ret:
         return {"error": "verifier " + str(att_tech) + " :" + ret["error"]}, 500
+    
+    ret["username"] = descriprion
 
     return ret
 
@@ -375,7 +377,7 @@ async def register_verifier():
     if "error" in ret.keys():
         return {"error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
 
-    return {"message": "verfier " + ret["id"] + " successfully registered"}
+    return {"message": "verfier " + ret["id"] + " successfully registered", "username": descriprion}
 
 @app.route('/verifier', methods=['DELETE'])
 async def remove_verifier():
@@ -414,7 +416,7 @@ async def remove_verifier():
     if "error" in ret.keys():
         return {"error": "verifier " + str(body["att_tech"]) + " :" + ret["error"]}, 500
 
-    return {"message": "verfier " + ret["id"] + " successfully deleted"}
+    return {"message": "verfier " + ret["id"] + " successfully deleted", "username": descriprion}
 
 @app.route('/whitelist')
 async def get_whitelist():
@@ -442,6 +444,8 @@ async def get_whitelist():
 
     if "error" in ret.keys():
         return {"error": "whitelist " + str(whitelist_uuid) + " :" + ret["error"]}, 500
+
+    ret["username"] = descriprion
 
     return ret
 
@@ -493,7 +497,7 @@ async def upload_whitelist():
     if "error" in ret.keys():
         return {"error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
 
-    return {"message": "whitelist " + ret["id"] + " added successfully"}
+    return {"message": "whitelist " + ret["id"] + " added successfully", "username": descriprion}
 
 @app.route('/whitelist', methods=['DELETE'])
 async def remove_whitelist():
@@ -529,7 +533,7 @@ async def remove_whitelist():
     if "error" in ret.keys():
         return {"error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
 
-    return {"message": "whitelist " + ret["id"] + " successfully deleted"}
+    return {"message": "whitelist " + ret["id"] + " successfully deleted", "username": descriprion}
 
 @app.route('/policy')
 async def get_policy():
@@ -647,6 +651,8 @@ async def get_status():
 
     ret = read_tm_status()
 
+    ret["username"] = descriprion
+
     return ret
 
 @app.route('/report', methods=['POST'])
@@ -685,6 +691,8 @@ async def get_report():
 
     if "error" in ret.keys():
         return {"error": ret["error"]}, 500
+
+    ret["username"] = descriprion
 
     return ret
 
