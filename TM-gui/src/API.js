@@ -1,7 +1,7 @@
 
-const ip = "10.4.34.139" //"10.4.34.136" //"trust-monitor" //"127.0.0.1"
-const port = 32580 //31012 // "5080" //"5443"
-const baseURL =  `http://${ip}:${port}` //`https://${ip}:${port}`
+const ip = "10.4.34.136" //"10.4.34.139" //"trust-monitor" //"127.0.0.1"
+const port = 31012 //32580 // "5080" //"5443"
+const baseURL =  `https://${ip}:${port}` //`https://${ip}:${port}`
 
 const getTasksByFilter = async (selectedFilter) => {
   const response = await fetch(`/api/tasks?filter=${selectedFilter}`);
@@ -17,7 +17,7 @@ const getAllEntities = async (token) => {
   const response = await fetch(`${baseURL}/entity?token=${token}`);
   const body = await response.json();
   if (response.ok) {
-    return body.entities;
+    return body;
   } else {
     throw body.error;
   }
@@ -140,7 +140,7 @@ const getEntityReport = async (uuid, token) => {
   });
   const body = await response.json();
   if (response.ok) {
-    return body.report_list[0].trust;
+    return body;
   } else {
     throw body.error;
   }

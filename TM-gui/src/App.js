@@ -18,8 +18,9 @@ function App() {
   //const [keycloak, setKeycloak] = useState(null)
   const [tokenCheck, setTokenCheck] = useState(true);
   const [error, setError] = useState("");
-  const [authenticated, setAuthenticated] = useState(false);
+  //const [authenticated, setAuthenticated] = useState(false);
   //const [token, setToken] = useState();
+  const [username, setUsername] = useState();
   
   const params = new URLSearchParams(window.location.search);
   const session = params.get('session');
@@ -89,28 +90,32 @@ function App() {
             <Header
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
+                    username={username}
                   />
-                  <Main toggle={toggle} menuFilters={menuFilters} session={session}/>
+                  <Main toggle={toggle} menuFilters={menuFilters} session={session} username={username} setUsername={setUsername}/>
             </Route>
             <Route path="/status">
             <Header
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
+                    username={username}
                   />
-                  <Main toggle={toggle} menuFilters={menuFilters} session={session}/>
+                  <Main toggle={toggle} menuFilters={menuFilters} session={session} username={username} setUsername={setUsername}/>
             </Route>
             <Route path="/whitelists">
             <Header
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
+                    username={username}
                   />
             </Route>
             <Route path="/">
               <Header
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
+                    username={username}
                   />
-                  <Main toggle={toggle} menuFilters={menuFilters} session={session}/>
+                  <Main toggle={toggle} menuFilters={menuFilters} session={session} username={username} setUsername={setUsername}/>
             </Route>
           </Switch>
         </Router>

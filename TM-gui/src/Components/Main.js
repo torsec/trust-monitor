@@ -6,7 +6,7 @@ import { useRouteMatch } from "react-router-dom";
 //import { useKeycloak } from "@react-keycloak/web";
 
 export function Main({ ...props }) {
-  const { menuFilters, toggle, user, session } = props;
+  const { menuFilters, toggle, user, session, username, setUsername } = props;
   const filter = useRouteMatch().path;
   //const { keycloak } = useKeycloak();
 
@@ -28,19 +28,24 @@ export function Main({ ...props }) {
     const getEntities = async () => {
       try {
         let list = [];
+        let body = {};
         let temp = {};
         if (filter === "/") {
-          list = await API.getAllEntities(session);
-          setEntitiesList(list);
+          body = await API.getAllEntities(session);
+          setEntitiesList(body.entities);
+          setUsername(body.username);
           setLoading(false);
         }else {
           if (filter === "/status") {
             setLoading(true);
+            let user = "";
             temp = await API.getStatus(session);
-            
+            user = temp.username;
             for (let i = 0; i < temp.att_processes.length; i++){
               const val = temp.att_processes[i];
-              let trust = await API.getEntityReport(val.entity_uuid);
+              let response = await API.getEntityReport(val.entity_uuid, session);
+              
+              let trust = response.report_list[0].trust;
               for (let index = 0; index < temp.att_processes.length; index++) {
                 if (temp.att_processes[index].entity_uuid === val.entity_uuid){
                   temp.att_processes[index]["trust"] = trust;
@@ -48,13 +53,15 @@ export function Main({ ...props }) {
               }
             }
 
+            setUsername(user);
             setStatus(temp);
             setLoading(false);
           }
           else{
             setLoading(true);
-            list = await API.getAllVerifiers(session);
-            setVerifiersList(list);
+            body = await API.getAllVerifiers(session);
+            setVerifiersList(body.verifiers);
+            setUsername(body.username);
             setLoading(false);
           }
         }
@@ -66,10 +73,10 @@ export function Main({ ...props }) {
         //setEntitiesList([]);
         if(Object.keys(err).length === 0){
           console.log(JSON.stringify(err));
-          setError("Error Trust Monitor: net::ERR_CERT_AUTHORITY_INVALID");
+          setError(JSON.stringify(err));
         }
         else{
-          console.log(err);
+          console.log(JSON.stringify(err));
           setError(err);
         }
       }
