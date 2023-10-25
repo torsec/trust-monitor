@@ -43,7 +43,8 @@ services:
       - zoo1
 
   postgres:
-    image: cinghio/tm-databases:0.1
+    image: tm/database
+    build: ./
     hostname: postgres
     container_name: postgres
     networks:
@@ -68,7 +69,8 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: "prova"
 
   trust-monitor:
-      image: cinghio/tm-spirs:1.0
+      image: tm/trust-monitor-core
+      build: ../
       hostname: trust-monitor
       container_name: trust-monitor
       networks:
@@ -81,10 +83,11 @@ services:
         - postgres
         - mongo
       volumes:
-        - './:/var/log/trust-monitor'
+        - '../log:/var/log/trust-monitor'
 
   tm-gui:
-      image: cinghio/tm-spirs-gui:1.0
+      image: tm/trust-monitor-gui
+      build: ../TM-gui
       hostname: tm-gui
       container_name: tm-gui
       networks:
