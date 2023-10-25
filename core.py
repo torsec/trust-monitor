@@ -3,7 +3,7 @@ import threading
 from database_connectors.instances import (retrieve_entity, retrieve_all_entities, store_entity, purge_entity, edit_entity, edit_state_entity)
 from database_connectors.verifiers import (store_verifier, purge_verifier, retrieve_verifier, retrieve_all_verifiers)
 from database_connectors.whitelists import (purge_whitelist, store_whitelist, retrieve_whitelist)
-from database_connectors.policies import (store_policy, purge_policy, retrieve_policy)
+# from database_connectors.policies import (store_policy, purge_policy, retrieve_policy)
 from database_connectors.reports import (store_report, retrieve_reports)
 from adapters_connector import (register_entity, verify_entity)
 from kafka_connector.kafka_connector import (run_kafka_consumer, new_topic, remove_topic)
@@ -327,29 +327,29 @@ def delete_whitelist(whitelist):
 
     return ret
 
-def insert_policy(policy):
-    """
-    Store the new policy for an entity in the policy database
-    """
-    ret = store_policy(policy)
+# def insert_policy(policy):
+#     """
+#     Store the new policy for an entity in the policy database
+#     """
+#     ret = store_policy(policy)
+# 
+#     return ret
 
-    return ret
+# def read_policy(policy):
+#     """
+#     read a policy for an entity in the policy database
+#     """
+#     ret = retrieve_policy(policy)
+# 
+#     return ret
 
-def read_policy(policy):
-    """
-    read a policy for an entity in the policy database
-    """
-    ret = retrieve_policy(policy)
-
-    return ret
-
-def delete_policy(policy):
-    """
-    Delete a policy for an entity from the policy database
-    """
-    ret = purge_policy(policy)
-
-    return ret
+# def delete_policy(policy):
+#     """
+#     Delete a policy for an entity from the policy database
+#     """
+#     ret = purge_policy(policy)
+# 
+#     return ret
 
 def read_tm_status():
     """

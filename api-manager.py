@@ -1,7 +1,7 @@
 from quart import Quart, request
 from quart_cors import cors
 from core import (
-    delete_policy,
+    # delete_policy,
     insert_att_tech,
     delete_att_tech,
     retrieve_att_tech,
@@ -15,9 +15,9 @@ from core import (
     insert_whitelist,
     delete_whitelist,
     read_whitelist,
-    insert_policy,
-    read_policy,
-    delete_policy,
+    # insert_policy,
+    # read_policy,
+    # delete_policy,
     attest_entity,
     read_tm_status,
     read_report
@@ -448,7 +448,7 @@ async def remove_whitelist():
     """
     Mandatory values
     """
-    if "_id" not in body:
+    if body is None or "_id" not in body:
         return {"error": "_id field must be present"}, 422
 
     """
@@ -461,86 +461,86 @@ async def remove_whitelist():
 
     return {"message": "whitelist " + ret["id"] + " successfully deleted"}
 
-@app.route('/policy')
-async def get_policy():
-    """
-    Read data about a policy for a specific entity stored into the policies DB. Usage:
-        /policy?entity_uuid=<entity_uuid>
+# @app.route('/policy')
+# async def get_policy():
+#     """
+#     Read data about a policy for a specific entity stored into the policies DB. Usage:
+#         /policy?entity_uuid=<entity_uuid>
+# 
+#     """
+#     entity_uuid = request.args.get('entity_uuid')
+#     """
+#     Mandatory values
+#     """
+#     if entity_uuid is None:
+#         return {"error": "entity_uuid field must be present in the URL"}, 422
+# 
+#     ret = read_policy( {"entity_uuid": int(entity_uuid)} )
+# 
+#     if "error" in ret.keys():
+#         return {"error": "policy for entity " + str(entity_uuid) + " :" + ret["error"]}, 500
+# 
+#     return ret
 
-    """
-    entity_uuid = request.args.get('entity_uuid')
-    """
-    Mandatory values
-    """
-    if entity_uuid is None:
-        return {"error": "entity_uuid field must be present in the URL"}, 422
+# @app.route('/policy', methods=['POST'])
+# async def upload_policy():
+#     """
+#     Store a new policy, for a specific object registered into the Trust Monitor
+# 
+#     Body structure:
+#     {
+#         "entity_uuid": uuid,
+#         "policy": policy
+#     }
+#     """
+# 
+#     body = await request.get_json()
+# 
+#     """
+#     Mandatory values
+#     """
+#     if "entity_uuid" not in body:
+#         return {"error": "entity_uuid field must be present"}, 422
+#     if "policy" not in body:
+#         return {"error": "policy field must be present"}, 422
+# 
+#     """
+#     Insert a policy for an entity in the TM
+#     """
+#     ret = insert_policy(body)
+# 
+#     if "error" in ret.keys():
+#         return {"error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+# 
+#     return {"message": "policy for entity " + ret["id"] + " added successfully"}
 
-    ret = read_policy( {"entity_uuid": int(entity_uuid)} )
-
-    if "error" in ret.keys():
-        return {"error": "policy for entity " + str(entity_uuid) + " :" + ret["error"]}, 500
-
-    return ret
-
-@app.route('/policy', methods=['POST'])
-async def upload_policy():
-    """
-    Store a new policy, for a specific object registered into the Trust Monitor
-
-    Body structure:
-    {
-        "entity_uuid": uuid,
-        "policy": policy
-    }
-    """
-
-    body = await request.get_json()
-
-    """
-    Mandatory values
-    """
-    if "entity_uuid" not in body:
-        return {"error": "entity_uuid field must be present"}, 422
-    if "policy" not in body:
-        return {"error": "policy field must be present"}, 422
-
-    """
-    Insert a policy for an entity in the TM
-    """
-    ret = insert_policy(body)
-
-    if "error" in ret.keys():
-        return {"error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
-
-    return {"message": "policy for entity " + ret["id"] + " added successfully"}
-
-@app.route('/policy', methods=['DELETE'])
-async def remove_policy():
-    """
-    Delete a policy, for a specific object registered into the Trust Monitor
-    
-    Body structure:
-    {
-        "entity_uuid": uuid
-    }
-    """
-    body = await request.get_json()
-
-    """
-    Mandatory values
-    """
-    if "entity_uuid" not in body:
-        return {"error": "entity_uuid field must be present"}, 422
-
-    """
-    Delete a policy for an entity from the TM
-    """
-    ret = delete_policy(body)
-
-    if "error" in ret.keys():
-        return {"error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
-
-    return {"message": "policy for entity " + ret["id"] + " successfully deleted"}
+# @app.route('/policy', methods=['DELETE'])
+# async def remove_policy():
+#     """
+#     Delete a policy, for a specific object registered into the Trust Monitor
+#     
+#     Body structure:
+#     {
+#         "entity_uuid": uuid
+#     }
+#     """
+#     body = await request.get_json()
+# 
+#     """
+#     Mandatory values
+#     """
+#     if "entity_uuid" not in body:
+#         return {"error": "entity_uuid field must be present"}, 422
+# 
+#     """
+#     Delete a policy for an entity from the TM
+#     """
+#     ret = delete_policy(body)
+# 
+#     if "error" in ret.keys():
+#         return {"error": "policy for entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+# 
+#     return {"message": "policy for entity " + ret["id"] + " successfully deleted"}
 
 @app.route('/status')
 async def get_status():
@@ -604,11 +604,11 @@ if __name__ == "__main__":
 
         app.run(
             host="0.0.0.0",
-            port=config["tls"]["port"],
+            port=5443,
             ca_certs=config["tls"]["ca_certs"], 
             certfile=config["tls"]["certfile"],  
             keyfile=config["tls"]["keyfile"]
         )
     else:
-        app.run(host="0.0.0.0", port=config["api-manager"]["port"])
+        app.run(host="0.0.0.0", port=5080)
     
