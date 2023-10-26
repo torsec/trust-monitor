@@ -1,0 +1,966 @@
+openapi: '3.0.2'
+info:
+  title: Trust Monitor
+  version: '1.0'
+  description: List of exposed APIs
+#servers:
+#  - url: http://trust-monitor:5080/
+paths:
+  /entity/{entity_uuid}:
+    get:
+      description: Returns a specific entity
+      parameters:
+        - name: entity_uuid
+          in: path
+          required: true
+          description: Specify the entity wanted
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entity_uuid:
+                    type: integer
+                    description: identifier of the object in the TM's database
+                  inf_id:
+                    type: integer
+                    description: The identifier of the infrastructure
+                  att_tech:
+                    type: array
+                    description: List of all attestation technologies which perform the remote attestation on the object
+                    items:
+                      type: string
+                  name:
+                    type: string
+                    description: Name of the entity
+                  external_id:
+                    type: string
+                    description: External identifier set during registration
+                  type:
+                    type: string
+                    description: Type of the entity
+                  whitelist_uuid:
+                    type: integer
+                    description: The identifier of the entity whitelist
+                  child:
+                    description: List of the entities contained in the current one (it could be empty)
+                    type: array
+                    items:
+                      type: integer
+                  parent:
+                    type: integer
+                    description: The identifier of the entity that contains the specified one (it could be null)
+                  state:
+                    type: string
+                    description: The state of the entity in the TM system
+                  metadata:
+                    description: The JSON object containing all metadata about the entity
+                    type: object
+                    
+              example:
+                entity_uuid: 1
+                inf_id: 1
+                att_tech: ["keylime_v6_3_2"]
+                external_id: 90e71d86-13e0-4bd3-9ec4-1521f10a5194
+                type: node
+                whitelist_uuid: 1
+                child: [2,3,4,5,6]
+                parent: null
+                state: registered
+                metadata:
+                  - keylime_v6_3_2: 
+                      agent_ip: 192.168.0.103
+                      e_list_data: ["^(?!/usr/bin/).*$"]
+        '404':
+          description: The requested entity is not present in the TM's db
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: entity 1 is not present in the TM's databasae
+        '500':
+          description: An error occurred during the request
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+    delete:
+      description: Delete an entity from the TM database
+      parameters:
+        - name: entity_uuid
+          in: path
+          required: true
+          description: Identifier of the object in the TM's database
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully deleted an entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: entity 1 successfully deleted
+        '422':
+          description: Error returned in case of missing mandatory attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+  /entity:
+    get:
+      description: Returns a list of registered entities
+      responses:
+        '200':
+          description: Successfully returned a list of entities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  entity_uuid:
+                    type: integer
+                    description: identifier of the object in the TM's database
+                  inf_id:
+                    type: integer
+                    description: The identifier of the infrastructure
+                  att_tech:
+                    type: array
+                    description: List of all attestation technologies which perform the remote attestation on the object
+                    items:
+                      type: string
+                  name:
+                    type: string
+                    description: Name of the entity
+                  external_id:
+                    type: string
+                    description: External identifier set during registration
+                  type:
+                    type: string
+                    description: Type of the entity
+                  whitelist_uuid:
+                    type: integer
+                    description: The identifier of the entity whitelist
+                  child:
+                    description: List of the entities contained in the current one (it could be empty)
+                    type: array
+                    items:
+                      type: integer
+                  parent:
+                    type: integer
+                    description: The identifier of the entity that contains the specified one (it could be null)
+                  state:
+                    type: string
+                    description: The state of the entity in the TM system
+                  metadata:
+                    description: The JSON object containing all metadata about the entity
+                    type: object
+              example:
+                entities:
+                  - entity_uuid: 1,
+                    inf_id: 1,
+                    att_tech: ["keylime_v6_3_2"]
+                    ...: ...
+                  - entity_uuid: 2,
+                    inf_id: 1,
+                    att_tech: ["keylime_v6_3_2"]
+                    ...: ...
+                  - ...
+        '500':
+          description: Successfully returned a list of entities
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+    post:
+      description: Add a new entity in the TM database
+      requestBody:
+        content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - entity_uuid
+                  - inf_id
+                  - name
+                  - external_id
+                  - type
+                  - metadata
+                properties:
+                  entity_uuid:
+                    type: integer
+                    description: Identifier of the object in the TM's database
+                  inf_id:
+                    type: integer
+                    description: The identifier of the infrastructure
+                  att_tech:
+                    description: List of all attestation technologies which perform the remote attestation on the object
+                    type: array
+                    items:
+                      type: string
+                  name:
+                    description: Name of the entity
+                    type: string
+                  external_id:
+                    description: External identifier set during registration
+                    type: string
+                  type:
+                    description: The state of the entity in the TM system
+                    type: string
+                  whitelist_uuid:
+                    description: The identifier of the entity whitelist
+                    type: integer
+                  child:
+                    description: List of the entities contained in the current one (it could be empty)
+                    type: array
+                    items:
+                      type: integer
+                  parent:
+                    description: The identifier of the entity that contains the specified one (it could be null)
+                    type: integer
+                  metadata:
+                    description: The JSON object containing all metadata about the entity
+                    type: object
+              example:
+                entity_uuid: 1
+                inf_id: 1
+                att_tech: ["keylime_v6_3_2"]
+                external_id: 90e71d86-13e0-4bd3-9ec4-1521f10a5194
+                type: node
+                whitelist_uuid: 1
+                child: [2,3,4,5,6]
+                parent: null
+                metadata:
+                  - keylime_v6_3_2: 
+                      agent_ip: 192.168.0.103
+                      e_list_data: ["^(?!/usr/bin/).*$"]
+      responses:
+        '200':
+          description: Successfully added a new entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: entity 1 successfully registered
+        '422':
+          description: Error returned in case of missing mandatory attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+        
+    put:
+      description: Modify an entity in the TM database
+      requestBody:
+        content:
+            application/json:
+              schema:
+                type: object
+                required:
+                  - entity_uuid
+                properties:
+                  entity_uuid:
+                    type: integer
+                    description: Identifier of the object in the TM's database
+                  inf_id:
+                    type: integer
+                    description: The identifier of the infrastructure
+                  att_tech:
+                    description: List of all attestation technologies which perform the remote attestation on the object
+                    type: array
+                    items:
+                      type: string
+                  name:
+                    description: Name of the entity
+                    type: string
+                  external_id:
+                    description: External identifier set during registration
+                    type: string
+                  type:
+                    description: The state of the entity in the TM system
+                    type: string
+                  whitelist_uuid:
+                    description: The identifier of the entity whitelist
+                    type: integer
+                  child:
+                    description: List of the entities contained in the current one (it could be empty)
+                    type: array
+                    items:
+                      type: integer
+                  parent:
+                    description: The identifier of the entity that contains the specified one (it could be null)
+                    type: integer
+                  metadata:
+                    description: The JSON object containing all metadata about the entity
+                    type: object
+      responses:
+        '200':
+          description: Successfully modified an entity
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: entity 1 successfully updated
+        '422':
+          description: Error returned in case of missing mandatory attributes (entity_uuid)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+    
+  /start_attestation/{entity_uuid}:
+    post:
+      description: Start remote attestation on a specific entity
+      parameters:
+        - name: entity_uuid
+          in: path
+          required: true
+          description: Specify the entity wanted
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully started the remote attestation process
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: entity 1 - attestation started successfully
+        '422':
+          description: Error returned in case of missing mandatory attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+
+  /stop_attestation/{entity_uuid}:
+    post:
+      description: Stop remote attestation on a specific entity
+      parameters:
+        - name: entity_uuid
+          in: path
+          required: true
+          description: identifier of the object in the TM's database
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully stopped the remote attestation process
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: entity 1 - attestation stopped successfully
+        '422':
+          description: Error returned in case of missing mandatory attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error:  error description
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error:  error description
+  /verifier:
+    get:
+      description: Retrieve information about a registered verifier
+      parameters:
+        - name: att_tech
+          in: query
+          required: true
+          description: Name of the attestation technology
+          schema:
+            type: string
+        - name: inf_id
+          in: query
+          required: true
+          description: Infrastructure identifier
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned a registered verifier
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  att_tech:
+                    description: Name of the attestation technology
+                    type: string
+                  inf_id:
+                    description: Infrastructure identifier
+                    type: integer
+                  metadata:
+                    description: The JSON object containing all metadata about the attestation technology
+                    type: object
+              example:
+                att_tech: keylime_v6_3_2
+                inf_id: 1
+                metadata:
+                  tenant_ip: 192.168.0.114
+                  tenant_port: 444
+        '404':
+          description: The requested verifier is not present in the TM's db
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: att_tech keylime_v6_3_2 with inf_id 1 not found
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+    post:
+      description: Register a new verifier
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                att_tech:
+                  description: Name of the attestation technology
+                  type: string
+                inf_id:
+                  description: Infrastructure identifier
+                  type: integer
+                metadata:
+                  description: The JSON object containing all metadata about the attestation technology
+                  type: object
+            example:
+                att_tech: keylime_v6_3_2
+                inf_id: 1
+                metadata:
+                  tenant_ip: 192.168.0.114
+                  tenant_port: 444
+      responses:
+        '200':
+          description: Successfully added a new verifier
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: verifier keylime_v6_3_2 successfully registered
+        '422':
+          description: Error returned in case of missing mandatory attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+    delete:
+      description: Delete a verifier from the TM database
+      parameters:
+        - name: att_tech
+          in: query
+          required: true
+          description: Name of the attestation technology
+          schema:
+            type: string
+        - name: inf_id
+          in: query
+          required: true
+          description: Infrastructure identifier
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully deleted a verifier
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: verfier keylime_v6_3_2 successfully deleted
+        '422':
+          description: Error returned in case of missing mandatory attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+  /whitelist/{whitelist_id}:
+    get:
+      description: Retrieve a whitelist from the TM database
+      parameters:
+        - name: whitelist_id
+          in: path
+          required: true
+          description: Specify the whitelist wanted
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: Successfully returned a registered verifier
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  _id:
+                    description: The identifier of the whitelist (whitelist_uuid)
+                    type: integer
+                  metadata:
+                    description: The JSON object containing all metadata about the whitelist
+                    type: object
+                  whitelist:
+                    description: The JSON object which contains the whitelist
+                    type: object
+              example:
+                _id: 2
+                metadata:
+                  att_tech: keylime_v6_3_2
+                  hash_algo: sha256
+                whitelist:
+                  a_list_data: [
+                    38ad97...2489b /pause,
+                    1edf98...6d6b7 /usr/bin/local-path-provisioner
+                  ]
+        '404':
+          description: The requested whitelist is not present in the TM's db
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: whitelist 1 not found
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+    delete:
+      description: Delete a registered whitelist
+      parameters:
+        - name: whitelist_id
+          in: path
+          required: true
+          description: Specify the whitelist wanted
+          schema:
+            type: integer
+        
+      responses:
+        '200':
+          description: Successfully deletede a registered whitelist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: whitelist 2 successfully deleted
+        '422':
+          description: Error returned in case of missing mandatory attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+  /whitelist:
+    post: 
+      description: Add a new whitelist into the TM database
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                _id:
+                  description: The identifier of the whitelist (whitelist_uuid)
+                  type: integer
+                metadata:
+                  description: The JSON object containing all metadata about the whitelist
+                  type: object
+                whitelist:
+                  description: The JSON object which contains the whitelist
+                  type: object
+            example:
+              _id: 2
+              metadata:
+                att_tech: keylime_v6_3_2
+                hash_algo: sha256
+              whitelist:
+                a_list_data: [
+                  38ad97...2489b /pause,
+                  1edf98...6d6b7 /usr/bin/local-path-provisioner
+                ]
+        
+      responses:
+        '200':
+          description: Successfully added a new whitelist
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+              example:
+                message: whitelist 2 added successfully
+        '422':
+          description: Error returned in case of missing mandatory attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+    
+  /status:
+    get:
+      description: Get information about the current state of the TM
+      responses:
+        '200':
+          description: Successfully returned information about the current state of the TM
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  adapters_loaded:
+                    description: Adapter correctly loaded
+                    type: array
+                    items:
+                      type: string
+                  att_processes:
+                    description: List of running attestation processes
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        entity_uuid:
+                          type: integer
+                        external_id:
+                          type: string
+                        name:
+                          type: string
+                        att_tech:
+                          type: array
+                          items:
+                            type: string
+              example:
+                adapters_loaded: [
+                  keylime_v6_3_2
+                ]
+                att_processes:
+                  - entity_uuid: 1
+                    external_id: 90e71d86-13e0-4bd3-9ec4-1521f10a5194
+                    name: attester
+                    att_tech: [
+                      keylime_v6_3_2
+                    ]
+                  - entity_uuid: 8
+                    external_id: d432fbb3-d2f1-4a97-9ef7-75bd81c00000
+                    name: attester_2
+                    att_tech: [
+                      keylime_v6_3_2
+                    ]
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+  /report:
+    description: Retrieve attestation reports
+    parameters:
+      - name: entity_uuid
+        in: query
+        required: true
+        description: The identifier of the entity for which starts the remote attestation process
+        schema:
+          type: integer
+      - name: last
+        in: query
+        required: false
+        description: If sperfified as true, permits to retrieve just the last report stored in the TM database
+        schema:
+          type: integer
+      - name: from
+        in: query
+        required: false
+        description: This is an optional value and it represents the first date, in ISOFormat ("yyyy-mm-ddThh:mm:ss"), from which retrieving reports
+        schema:
+          type: integer
+      - name: to
+        in: query
+        required: false
+        description: This is an optional value and it represents the last date, in ISOFormat ("yyyy-mm-ddThh:mm:ss"), from which retrieving reports
+        schema:
+          type: integer
+    get:
+      responses:
+        '200':
+          description: Successfully retrived wanted reports
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  report_list:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        _id:
+                          type: string
+                        entity_uuid:
+                         type: integer
+                        trust:
+                          type: boolean
+                        state:
+                          type: array
+                          items:
+                            type: object
+                            properties:
+                              att_tech:
+                                type: string
+                              trust:
+                                type: boolean
+                        time:
+                          type: string
+              example:
+                report_list:
+                  - _id: 62ea9ff6cd03ce4ce1b0aebd
+                    entity_uuid: 8
+                    trust: false
+                    state:
+                      - att_tech: keylime_v6_3_2
+                        trust: false
+                    time: Mon, 29 Aug 2022 08:33:53 GMT
+                  - _id: 62eaa082be86d83bee075ff7
+                    entity_uuid: 8
+                    trust: true
+                    state:
+                      - att_tech: keylime_v6_3_2
+                        trust: true
+                    time: Mon, 29 Aug 2022 08:26:42 GMT
+        '422':
+          description: Error returned in case of missing mandatory attributes
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
+        '500':
+          description: Error in case of an internal server problem
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+              example:
+                error: error description
