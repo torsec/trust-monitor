@@ -53,23 +53,24 @@ def verify_token(token):
     else:
         return True, 'Token verified correctly'
 
-@app.route('/entity')
-async def get_entity():
+@app.route('/entity', defaults={'entity_uuid': None})
+@app.route('/entity/<entity_uuid>')
+async def get_entity(entity_uuid):
     """
     Read data about an object stored into the instances DB. Usage:
-        /entity?entity_uuid=<id>&token=<access_token>
+        /entity/<entity_uuid>
 
     If no entity_uuid is provided it responds with the whole list of entities
     """
 
     #token verification
-    token = request.args.get('token')
-    success, descriprion = verify_token(token)
-    if success is False:
-        return {"error": descriprion}, 401
+    #token = request.args.get('token')
+    #success, descriprion = verify_token(token)
+    #if success is False:
+    #    return {"error": descriprion}, 401
     #END token verification
 
-    entity_uuid = request.args.get('entity_uuid')
+    #entity_uuid = request.args.get('entity_uuid')
     
     """
     Mandatory values
@@ -140,29 +141,26 @@ async def add_entity():
 
     return {"message": "entity " + ret["id"] + " successfully registered"}
 
-@app.route('/entity', methods=['DELETE'])
-async def remove_entity():
+@app.route('/entity/<entity_uuid>', methods=['DELETE'])
+async def remove_entity(entity_uuid):
     """
     Delete an object from the Trust Monitor
 
-    Body structure:
-    {
-        "entity_uuid": uuid
-    }
+    /entity/<entity_uuid> : entity_uuid -> identifier of the entity to delete from the TM db
     """
 
-    body = await request.get_json()
+    #body = await request.get_json()
 
     """
     Mandatory values
     """
-    if "entity_uuid" not in body:
-        return {"error": "entity_uuid field must be present"}, 422
+    #if "entity_uuid" not in body:
+    #    return {"error": "entity_uuid field must be present"}, 422
 
-    ret = delete_entity(body)
+    ret = delete_entity({'entity_uuid': entity_uuid})
 
     if "error" in ret.keys():
-        return {"error": "entity " + str(body["entity_uuid"]) + " :" + ret["error"]}, 500
+        return {"error": "entity " + str(entity_uuid) + " :" + ret["error"]}, 500
 
     return {"message": "entity " + ret["id"] + " successfully deleted"}
 
