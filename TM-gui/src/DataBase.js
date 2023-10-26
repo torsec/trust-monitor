@@ -4,4 +4,6 @@ const menuFilters = [
     { name: "Status" }
 ];
 
-export {menuFilters};
+const subPath = '/app'
+
+export {menuFilters, subPath};

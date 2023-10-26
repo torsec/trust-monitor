@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
 import { useState } from 'react';
+import { subPath } from '../DataBase';
 
 export function Sidebar({...props}) {
     const { menuFilters, setRefresh, filter, setFilterLoading, session } = props;
@@ -13,11 +14,11 @@ export function Sidebar({...props}) {
         key={index} 
         onClick={() => {
                         setRefresh(true);
-                        setActiveFilter("/"+val.name.toLowerCase());
+                        setActiveFilter(subPath+"/"+val.name.toLowerCase());
                         setFilterLoading(true);
                     }}
-        className={`list-group-item list-group-item-action ${activeFilter === "/"+val.name.toLowerCase() || (val.name === "Entities" && activeFilter === "/") ? 'active': ''}`} 
-        to={`/${val.name.toLowerCase()}`+`?session=${session}`}>{val.name}
+        className={`list-group-item list-group-item-action ${activeFilter === subPath+"/"+val.name.toLowerCase() || (val.name === "Entities" && activeFilter === subPath) ? 'active': ''}`} 
+        to={`${subPath}/${val.name.toLowerCase()}`}>{val.name}
     </Link>);
     return (
         <>

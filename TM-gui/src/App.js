@@ -2,7 +2,7 @@ import "bootstrap/dist/css/bootstrap.min.css";
 import "./css/style.css";
 import { Header, Main, InitialSpinner } from "./Components";
 import { useState, React, useEffect } from "react";
-import { menuFilters } from "./DataBase";
+import { menuFilters, subPath } from "./DataBase";
 import {
   BrowserRouter as Router,
   Switch,
@@ -20,10 +20,11 @@ function App() {
   const [error, setError] = useState("");
   const [authenticated, setAuthenticated] = useState(false);
   //const [token, setToken] = useState();
+  const session = ''
   
-  const params = new URLSearchParams(window.location.search);
+  /* const params = new URLSearchParams(window.location.search);
   const session = params.get('session');
-  console.log(session);
+  console.log(session); */
   /*const keycloak = new Keycloak({
     url: "http://localhost:8080/auth",
     realm: "tmrealm",
@@ -82,35 +83,38 @@ function App() {
     {/*tokenCheck*/ false ? <InitialSpinner/> : ( /*authenticated*/ true ?
         <Router>
           <Switch>
-          <Route path="/entities">
-              <Redirect to={`/?session=${session}`}/>
+          <Route path={subPath+"/entities"}>
+              <Redirect to={subPath}/>
             </Route>
-            <Route path="/verifiers">
+            <Route path={subPath+"/verifiers"}>
             <Header
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
                   <Main toggle={toggle} menuFilters={menuFilters} session={session}/>
             </Route>
-            <Route path="/status">
+            <Route path={subPath+"/status"}>
             <Header
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
                   <Main toggle={toggle} menuFilters={menuFilters} session={session}/>
             </Route>
-            <Route path="/whitelists">
+            <Route path={subPath+"/whitelists"}>
             <Header
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
             </Route>
-            <Route path="/">
+            <Route path={subPath}>
               <Header
                     toggleFunc={hideShow}
                     title="Trust Monitor GUI"
                   />
                   <Main toggle={toggle} menuFilters={menuFilters} session={session}/>
+            </Route>
+            <Route path={"/"}>
+              <Redirect to={subPath}/>
             </Route>
           </Switch>
         </Router>

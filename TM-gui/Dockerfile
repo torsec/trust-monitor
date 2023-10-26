@@ -22,3 +22,4 @@ CMD ["nginx", "-g", "daemon off;"]
 
 ## docker run -d -p 8080:80 tm-web-app:0.1
 # "start": "HTTPS=true SSL_CRT_FILE=./.cert/tm-gui.crt SSL_KEY_FILE=./.cert/tm-gui.key react-scripts start", (in package.json)
+#  "build": "react-scripts --openssl-legacy-provider build",

@@ -3,6 +3,7 @@ import { Sidebar, EntityList, AddEditTask, ButtonRounded, Status, VerifierList }
 import { useState, useEffect } from "react";
 import API from "../API";
 import { useRouteMatch } from "react-router-dom";
+import { subPath } from "../DataBase";
 //import { useKeycloak } from "@react-keycloak/web";
 
 export function Main({ ...props }) {
@@ -29,12 +30,12 @@ export function Main({ ...props }) {
       try {
         let list = [];
         let temp = {};
-        if (filter === "/") {
+        if (filter === subPath) {
           list = await API.getAllEntities(session);
           setEntitiesList(list);
           setLoading(false);
         }else {
-          if (filter === "/status") {
+          if (filter === subPath+"/status") {
             setLoading(true);
             temp = await API.getStatus(session);
             
@@ -150,7 +151,7 @@ export function Main({ ...props }) {
             </nav>
           </Collapse>
           { error ? <span className="urgent">{error}</span> :
-            ((filter === "/") ?
+            ((filter === subPath) ?
               <>
                 <EntityList
                 entitiesList={entitiesList}
@@ -179,7 +180,7 @@ export function Main({ ...props }) {
             </>
             :
             (
-              (filter === "/status") ?
+              (filter === subPath+"/status") ?
               <Status
                 status={status}
                 error={error}
@@ -190,7 +191,7 @@ export function Main({ ...props }) {
               />
               :
               (
-                (filter === "/verifiers") ?
+                (filter === subPath+"/verifiers") ?
                 <VerifierList
                   verifiers={verifiersList}
                   filter={filter}

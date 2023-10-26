@@ -1,4 +1,4 @@
-from quart import Quart, request
+from quart import Quart, request, send_from_directory
 from quart_cors import cors
 from core import (
     # delete_policy,
@@ -25,11 +25,13 @@ from core import (
 import configparser
 from logger import logger
 import requests
+import os
 
 config = configparser.ConfigParser()
 config.read('config/config.ini')
 
-app = Quart(__name__)
+app = Quart(__name__, static_folder='TM-gui/build',
+            static_url_path='/app')
 app = cors(app, allow_origin="*")
 
 def verify_token(token):
@@ -37,21 +39,21 @@ def verify_token(token):
 
     return True, 'Token verified correctly'
 
-    try:
-        response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={
-            'access_token': token
-        }, headers=headers)
-        response_body = response.json()
-    except:
-        return False, 'Internal Server Error'
-    
-    if response.status_code == 500:
-        return False, 'Internal Server Error'
-    
-    if('error' in response_body):
-        return False, response_body['error_description']
-    else:
-        return True, 'Token verified correctly'
+    # try:
+    #     response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={
+    #         'access_token': token
+    #     }, headers=headers)
+    #     response_body = response.json()
+    # except:
+    #     return False, 'Internal Server Error'
+    # 
+    # if response.status_code == 500:
+    #     return False, 'Internal Server Error'
+    # 
+    # if('error' in response_body):
+    #     return False, response_body['error_description']
+    # else:
+    #     return True, 'Token verified correctly'
 
 @app.route('/entity', defaults={'entity_uuid': None})
 @app.route('/entity/<entity_uuid>')
@@ -586,6 +588,22 @@ async def get_report():
         return {"error": ret["error"]}, 500
 
     return ret
+
+# Serve React App
+@app.route('/<path:path>')
+async def static_dir(path):
+    if path != "" and os.path.exists(app.static_folder.__str__() + '/' + path):
+        return await send_from_directory(app.static_folder, path)
+
+@app.route('/app', defaults={'path': ''})
+@app.route('/app/<path:path>')
+async def serve(path):
+    if str(path) in ["verifiers", "status"]:
+        serve("")        
+    elif path != "" and os.path.exists(app.static_folder.__str__() + '/' + path):
+        return await send_from_directory(app.static_folder, path)
+    else:
+        return await send_from_directory(app.static_folder, 'index.html')
 
 if __name__ == "__main__":
     

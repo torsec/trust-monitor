@@ -1,7 +1,7 @@
 
-const ip = "130.192.1.50" //"127.0.0.1"
+const ip = "127.0.0.1"
 const port = "5080" //"5443"
-const baseURL = `https://${ip}:${port}`
+const baseURL = `http://${ip}:${port}`
 
 const getTasksByFilter = async (selectedFilter) => {
   const response = await fetch(`/api/tasks?filter=${selectedFilter}`);
@@ -14,7 +14,7 @@ const getTasksByFilter = async (selectedFilter) => {
 };
 
 const getAllEntities = async (token) => {
-  const response = await fetch(`${baseURL}/entity?token=${token}`);
+  const response = await fetch(`${baseURL}/entity`);
   const body = await response.json();
   if (response.ok) {
     return body.entities;
@@ -24,7 +24,7 @@ const getAllEntities = async (token) => {
 };
 
 const getAllVerifiers = async (token) => {
-  const response = await fetch(`${baseURL}/verifier?token=${token}`);
+  const response = await fetch(`${baseURL}/verifier`);
   const body = await response.json();
   if (response.ok) {
     return body;
@@ -34,7 +34,7 @@ const getAllVerifiers = async (token) => {
 };
 
 const addEntity = async (entity, token) => {
-  const response = await fetch(`${baseURL}/entity?token=${token}`, {
+  const response = await fetch(`${baseURL}/entity`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -50,7 +50,7 @@ const addEntity = async (entity, token) => {
 };
 
 const deleteEntity = async (uuid, token) => {
-  const response = await fetch(`${baseURL}/entity?token=${token}`, {
+  const response = await fetch(`${baseURL}/entity`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -66,7 +66,7 @@ const deleteEntity = async (uuid, token) => {
 };
 
 const editEntity = async (entity, token) => {
-  const response = await fetch(`${baseURL}/entity?token=${token}`, {
+  const response = await fetch(`${baseURL}/entity`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -82,7 +82,7 @@ const editEntity = async (entity, token) => {
 };
 
 const attestEntity = async (uuid, token) => {
-  const response = await fetch(`${baseURL}/attest_entity?token=${token}`, {
+  const response = await fetch(`${baseURL}/attest_entity`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
@@ -100,7 +100,7 @@ const attestEntity = async (uuid, token) => {
 }
 
 const stopAttestEntity = async (uuid, token) => {
-  const response = await fetch(`${baseURL}/attest_entity?token=${token}`, {
+  const response = await fetch(`${baseURL}/attest_entity`, {
     method: "DELETE",
     headers: {
       "Content-Type": "application/json",
@@ -118,7 +118,7 @@ const stopAttestEntity = async (uuid, token) => {
 }
 
 const getStatus = async (token) => {
-  const response = await fetch(`${baseURL}/status?token=${token}`);
+  const response = await fetch(`${baseURL}/status`);
   const body = await response.json();
   if (response.ok) {
     return body;
@@ -128,7 +128,7 @@ const getStatus = async (token) => {
 }
 
 const getEntityReport = async (uuid, token) => {
-  const response = await fetch(`${baseURL}/report?token=${token}`, {
+  const response = await fetch(`${baseURL}/report`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
