@@ -596,11 +596,9 @@ async def static_dir(path):
         return await send_from_directory(app.static_folder, path)
 
 @app.route('/app', defaults={'path': ''})
-@app.route('/app/<path:path>')
-async def serve(path):
-    if str(path) in ["verifiers", "status"]:
-        serve("")        
-    elif path != "" and os.path.exists(app.static_folder.__str__() + '/' + path):
+@app.route('/app/<path:path>')  
+async def serve(path):     
+    if path != "" and os.path.exists(app.static_folder.__str__() + '/' + path):
         return await send_from_directory(app.static_folder, path)
     else:
         return await send_from_directory(app.static_folder, 'index.html')

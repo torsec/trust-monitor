@@ -17,6 +17,7 @@ services:
 
   kafka1:
     image: confluentinc/cp-kafka:7.1.1
+    restart: always
     hostname: kafka1
     container_name: kafka1
     networks:
@@ -69,13 +70,16 @@ services:
       MONGO_INITDB_ROOT_PASSWORD: "prova"
 
   trust-monitor:
-      image: tm/trust-monitor-core
+      image: tm/trust-monitor
+      restart: always
+      #stdin_open: true # docker run -i
+      #tty: true        # docker run -t
       build: ../
       hostname: trust-monitor
       container_name: trust-monitor
       networks:
         priv_net:
-          ipv4_address: 172.20.0.10
+          ipv4_address: 172.20.0.6
       ports:
         - "5080:5080"
       depends_on:
@@ -83,26 +87,25 @@ services:
         - postgres
         - mongo
       volumes:
-        - '../log:/var/log/trust-monitor'
+        - './log:/var/log/trust-monitor'
 
-  tm-gui:
-      image: tm/trust-monitor-gui
-      build: ../TM-gui
-      hostname: tm-gui
-      container_name: tm-gui
-      networks:
-        priv_net:
-          ipv4_address: 172.20.0.11
-      ports:
-        - "8080:80"
-      depends_on:
-        - trust-monitor
+#  tm-gui:
+#      image: tm/trust-monitor-gui
+#      build: ../TM-gui
+#      hostname: tm-gui
+#      container_name: tm-gui
+#      networks:
+#        priv_net:
+#          ipv4_address: 172.20.0.11
+#      ports:
+#        - "8080:80"
+#      depends_on:
+#        - trust-monitor
 
 networks:
-    priv_net:
-        driver: bridge
-        ipam:
-            driver: default
-            config:
-                - 
-                  subnet: 172.20.0.0/24
+  priv_net:
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.20.0.0/24
