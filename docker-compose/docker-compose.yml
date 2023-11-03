@@ -87,7 +87,7 @@ services:
         - postgres
         - mongo
       volumes:
-        - './log:/var/log/trust-monitor'
+        - '../log:/var/log/trust-monitor'
 
 #  tm-gui:
 #      image: tm/trust-monitor-gui
