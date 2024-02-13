@@ -14,13 +14,14 @@ import core
 from waiting import wait, TimeoutExpired
 
 # Disable insecure TLS requests warnings
-from requests.packages.urllib3.exceptions import InsecureRequestWarning
+from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 tech = "enarx_v0_7_1"
 
 hostname = "localhost"
 port = 8080
+
 # .wasm file to check (CHECK THE PATH!)
 file = open('/home/jaco/Desktop/hello-world.wasm', "rb")
 wasm_bytes =  file.read()
@@ -28,6 +29,10 @@ wasm_bytes =  file.read()
 att_result = False
 
 class AttestationServer(BaseHTTPRequestHandler):
+    def do_GET(self):
+        self.send_response(200, "Hello World!")
+        self.end_headers()
+    
     def do_POST(self):
         
         global att_result
