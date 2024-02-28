@@ -82,6 +82,7 @@ services:
           ipv4_address: 172.20.0.6
       ports:
         - "5080:5080"
+        - "2107:2107"
       depends_on:
         - kafka1
         - postgres

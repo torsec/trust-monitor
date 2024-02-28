@@ -1,16 +1,14 @@
-import datetime
+from datetime import datetime
 from http.server import BaseHTTPRequestHandler, HTTPServer
 from cryptography import x509
-from cryptography.hazmat.primitives.asymmetric import ec
+from cryptography.hazmat.primitives.asymmetric import (ec, utils)
 from cryptography.hazmat.primitives import hashes
+import pytz
 
-import json
 import requests
-import time
 from kafka_connector.kafka_connector import run_kafka_producer
 
 #from core import read_entity, read_whitelist
-import core
 from waiting import wait, TimeoutExpired
 
 # Disable insecure TLS requests warnings
@@ -19,23 +17,26 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 tech = "enarx_v0_7_1"
 
-hostname = "localhost"
-port = 8080
+hostname = "0.0.0.0"
+port = 2107
 
-# .wasm file to check (CHECK THE PATH!)
-file = open('/home/jaco/Desktop/hello-world.wasm', "rb")
-wasm_bytes =  file.read()
-
-att_result = False
+att_result = None # Used to check if the attestation has been done (att_result = bool(True) or bool(False))
+allowed_wasm_hashes = []
+run_wasm_hash = ""
+attempted_wasm_hash = ""
 
 class AttestationServer(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200, "Hello World!")
         self.end_headers()
+        
+        global allowed_wasm_hashes
+        print(allowed_wasm_hashes)
     
     def do_POST(self):
         
         global att_result
+        global allowed_wasm_hashes
         
         # Retrive the total lenght of the received bytes
         content_length = int(self.headers['Content-Length'])
@@ -60,8 +61,8 @@ class AttestationServer(BaseHTTPRequestHandler):
         x509_cert = x509.load_der_x509_certificate(bytes_cert)
         
         # Take the current datetime UTC and compare it with the expiration date of the Keep's certificate
-        current_utc_datetime = datetime.utcnow()
-        if x509_cert.not_valid_after.__lt__(current_utc_datetime):
+        current_utc_datetime = current_utc_datetime = datetime.now(pytz.utc)
+        if x509_cert.not_valid_after_utc.__lt__(current_utc_datetime):
                 raise ValueError("Certificate expired!\n")     
         
         # Print the certificate of the Keep
@@ -77,14 +78,33 @@ class AttestationServer(BaseHTTPRequestHandler):
         # Get the public key from the certificate
         pubkey = x509_cert.public_key()
         try:
-                # Verify the signature over the .wasm with the public key
-                pubkey.verify(bytes_signature, wasm_bytes, ec.ECDSA(hashes.SHA256()))
-                att_result = True
+                for hash in allowed_wasm_hashes:
+                    
+                    wasm_hash_bytes = bytes.fromhex(hash)
+                    
+                    global run_wasm_hash
+                    run_wasm_hash = hash
+                    
+                    # SHA256 (Intel CPU)
+                    if len(wasm_hash_bytes) == 32:
+                        # Verify the signature over the .wasm's hash with the public key
+                        
+                        if  pubkey.verify(bytes_signature, wasm_hash_bytes, ec.ECDSA(utils.Prehashed(hashes.SHA256()))) == None:
+                            break
+                    
+                    # SHA384 (AMD CPU)
+                    if len(wasm_hash_bytes) == 48:
+                        # Verify the signature over the .wasm's hash with the public key
+                        
+                        if  pubkey.verify(bytes_signature, wasm_hash_bytes, ec.ECDSA(utils.Prehashed(hashes.SHA384()))) == None:
+                            break
+                
+                att_result = bool(True) # Record successful attestation
                 print("Attestation: " + att_result.__str__())
                 self.send_response(200, "Certificate successfully received and signature over the .wasm verified!")
                 self.end_headers()
         except:
-                att_result = False
+                att_result = bool(False) # Record unsuccessful attestation with invalid signature
                 print("Error: Invalid Signature exception!")
                 self.send_response(400, "Bad Request!")
                 self.end_headers()
@@ -95,46 +115,56 @@ class EnarxAdapter():
         pass
 
     def register(entity, whitelist, verifier):
+        """
+        Enarx does not need an implemetation for the delete method
+        """
         pass
 
-    def attest(entity, steward, whitelist, se, topic):
+    def attest(entity, _steward, whitelist, _se, topic):
         
         if tech not in entity["att_tech"]:
             return {"error" : tech + " is not present into the entity's attestation technologies list"}
+        
+        
+        if not whitelist["whitelist"]:
+            return {"error" : " empty whitelist of WASM hashes"}
+        
+        global allowed_wasm_hashes
+        allowed_wasm_hashes = whitelist["whitelist"]["wasm_hashes_list"]
+        
+        print(allowed_wasm_hashes)
     
         webServer = HTTPServer((hostname, port), AttestationServer)
+        webServer.socket.settimeout(300) # Set the server timeout to 5 mins
+        
         print("TM Enarx Attestation Server started at http://%s:%s" %(hostname, port))
                 
-        try:
-            webServer.handle_request()
-            print("\nAttestation server shutdown.\n")
-        except KeyboardInterrupt:
-            print("\nAttestation server forced shutdown.\n")
+        webServer.handle_request()
         
+        if att_result == True:
+            run_kafka_producer( {
+                "entity_uuid": entity["entity_uuid"],
+                "att_tech": tech,
+                # "run_wasm_hash": run_wasm_hash,
+                "trust": True
+            }, topic )
         
-        while not se.is_set():
-            if att_result == True:
-                run_kafka_producer( {
-                    "entity_uuid": entity["entity_uuid"],
-                    "att_tech": tech,
-                    "trust": True
-                }, topic )
+        else:
+            run_kafka_producer( {
+                "entity_uuid": entity["entity_uuid"],
+                "att_tech": tech,
+                # "attempted_wasm_hash": run_wasm_hash,
+                "trust": False
+            }, topic )
             
-                try:
-                    if wait(lambda : se.is_set(), timeout_seconds=10, sleep_seconds=0.1) is True:
-                        break
-                except TimeoutExpired:
-                    pass
-            
-            else:
-                run_kafka_producer( {
-                    "entity_uuid": entity["entity_uuid"],
-                    "att_tech": tech,
-                    "trust": False
-                }, topic )
-                
-                try:
-                    if wait(lambda : se.is_set(), timeout_seconds=10, sleep_seconds=0.1) is True:
-                        break
-                except TimeoutExpired:
-                    pass
+        # If the server timoeout expires, att_result is still None, otherwise is is True or False and attestation has been performed
+        if att_result == None:
+            print("WASM Attestation Server Timeout Expired! - Server shutdown.")
+        else:
+            print("Attestation done! - Server Shutdown.")
+
+    def delete(entity, verifier):
+        """
+        Enarx does not need an implemetation for the delete method
+        """
+        pass
