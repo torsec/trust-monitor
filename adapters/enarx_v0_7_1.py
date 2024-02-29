@@ -4,6 +4,7 @@ from cryptography import x509
 from cryptography.hazmat.primitives.asymmetric import (ec, utils)
 from cryptography.hazmat.primitives import hashes
 import pytz
+import configparser
 
 import requests
 from kafka_connector.kafka_connector import run_kafka_producer
@@ -15,10 +16,14 @@ from waiting import wait, TimeoutExpired
 from urllib3.exceptions import InsecureRequestWarning
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
+config = configparser.ConfigParser()
+config.read('config/config.ini')
+
 tech = "enarx_v0_7_1"
 
-hostname = "0.0.0.0"
-port = 2107
+hostname = config["enarx_wasm_att_service"]["hostname"]
+port = int(config["enarx_wasm_att_service"]["port"])
+att_server_timeout = int(config["enarx_wasm_att_service"]["timeout"])
 
 att_result = None # Used to check if the attestation has been done (att_result = bool(True) or bool(False))
 allowed_wasm_hashes = []
@@ -29,9 +34,6 @@ class AttestationServer(BaseHTTPRequestHandler):
     def do_GET(self):
         self.send_response(200, "Hello World!")
         self.end_headers()
-        
-        global allowed_wasm_hashes
-        print(allowed_wasm_hashes)
     
     def do_POST(self):
         
@@ -116,7 +118,7 @@ class EnarxAdapter():
 
     def register(entity, whitelist, verifier):
         """
-        Enarx does not need an implemetation for the delete method
+        Enarx does not need an implementation for the delete method
         """
         pass
 
@@ -135,7 +137,7 @@ class EnarxAdapter():
         print(allowed_wasm_hashes)
     
         webServer = HTTPServer((hostname, port), AttestationServer)
-        webServer.socket.settimeout(300) # Set the server timeout to 5 mins
+        webServer.socket.settimeout(att_server_timeout) # Set the server timeout to 5 mins
         
         print("TM Enarx Attestation Server started at http://%s:%s" %(hostname, port))
                 
@@ -157,7 +159,7 @@ class EnarxAdapter():
                 "trust": False
             }, topic )
             
-        # If the server timoeout expires, att_result is still None, otherwise is is True or False and attestation has been performed
+        # If the server timeout expires, att_result is still None, otherwise is True or False and attestation has been performed
         if att_result == None:
             print("WASM Attestation Server Timeout Expired! - Server shutdown.")
         else:
@@ -165,6 +167,6 @@ class EnarxAdapter():
 
     def delete(entity, verifier):
         """
-        Enarx does not need an implemetation for the delete method
+        Enarx does not need an implementation for the delete method
         """
         pass
