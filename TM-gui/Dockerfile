@@ -1,7 +1,6 @@
 ### STAGE 1: Build ###
 FROM node:latest AS build
 WORKDIR /build
-ENV TRUST_MONITOR_IP_ADDRESS=130.192.1.100
 
 COPY package.json package.json
 COPY package-lock.json package-lock.json
