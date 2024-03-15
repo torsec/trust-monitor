@@ -13,6 +13,7 @@
     "async_hooks": "^1.0.0",
     "bootstrap": "^4.6.0",
     "dayjs": "^1.10.4",
+    "dotenv": "^16.4.5",
     "jquery": "^3.6.0",
     "keycloak-js": "^20.0.3",
     "popper.js": "^1.16.1",

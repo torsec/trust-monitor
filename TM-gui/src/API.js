@@ -1,5 +1,7 @@
 
-const ip = process.env.NODE_ENV === "development" ? process.env.REACT_APP_IP_BACKEND_DEVELOPMENT : process.env.REACT_APP_IP_BACKEND_PRODUCTION
+const dotenv = require('dotenv').config()
+
+const ip = dotenv.parsed.REACT_APP_IP_BACKEND_PRODUCTION
 const port = "5080" //"5443"
 const baseURL = `http://${ip}:${port}`
 
