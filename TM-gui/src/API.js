@@ -1,5 +1,5 @@
 
-const ip = process.env.TRUST_MONITOR_IP_ADDRESS // "127.0.0.1"
+const ip = process.env.NODE_ENV === "development" ? process.env.REACT_APP_IP_BACKEND_DEVELOPMENT : process.env.REACT_APP_IP_BACKEND_PRODUCTION
 const port = "5080" //"5443"
 const baseURL = `http://${ip}:${port}`
 

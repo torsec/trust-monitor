@@ -27,8 +27,8 @@
     "web-vitals": "^1.1.1"
   },
   "scripts": {
-    "start": "TRUST_MONITOR_IP_ADDRESS=130.192.1.100 react-scripts start",
-    "build": "TRUST_MONITOR_IP_ADDRESS=130.192.1.100 react-scripts --openssl-legacy-provider build",
+    "start": "react-scripts start",
+    "build": "react-scripts --openssl-legacy-provider build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"
   },
