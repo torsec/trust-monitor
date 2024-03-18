@@ -1,7 +1,4 @@
-
-import dotenv from 'dotenv'
-
-const ip = dotenv.config().parsed.REACT_APP_IP_BACKEND_PRODUCTION
+const ip = '130.192.1.100'
 const port = "5080" //"5443"
 const baseURL = `http://${ip}:${port}`
 
