@@ -34,26 +34,6 @@ app = Quart(__name__, static_folder='TM-gui/build',
             static_url_path='/app')
 app = cors(app, allow_origin="*")
 
-def verify_token(token):
-    headers = {'Content-Type': 'application/x-www-form-urlencoded'}
-
-    return True, 'Token verified correctly'
-
-    # try:
-    #     response = requests.post('https://fishy-idm.dsi.uminho.pt/auth/realms/fishy-realm/protocol/openid-connect/userinfo', data={
-    #         'access_token': token
-    #     }, headers=headers)
-    #     response_body = response.json()
-    # except:
-    #     return False, 'Internal Server Error'
-    # 
-    # if response.status_code == 500:
-    #     return False, 'Internal Server Error'
-    # 
-    # if('error' in response_body):
-    #     return False, response_body['error_description']
-    # else:
-    #     return True, 'Token verified correctly'
 
 @app.route('/entity', defaults={'entity_uuid': None})
 @app.route('/entity/<entity_uuid>')
@@ -64,13 +44,6 @@ async def get_entity(entity_uuid):
 
     If no entity_uuid is provided it responds with the whole list of entities
     """
-
-    #token verification
-    #token = request.args.get('token')
-    #success, descriprion = verify_token(token)
-    #if success is False:
-    #    return {"error": descriprion}, 401
-    #END token verification
 
     #entity_uuid = request.args.get('entity_uuid')
     
@@ -256,16 +229,9 @@ async def stop_ra_entity():
 async def get_verifier():
     """
     Read data about a verfier stored into the verfiers DB. Usage:
-        /verifier?token=<token>&att_tech=<att_tech_name>&inf_id=<inf_id>
+        /verifier?att_tech=<att_tech_name>&inf_id=<inf_id>
 
     """
-
-    #token verification
-    token = request.args.get('token')
-    success, descriprion = verify_token(token)
-    if success is False:
-        return {"error": descriprion}, 401
-    #END token verification
 
     att_tech = request.args.get('att_tech')
     inf_id = request.args.get('inf_id')
@@ -544,13 +510,6 @@ async def remove_whitelist():
 
 @app.route('/status')
 async def get_status():
-
-    #token verification
-    token = request.args.get('token')
-    success, descriprion = verify_token(token)
-    if success is False:
-        return {"error": descriprion}, 401
-    #END token verification
 
     ret = read_tm_status()
 
