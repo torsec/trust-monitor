@@ -7,3 +7,5 @@ ssl_cert/
 rabbitmq_connector/
 TM-gui/.cert/
 trust-monitor.log
+trust-monitor.crt
+trust-monitor.key

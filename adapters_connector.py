@@ -16,8 +16,9 @@ def refresh_adapters():
         class_ = config["adapters"][module]
         try:
             classes[module] = getattr(importlib.import_module("."+module, "adapters"), class_) #__import__("adapters."+module, fromlist=[module]), class_
-        except:
+        except Exception as ex:
             print("Adapter " + module + " NOT found!", file=sys.stderr)
+            raise ex
 
 
 def register_entity(entity, whitelist, verifier):

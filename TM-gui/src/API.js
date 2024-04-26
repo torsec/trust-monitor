@@ -1,5 +1,4 @@
-
-const ip = "127.0.0.1"
+const ip = '130.192.1.100'
 const port = "5080" //"5443"
 const baseURL = `http://${ip}:${port}`
 
