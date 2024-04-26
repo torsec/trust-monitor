@@ -26,6 +26,14 @@ import configparser
 from logger import logger
 import requests
 import os
+import group_sig.client_mon as client_mon
+
+MCRT = "group_sig/trust-monitor.crt"
+MKEY = "group_sig/trust-monitor.key"
+
+# Group signature object
+mon = None
+
 
 config = configparser.ConfigParser()
 config.read('config/config.ini')
@@ -562,11 +570,17 @@ async def serve(path):
     else:
         return await send_from_directory(app.static_folder, 'index.html')
 
-if __name__ == "__main__":
-    
 #
 # start the API server
 #
+if __name__ == "__main__":
+    
+    # Initialize a Producer (requires an active server, a public certificate and its private key)
+    mon = client_mon.Monitor('172.16.3.79', MCRT, MKEY)
+
+    # Register in monitors group (This must contact the server)
+    mon.register()
+
     if "tls" in config:
         if "ca_certs" not in config["tls"]:
             raise Exception("No ca_certs specified in tls section of config/config.ini")
