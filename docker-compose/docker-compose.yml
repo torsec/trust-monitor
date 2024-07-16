@@ -69,26 +69,26 @@ services:
       MONGO_INITDB_ROOT_USERNAME: "mongo"
       MONGO_INITDB_ROOT_PASSWORD: "prova"
 
-  trust-monitor:
-      image: tm/trust-monitor
-      restart: always
-      #stdin_open: true # docker run -i
-      #tty: true        # docker run -t
-      build: ../
-      hostname: trust-monitor
-      container_name: trust-monitor
-      networks:
-        priv_net:
-          ipv4_address: 172.20.0.6
-      ports:
-        - "5080:5080"
-        - "2107:2107"
-      depends_on:
-        - kafka1
-        - postgres
-        - mongo
-      volumes:
-        - '../log:/var/log/trust-monitor'
+  # trust-monitor:
+  #     image: tm/trust-monitor
+  #     restart: always
+  #     #stdin_open: true # docker run -i
+  #     #tty: true        # docker run -t
+  #     build: ../
+  #     hostname: trust-monitor
+  #     container_name: trust-monitor
+  #     networks:
+  #       priv_net:
+  #         ipv4_address: 172.20.0.6
+  #     ports:
+  #       - "5080:5080"
+  #       - "2107:2107"
+  #     depends_on:
+  #       - kafka1
+  #       - postgres
+  #       - mongo
+  #     volumes:
+  #       - '../log:/var/log/trust-monitor'
 
 #  tm-gui:
 #      image: tm/trust-monitor-gui

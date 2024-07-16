@@ -65,7 +65,8 @@ def run_kafka_consumer(stop_event, entity, topics):
     report = {
         "entity_uuid": entity["entity_uuid"],
         "trust": False,
-        "state": []
+        "state": [],
+        "enclaves": entity["child"]
     }
 
     msg = None

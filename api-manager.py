@@ -26,7 +26,7 @@ import configparser
 from logger import logger
 import requests
 import os
-import group_sig.client_mon as client_mon
+# import group_sig.client_mon as client_mon
 
 MCRT = "group_sig/trust-monitor.crt"
 MKEY = "group_sig/trust-monitor.key"
@@ -576,10 +576,10 @@ async def serve(path):
 if __name__ == "__main__":
     
     # Initialize a Producer (requires an active server, a public certificate and its private key)
-    mon = client_mon.Monitor('172.16.3.79', MCRT, MKEY)
+    # mon = client_mon.Monitor('172.16.3.79', MCRT, MKEY)
 
-    # Register in monitors group (This must contact the server)
-    mon.register()
+    # # Register in monitors group (This must contact the server)
+    # mon.register()
 
     if "tls" in config:
         if "ca_certs" not in config["tls"]:
