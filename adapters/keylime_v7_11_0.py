@@ -1,11 +1,12 @@
 import json
 from kafka_connector.kafka_connector import run_kafka_producer
-from waiting import wait
+from waiting import wait, TimeoutExpired
 import os
 import subprocess
 import sys
 import time
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union, cast
+from database_connectors.instances import (edit_state_entity)
 
 tech = "keylime_v7_11_0"
 
@@ -103,16 +104,21 @@ class KeyLimeAdapter():
             
             agent_data = parsed_data[uuid]
             
-            print(agent_data['operational_state'])
-            
             report = {
                 "entity_uuid": uuid,
                 "trust": False,
                 "enclaves": [],
-                "containers": []
+                "containers": [],
+                "att_tech": "keylime_v7_11_0"
     		}
             
-            enclaves = agent_data['meta_data'].split(",")
+            if ',' in agent_data['meta_data']:
+                enclaves = agent_data['meta_data'].split(",")
+            else:
+                enclaves = [agent_data['meta_data']]
+            
+            edit_state_entity( {"entity_uuid": entity["entity_uuid"], "state": "attesting"} )
+            
             
             if agent_data['operational_state'] == 'Provide V' or agent_data["operational_state"] == 'Get Quote':
                 enclaves_list = [{"uuid": uuid, "trust": True} for uuid in enclaves]
@@ -120,6 +126,8 @@ class KeyLimeAdapter():
                 report['trust'] = True
                 entity['state'] = 'trusted'
                 entity['child'] = enclaves_list
+            elif agent_data['operational_state'] == 'Registered':
+                continue
             else:
                 enclaves_list = [{"uuid": uuid, "trust": False} for uuid in enclaves]
                 report['enclaves'] = enclaves_list
@@ -127,7 +135,11 @@ class KeyLimeAdapter():
                 entity['state'] = 'untrusted'
                 
             run_kafka_producer(report, topic)
-            wait(lambda : se.is_set(), timeout_seconds=5, sleep_seconds=0.1)
+            try:
+                if wait(lambda : se.is_set(), timeout_seconds=5, sleep_seconds=0.1) is True: # wait 5 s
+                    break
+            except TimeoutExpired:
+                pass
 
     def delete(entity, verifier):
         """
