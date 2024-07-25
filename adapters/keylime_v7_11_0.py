@@ -98,7 +98,7 @@ class KeyLimeAdapter():
 
         while not se.is_set():
             retDic = run(cmd=["keylime_tenant", "-c", "status", "--uuid", uuid], raiseOnError=False)
-            # print(retDic)
+
             parsed_data = json.loads(retDic['retout'][-1])
             # print(parsed_data[uuid])
             
@@ -112,27 +112,51 @@ class KeyLimeAdapter():
                 "att_tech": "keylime_v7_11_0"
     		}
             
-            if ',' in agent_data['meta_data']:
-                enclaves = agent_data['meta_data'].split(",")
-            else:
-                enclaves = [agent_data['meta_data']]
+            other_entities = json.loads(agent_data['meta_data'])
             
-            edit_state_entity( {"entity_uuid": entity["entity_uuid"], "state": "attesting"} )
+            print(other_entities)
+            
+            if ',' in other_entities['enclaves'][0]:
+                enclaves = other_entities['enclaves'][0].split(",")
+            elif other_entities['enclaves'][0] != "":
+                enclaves = other_entities['enclaves']
+            else:
+                enclaves = []
+                
+            if ',' in other_entities['containers'][0]:
+                containers = other_entities['containers'][0].split(",")
+            elif other_entities['containers'][0] != "":
+                containers = other_entities['containers']
+            else:
+                containers = []
+                
+            entity['metadata']['enclaves'] = []
+            entity['metadata']['containers'] = []
             
             
             if agent_data['operational_state'] == 'Provide V' or agent_data["operational_state"] == 'Get Quote':
                 enclaves_list = [{"uuid": uuid, "trust": True} for uuid in enclaves]
+                if len(containers) != 0:
+                    containers_list = [{"uuid": uuid, "trust": True} for uuid in containers]
+                    report['containers'] = containers_list
+                    entity['metadata']['containers'] = containers_list
                 report['enclaves'] = enclaves_list
                 report['trust'] = True
                 entity['state'] = 'trusted'
-                entity['child'] = enclaves_list
+                entity['metadata']['enclaves'] = enclaves_list
+                edit_state_entity( {"entity_uuid": entity["entity_uuid"], "state": "attesting"} )
             elif agent_data['operational_state'] == 'Registered':
                 continue
             else:
                 enclaves_list = [{"uuid": uuid, "trust": False} for uuid in enclaves]
+                if len(containers) != 0:
+                    containers_list = [{"uuid": uuid, "trust": False} for uuid in containers]
+                    report['containers'] = containers_list
+                    entity['metadata']['containers'] = containers_list
                 report['enclaves'] = enclaves_list
                 report['trust'] = False
                 entity['state'] = 'untrusted'
+                entity['metadata']['enclaves'] = enclaves_list
                 
             run_kafka_producer(report, topic)
             try:

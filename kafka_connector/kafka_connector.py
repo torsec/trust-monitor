@@ -66,7 +66,8 @@ def run_kafka_consumer(stop_event, entity, topics):
         "entity_uuid": entity["entity_uuid"],
         "trust": False,
         "state": [],
-        "enclaves": entity["child"]
+        "enclaves": entity["child"],
+        "containers": []
     }
 
     msg = None
@@ -122,6 +123,7 @@ def run_kafka_consumer(stop_event, entity, topics):
         # build the report if it's possible, and clear the report state
         #
         report['enclaves'] = result['enclaves']
+        report['containers'] = result['containers']
         if len(report["state"]) == len(entity["att_tech"]):
 
             report["time"] = str(datetime.now())
