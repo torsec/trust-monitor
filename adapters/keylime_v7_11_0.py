@@ -7,6 +7,7 @@ import sys
 import time
 from typing import Any, Dict, List, Optional, Sequence, Tuple, Union, cast
 from database_connectors.instances import (edit_state_entity)
+from database_connectors.whitelists import (retrieve_whitelist)
 
 tech = "keylime_v7_11_0"
 
@@ -94,13 +95,17 @@ class KeyLimeAdapter():
             pass         
         retDic = run(cmd=["keylime_tenant", "-c", "add", "--uuid", uuid, "-f", "/tmp/payload", "--allowlist", filepath], raiseOnError=False)
         
-        # print(retDic)
+        print(retDic)
+        enc_body = {"_id": entity["whitelist_uuid"]} 
+        whitelist_entity = retrieve_whitelist(enc_body)
+        whitelist_enclaves = whitelist_entity["whitelist"]["enclaves"]
+        
+        print(whitelist_enclaves)
 
         while not se.is_set():
             retDic = run(cmd=["keylime_tenant", "-c", "status", "--uuid", uuid], raiseOnError=False)
 
             parsed_data = json.loads(retDic['retout'][-1])
-            # print(parsed_data[uuid])
             
             agent_data = parsed_data[uuid]
             
@@ -114,49 +119,63 @@ class KeyLimeAdapter():
             
             other_entities = json.loads(agent_data['meta_data'])
             
+            print("other entities")
             print(other_entities)
             
-            if ',' in other_entities['enclaves'][0]:
-                enclaves = other_entities['enclaves'][0].split(",")
-            elif other_entities['enclaves'][0] != "":
-                enclaves = other_entities['enclaves']
-            else:
-                enclaves = []
+            enclaves = []
+            containers = []
+            if 'enclaves' in other_entities: 
+                if ',' in other_entities['enclaves'][0]:
+                    enclaves = other_entities['enclaves'][0].split(",")
+                elif other_entities['enclaves'][0] != "":
+                    enclaves = other_entities['enclaves']
+                    
+                if ',' in other_entities['containers'][0]:
+                    containers = other_entities['containers'][0].split(",")
+                elif other_entities['containers'][0] != "":
+                    containers = other_entities['containers']
+               
+            dict_enclaves = []
+
+            for string in enclaves:
+                parts = string.split(":")
+                dict_item = {
+                    "uuid": parts[0],
+                    "hash": parts[1],
+                    "signature": parts[2],
+                    "trust": False
+                }
                 
-            if ',' in other_entities['containers'][0]:
-                containers = other_entities['containers'][0].split(",")
-            elif other_entities['containers'][0] != "":
-                containers = other_entities['containers']
-            else:
-                containers = []
-                
-            entity['metadata']['enclaves'] = []
+                element_whitelist = next((d for d in whitelist_enclaves if d["uuid"] == dict_item["uuid"]), None)
+                if element_whitelist is not None and element_whitelist["hash"] == dict_item["hash"] and element_whitelist["signature"] == dict_item["signature"]:
+                    dict_item["trust"] = True
+                dict_enclaves.append(dict_item)
+
+            print(dict_enclaves)             
+            entity['metadata']['enclaves'] = dict_enclaves
             entity['metadata']['containers'] = []
             
             
+            
             if agent_data['operational_state'] == 'Provide V' or agent_data["operational_state"] == 'Get Quote':
-                enclaves_list = [{"uuid": uuid, "trust": True} for uuid in enclaves]
                 if len(containers) != 0:
                     containers_list = [{"uuid": uuid, "trust": True} for uuid in containers]
                     report['containers'] = containers_list
                     entity['metadata']['containers'] = containers_list
-                report['enclaves'] = enclaves_list
+                report['enclaves'] = dict_enclaves
                 report['trust'] = True
                 entity['state'] = 'trusted'
-                entity['metadata']['enclaves'] = enclaves_list
                 edit_state_entity( {"entity_uuid": entity["entity_uuid"], "state": "attesting"} )
             elif agent_data['operational_state'] == 'Registered':
                 continue
             else:
-                enclaves_list = [{"uuid": uuid, "trust": False} for uuid in enclaves]
                 if len(containers) != 0:
                     containers_list = [{"uuid": uuid, "trust": False} for uuid in containers]
                     report['containers'] = containers_list
                     entity['metadata']['containers'] = containers_list
-                report['enclaves'] = enclaves_list
+                report['enclaves'] = dict_enclaves
                 report['trust'] = False
                 entity['state'] = 'untrusted'
-                entity['metadata']['enclaves'] = enclaves_list
                 
             run_kafka_producer(report, topic)
             try:

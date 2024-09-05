@@ -20,7 +20,8 @@ from core import (
     # delete_policy,
     attest_entity,
     read_tm_status,
-    read_report
+    read_report,
+    whitelist_enclave
 )
 import configparser
 from logger import logger
@@ -434,6 +435,22 @@ async def remove_whitelist():
         return {"error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
 
     return {"message": "whitelist " + ret["id"] + " successfully deleted"}
+
+@app.route('/whitelist/enclave', methods=['PUT'])
+async def update_whitelist():
+    body = await request.get_json()
+    
+    if body is None or "_id" not in body or "enclave" not in body:
+        return {"error": "_id field must be present"}, 422
+
+    print(body)
+    ret = whitelist_enclave(body.get("enclave"), body.get("_id"))
+
+    if "error" in ret.keys():
+        return {"error": "whitelist " + str(body["_id"]) + " :" + ret["error"]}, 500
+
+    return {"message": "whitelist " + ret["id"] + " successfully updated"}
+
 
 # @app.route('/policy')
 # async def get_policy():

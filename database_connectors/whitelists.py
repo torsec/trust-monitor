@@ -3,6 +3,7 @@ import psycopg2
 from jsonschema import validate
 import os
 import configparser
+import json
 
 config = configparser.ConfigParser()
 config.read('config/config.ini')
@@ -179,3 +180,30 @@ def purge_whitelist(whitelist):
         return {"error": error.__str__()}
     
     return {"id": str(id)}
+
+def insert_whitelist_enclave(enclave, whitelist_id):
+    cur = conn.cursor()
+    
+    try:
+        cur.execute("SELECT whitelist FROM whitelists WHERE whitelist_id = %s", (whitelist_id,))
+        whitelist = cur.fetchone()[0]
+
+        new_uuid = enclave.get("uuid")
+        whitelist["enclaves"] = [enclave for enclave in whitelist["enclaves"] if enclave.get("uuid") != new_uuid]
+        whitelist["enclaves"].append(enclave)
+
+        cur.execute("""
+            UPDATE whitelists
+            SET whitelist = %s
+            WHERE whitelist_id = %s
+        """, (
+            json.dumps(whitelist),
+            whitelist_id
+        ))
+        conn.commit()
+
+    except Exception as error:
+        conn.rollback()
+        print({"error": error.__str__()})
+
+    return {"id": str(whitelist_id)}
